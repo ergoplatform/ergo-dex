@@ -1,3 +1,5 @@
+enablePlugins(GraalVMNativeImagePlugin)
+
 lazy val sonatypePublic = "Sonatype Public" at "https://oss.sonatype.org/content/groups/public/"
 lazy val sonatypeReleases = "Sonatype Releases" at "https://oss.sonatype.org/content/repositories/releases/"
 lazy val sonatypeSnapshots = "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
@@ -37,3 +39,15 @@ scalacOptions in(Compile, compile) ++= (if (scalaBinaryVersion.value == "2.11") 
 
 assemblyJarName in assembly := s"appkit-scala-examples-${version.value}.jar"
 
+graalVMNativeImageOptions ++= Seq(
+  "--no-server",
+  "--report-unsupported-elements-at-runtime",
+  "--no-fallback",
+  "-H:+TraceClassInitialization",
+  "-H:+ReportExceptionStackTraces",
+  "-H:+AddAllCharsets",
+  "-H:+AllowVMInspection",
+  "-H:-RuntimeAssertions",
+  "--allow-incomplete-classpath",
+  "--enable-url-protocols=http,https"
+)
