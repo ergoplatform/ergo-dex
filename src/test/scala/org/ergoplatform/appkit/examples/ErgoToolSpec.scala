@@ -1,7 +1,7 @@
 package org.ergoplatform.appkit.examples
 
 import org.ergoplatform.appkit.console.Console
-import org.ergoplatform.appkit.examples.ergotool.{ConfigOption, ErgoTool}
+import org.ergoplatform.appkit.examples.ergotool.{ConfigOption, ErgoTool, ExtractStorageCmd}
 import org.ergoplatform.appkit.examples.util.FileMockedErgoClient
 import org.scalatest.{PropSpec, Matchers}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
@@ -13,11 +13,15 @@ import java.nio.file.{Files, Paths}
 
 /** To run in IDEA set `Working directory` in Run/Debug configuration. */
 class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks with ConsoleTesting {
+
+  // test values which correspond to each other (see also addr.json storage file, which is obtained using this values)
   val addrStr = "3WzR39tWQ5cxxWWX6ys7wNdJKLijPeyaKgx72uqg9FJRBCdZPovL"
   val mnemonic = "slow silly start wash bundle suffer bulb ancient height spin express remind today effort helmet"
-
-  val addr2Str = "3WwWU3GJLK3aXCsoqptRboPYnvdqwv9QMBbpHybwXdVo9bSaMLEE"
-  val mnemonic2 = "burst cancel left report gauge fame fit slow series dial convince satoshi outer magnet filter"
+  val mnemonicPassword = ""
+  val storagePassword = "def"
+  val publicKey = "03f56b14197c1d0f9bf8418ed8c57a3179d12d9af98745fbd0ab3b9dd6883d24a8"
+  val secretKey = "18258e98ea87256806275b71cb203dc234752488e01985d405426e5c6f4ea1d1"
+  val masterKey = "18258e98ea87256806275b71cb203dc234752488e01985d405426e5c6f4ea1d1efe92e5adfcaa6f61173108305f7e3ba4ec9643a81dffa347879cf4d58d2a10006000200000000"
 
   val responsesDir = "src/test/resources/mockwebserver"
   def loadNodeResponse(name: String) = {
@@ -47,9 +51,9 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     })
   }
 
-  /**
-   * @param consoleScenario input and output operations with the console
-   * @param name command name
+  /** Run the given command with expected console scenario (print and read operations)
+   * @param consoleScenario input and output operations with the console (see parseScenario)
+   * @param name the command
    * @param args arguments of command line
    */
   def runCommand(consoleScenario: String, name: String, args: Seq[String], data: MockData = MockData.empty): String = {
@@ -68,8 +72,8 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("address command") {
-    testCommand(
-      s"""Mnemonic password> ::;
+    testCommand(consoleScenario =
+      s"""Mnemonic password> ::$mnemonicPassword;
         |$addrStr::;
         |""".stripMargin,
       "address", Seq("testnet", mnemonic))
@@ -121,13 +125,13 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("createStorage and extractStorage commands") {
+    import ExtractStorageCmd._
     val storageDir = "storage"
     val storageFileName = "secret.json"
     val filePath = Paths.get(storageDir, storageFileName)
     try {
       // create a storage file
-      testCommand(
-        consoleScenario =
+      testCommand(consoleScenario =
             s"""Mnemonic password> ::;
               |Repeat mnemonic password> ::;
               |Storage password> ::def;
@@ -136,14 +140,24 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
               |""".stripMargin,
         "createStorage", Seq(mnemonic))
 
-      // extract address from the storage file
-      testCommand(
-        consoleScenario =
+      // extract properties from the storage file
+      Seq(
+        PropAddress -> addrStr,
+        PropPublicKey -> publicKey,
+        PropMasterKey -> masterKey,
+        PropSecretKey -> secretKey).foreach { case (propName, expectedValue) =>
+        testCommand(consoleScenario =
             s"""Storage password> ::def;
-              |$addrStr\n::;
+              |$expectedValue\n::;
               |""".stripMargin,
-        "extractStorage", Seq(filePath.toString, "address", "testnet"))
+          "extractStorage", Seq(filePath.toString, propName, "testnet"))
+        println(s"$propName: ok")
+      }
 
+      // try extract invalid property
+      val res = runCommand(consoleScenario = s"ignored",
+        "extractStorage", Seq(filePath.toString, "invalidProp", "testnet"))
+      res should include ("Please specify one of the supported properties")
     } finally {
       if (Files.exists(filePath)) Files.delete(filePath)
     }
@@ -167,15 +181,6 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     println(res)
     res should include ("\"transactionId\": \"21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1\",")
   }
-
-//  ignore("send command") {
-//    val res = runCommand(
-//      s"""Storage password> ::abc;
-//        |""".stripMargin,
-//      "send", "storage/E1.json", "9hHDQb26AjnJUXxcqriqY1mnhpLuUeC81C4pggtK7tupr92Ea1K", "1000000")
-//    println(res)
-//  }
-
 
 }
 
