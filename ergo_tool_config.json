@@ -1,0 +1,9 @@
+{
+  "node": {
+    "nodeApi": {
+      "apiUrl": "http://138.68.98.248:9053",
+      "apiKey": ""
+    },
+    "networkType": "MAINNET"
+  }
+}

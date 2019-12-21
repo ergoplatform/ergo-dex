@@ -1,0 +1,9 @@
+{
+  "node": {
+    "nodeApi": {
+      "apiUrl": "http://206.189.130.185:9052",
+      "apiKey": ""
+    },
+    "networkType": "TESTNET"
+  }
+}

@@ -1,0 +1,11 @@
+*.iml
+.google
+.gradle
+.idea
+build
+target
+gradle
+/local.properties
+out/
+c-examples/.idea
+c-examples/cmake-build-debug
