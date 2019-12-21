@@ -21,19 +21,19 @@ case class CreateStorageCmd(
   }
 }
 object CreateStorageCmd extends CmdFactory(
-  name = "createStorage", cmdParamSyntax = "<mnemonic> [<storageDir>=\"storage\"] [<storageFileName>=\"secret.json\"]",
-  description = "Creates an encrypted storage file for the given <mnemonic> (requests storage password)") {
+  name = "createStorage", cmdParamSyntax = "[<storageDir>=\"storage\"] [<storageFileName>=\"secret.json\"]",
+  description = "Creates an encrypted storage file for the mnemonic entered by user") {
 
   override def parseCmd(ctx: RunContext): Cmd = {
     val args = ctx.cmdArgs
     val console = ctx.console
-    val phrase = if (args.length > 1) args(1) else error("mnemonic is not specified")
-    val storageDir = if (args.length > 2) args(2) else "storage"
-    val storageFileName = if (args.length > 3) args(3) else "secret.json"
+    val storageDir = if (args.length > 1) args(1) else "storage"
+    val storageFileName = if (args.length > 2) args(2) else "secret.json"
 
     val storagePath = Paths.get(storageDir, storageFileName)
     if (Files.exists(storagePath)) error(s"File $storagePath already exists")
 
+    val phrase = console.readLine("Enter mnemonic phrase> ")
     val mnemonicPass = readNewPassword(3, console) {
       val p1 = console.readPassword("Mnemonic password> ")
       val p2 = console.readPassword("Repeat mnemonic password> ")

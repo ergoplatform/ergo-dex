@@ -131,9 +131,10 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     val filePath = Paths.get(storageDir, storageFileName)
     try {
       // create a storage file
-      testCommand("createStorage", Seq(mnemonic),
+      testCommand("createStorage", Seq(),
         expectedConsoleScenario =
-            s"""Mnemonic password> ::$mnemonicPassword;
+            s"""Enter mnemonic phrase> ::$mnemonic;
+              |Mnemonic password> ::$mnemonicPassword;
               |Repeat mnemonic password> ::$mnemonicPassword;
               |Storage password> ::$storagePassword;
               |Repeat storage password> ::$storagePassword;
