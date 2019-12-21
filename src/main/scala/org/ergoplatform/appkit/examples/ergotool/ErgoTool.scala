@@ -21,7 +21,7 @@ import scala.collection.mutable.ArrayBuffer
 object ErgoTool {
   val commands: Map[String, CmdFactory] = Array(
     AddressCmd, MnemonicCmd, CheckAddressCmd,
-    ListWalletBoxesCmd, ListAddressBoxesCmd,
+    ListAddressBoxesCmd,
     CreateStorageCmd, ExtractStorageCmd, SendCmd
     ).map(c => (c.name, c)).toMap
 

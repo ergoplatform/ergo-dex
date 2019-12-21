@@ -9,6 +9,7 @@ import scalan.util.FileUtil
 import org.ergoplatform.appkit.JavaHelpers._
 import java.util.{List => JList}
 import java.lang.{String => JString}
+import java.nio.file.{Files, Paths}
 
 /** To run in IDEA set `Working directory` in Run/Debug configuration. */
 class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks with ConsoleTesting {
@@ -66,17 +67,17 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     ()
   }
 
-  property("mnemonic command") {
-    val res = runCommand("", "mnemonic", Nil)
-    res.split(" ").length shouldBe 15
-  }
-
   property("address command") {
     testCommand(
       s"""Mnemonic password> ::;
-         |$addrStr::;
-         |""".stripMargin,
+        |$addrStr::;
+        |""".stripMargin,
       "address", Seq("testnet", mnemonic))
+  }
+
+  property("mnemonic command") {
+    val res = runCommand("", "mnemonic", Nil)
+    res.split(" ").length shouldBe 15
   }
 
   property("checkAddress command") {
@@ -103,10 +104,6 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     res should include ("Network type of the address MAINNET don't match expected TESTNET")
   }
 
-  def containAll(s: String, substrings: String*): Boolean = {
-    substrings.forall(s.contains(_))
-  }
-
   property("listAddressBoxes command") {
     val data = MockData(
       Seq(
@@ -121,6 +118,35 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     res should include ("d47f958b201dc7162f641f7eb055e9fa7a9cb65cc24d4447a10f86675fc58328")
     res should include ("e050a3af38241ce444c34eb25c0ab880674fc23a0e63632633ae14f547141c37")
     res should include ("26d6e08027e005270b38e5c5f4a73ffdb6d65a3289efb51ac37f98ad395d887c")
+  }
+
+  property("createStorage and extractStorage commands") {
+    val storageDir = "storage"
+    val storageFileName = "secret.json"
+    val filePath = Paths.get(storageDir, storageFileName)
+    try {
+      // create a storage file
+      testCommand(
+        consoleScenario =
+            s"""Mnemonic password> ::;
+              |Repeat mnemonic password> ::;
+              |Storage password> ::def;
+              |Repeat storage password> ::def;
+              |Storage File: $filePath\n::;
+              |""".stripMargin,
+        "createStorage", Seq(mnemonic))
+
+      // extract address from the storage file
+      testCommand(
+        consoleScenario =
+            s"""Storage password> ::def;
+              |$addrStr\n::;
+              |""".stripMargin,
+        "extractStorage", Seq(filePath.toString, "address", "testnet"))
+
+    } finally {
+      if (Files.exists(filePath)) Files.delete(filePath)
+    }
   }
 
   property("send command") {
