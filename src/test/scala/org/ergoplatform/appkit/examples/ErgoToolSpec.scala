@@ -52,19 +52,19 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   /** Run the given command with expected console scenario (print and read operations)
-   * @param consoleScenario input and output operations with the console (see parseScenario)
    * @param name the command
    * @param args arguments of command line
+   * @param expectedConsoleScenario input and output operations with the console (see parseScenario)
    */
-  def runCommand(consoleScenario: String, name: String, args: Seq[String], data: MockData = MockData.empty): String = {
-    val consoleOps = parseScenario(consoleScenario)
+  def runCommand(name: String, args: Seq[String], expectedConsoleScenario: String, data: MockData = MockData.empty): String = {
+    val consoleOps = parseScenario(expectedConsoleScenario)
     runScenario(consoleOps) { console =>
       runErgoTool(console, name, args, data)
     }
   }
 
-  def testCommand(consoleScenario: String, name: String, args: Seq[String], data: MockData = MockData.empty): Unit = {
-    val consoleOps = parseScenario(consoleScenario)
+  def testCommand(name: String, args: Seq[String], expectedConsoleScenario: String, data: MockData = MockData.empty): Unit = {
+    val consoleOps = parseScenario(expectedConsoleScenario)
     testScenario(consoleOps) { console =>
       runErgoTool(console, name, args, data)
     }
@@ -72,39 +72,40 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("address command") {
-    testCommand(consoleScenario =
-      s"""Mnemonic password> ::$mnemonicPassword;
-        |$addrStr::;
-        |""".stripMargin,
-      "address", Seq("testnet", mnemonic))
+    testCommand("address", Seq("testnet", mnemonic),
+      expectedConsoleScenario =
+        s"""Mnemonic password> ::$mnemonicPassword;
+          |$addrStr::;
+          |""".stripMargin)
   }
 
   property("mnemonic command") {
-    val res = runCommand("", "mnemonic", Nil)
+    val res = runCommand("mnemonic", Nil, "")
     res.split(" ").length shouldBe 15
   }
 
   property("checkAddress command") {
-    testCommand(
-      s"""Mnemonic password> ::;
-         |Ok::;
-         |""".stripMargin,
-      "checkAddress", Seq("testnet", mnemonic, addrStr))
+    testCommand("checkAddress", Seq("testnet", mnemonic, addrStr),
+      expectedConsoleScenario =
+        s"""Mnemonic password> ::$mnemonicPassword;
+           |Ok::;
+           |""".stripMargin)
   }
 
   property("checkAddress command validates address format") {
-    val res = runCommand(
-      s"""Mnemonic password> ::;
-        |""".stripMargin,
-      "checkAddress", Seq("testnet", mnemonic, "someaddress"))
+    val res = runCommand("checkAddress", Seq("testnet", mnemonic, "someaddress"),
+      expectedConsoleScenario =
+        s"""Mnemonic password> ::$mnemonicPassword;
+          |""".stripMargin)
     res should include ("Invalid address encoding, expected base58 string: someaddress")
   }
 
   property("checkAddress command validates network type") {
-    val res = runCommand(
-      s"""Mnemonic password> ::;
-        |""".stripMargin,
-      "checkAddress", Seq("testnet", mnemonic, "9f4QF8AD1nQ3nJahQVkMj8hFSVVzVom77b52JU7EW71Zexg6N8v"))
+    val res = runCommand("checkAddress",
+      args = Seq("testnet", mnemonic, "9f4QF8AD1nQ3nJahQVkMj8hFSVVzVom77b52JU7EW71Zexg6N8v"),
+      expectedConsoleScenario =
+        s"""Mnemonic password> ::$mnemonicPassword;
+          |""".stripMargin)
     res should include ("Network type of the address MAINNET don't match expected TESTNET")
   }
 
@@ -116,9 +117,8 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         loadNodeResponse("response_Box3.json")),
       Seq(
         loadExplorerResponse("response_boxesByAddressUnspent.json")))
-    val res = runCommand(
-      s"""""".stripMargin,
-      "listAddressBoxes", Seq("9hHDQb26AjnJUXxcqriqY1mnhpLuUeC81C4pggtK7tupr92Ea1K"), data)
+    val res = runCommand("listAddressBoxes", Seq("9hHDQb26AjnJUXxcqriqY1mnhpLuUeC81C4pggtK7tupr92Ea1K"),
+      expectedConsoleScenario = "", data)
     res should include ("d47f958b201dc7162f641f7eb055e9fa7a9cb65cc24d4447a10f86675fc58328")
     res should include ("e050a3af38241ce444c34eb25c0ab880674fc23a0e63632633ae14f547141c37")
     res should include ("26d6e08027e005270b38e5c5f4a73ffdb6d65a3289efb51ac37f98ad395d887c")
@@ -131,14 +131,14 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     val filePath = Paths.get(storageDir, storageFileName)
     try {
       // create a storage file
-      testCommand(consoleScenario =
-            s"""Mnemonic password> ::;
-              |Repeat mnemonic password> ::;
-              |Storage password> ::def;
-              |Repeat storage password> ::def;
+      testCommand("createStorage", Seq(mnemonic),
+        expectedConsoleScenario =
+            s"""Mnemonic password> ::$mnemonicPassword;
+              |Repeat mnemonic password> ::$mnemonicPassword;
+              |Storage password> ::$storagePassword;
+              |Repeat storage password> ::$storagePassword;
               |Storage File: $filePath\n::;
-              |""".stripMargin,
-        "createStorage", Seq(mnemonic))
+              |""".stripMargin)
 
       // extract properties from the storage file
       Seq(
@@ -146,17 +146,17 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         PropPublicKey -> publicKey,
         PropMasterKey -> masterKey,
         PropSecretKey -> secretKey).foreach { case (propName, expectedValue) =>
-        testCommand(consoleScenario =
-            s"""Storage password> ::def;
+        testCommand("extractStorage", Seq(filePath.toString, propName, "testnet"),
+          expectedConsoleScenario =
+            s"""Storage password> ::$storagePassword;
               |$expectedValue\n::;
-              |""".stripMargin,
-          "extractStorage", Seq(filePath.toString, propName, "testnet"))
+              |""".stripMargin)
         println(s"$propName: ok")
       }
 
       // try extract invalid property
-      val res = runCommand(consoleScenario = s"ignored",
-        "extractStorage", Seq(filePath.toString, "invalidProp", "testnet"))
+      val res = runCommand("extractStorage", Seq(filePath.toString, "invalidProp", "testnet"),
+        expectedConsoleScenario = s"ignored")
       res should include ("Please specify one of the supported properties")
     } finally {
       if (Files.exists(filePath)) Files.delete(filePath)
@@ -172,12 +172,11 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1"),
       Seq(
         loadExplorerResponse("response_boxesByAddressUnspent.json")))
-    val res = runCommand(
-      s"""Storage password> ::abc;
-        |""".stripMargin,
-      "send",
+    val res = runCommand("send",
       args = Seq("storage/E2.json", "9f4QF8AD1nQ3nJahQVkMj8hFSVVzVom77b52JU7EW71Zexg6N8v", "1000000"),
-      data)
+      expectedConsoleScenario =
+        s"""Storage password> ::abc;
+          |""".stripMargin, data)
     println(res)
     res should include ("\"transactionId\": \"21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1\",")
   }
