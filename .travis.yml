@@ -29,9 +29,5 @@ matrix:
       install: . ./install-jdk.sh --verbose --url "https://github.com/oracle/graal/releases/download/vm-19.2.1/graalvm-ce-linux-amd64-19.2.1.tar.gz"
 
 script:
-  - env
-  - alias native-image="$JAVA_HOME/bin/native-image"
-  - ls $JAVA_HOME/bin
   - gu install native-image
-  - ls $JAVA_HOME/bin
-  - sbt graalvm-native-image:packageBin
+  - travis_wait sbt graalvm-native-image:packageBin
