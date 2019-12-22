@@ -9,14 +9,7 @@ import org.ergoplatform.appkit.console.Console
 import scala.collection.mutable.ArrayBuffer
 
 /**
-   Generate native image using
-   native-image --no-server \
-     -cp target/scala-2.12/appkit-scala-examples-3.1.0.jar\
-     --report-unsupported-elements-at-runtime\
-     --no-fallback -H:+TraceClassInitialization -H:+ReportExceptionStackTraces\
-     -H:+AddAllCharsets -H:+AllowVMInspection -H:-RuntimeAssertions\
-     --allow-incomplete-classpath \
-     --enable-url-protocols=http,https org.ergoplatform.appkit.ergotool.ErgoTool ergotool
+   To generate native executable see instructons in README.
   */
 object ErgoTool {
   val commands: Map[String, CmdDescriptor] = Array(
@@ -24,6 +17,8 @@ object ErgoTool {
     ListAddressBoxesCmd,
     CreateStorageCmd, ExtractStorageCmd, SendCmd
     ).map(c => (c.name, c)).toMap
+
+  val options: Seq[CmdOption] = Array(ConfigOption, NonInteractiveOption, DryRunOption)
 
   def main(args: Array[String]): Unit = {
     val console = Console.instance
@@ -51,6 +46,8 @@ object ErgoTool {
     def apiKey: String = toolConf.getNode.getNodeApi.getApiKey
 
     def networkType: NetworkType = toolConf.getNode.getNetworkType
+
+    def isDryRun: Boolean = cmdOptions.contains(DryRunOption.name)
   }
 
   def run(args: Seq[String], console: Console, clientFactory: RunContext => ErgoClient): Unit = {
@@ -67,8 +64,6 @@ object ErgoTool {
       printUsage(console)
     }
   }
-
-  val options: Seq[CmdOption] = Array(ConfigOption, NonInteractiveOption)
 
   def parseOptions(args: Seq[String]): (Map[String, String], Seq[String]) = {
     var resOptions = Map.empty[String, String]

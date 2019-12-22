@@ -19,7 +19,7 @@ case class SendCmd(toolConf: ErgoToolConfig, name: String, storageFile: File, st
 
   override def runWithClient(ergoClient: ErgoClient, runCtx: RunContext): Unit = {
     val console = runCtx.console
-    val res: String = ergoClient.execute(ctx => {
+    ergoClient.execute(ctx => {
       val senderProver = loggedStep("Creating prover", console) {
         BoxOperations.createProver(ctx, storageFile.getPath, String.valueOf(storagePass))
       }
@@ -48,12 +48,13 @@ case class SendCmd(toolConf: ErgoToolConfig, name: String, storageFile: File, st
       val txJson = signed.toJson(true)
       console.println(s"Tx: $txJson")
 
-      val txId = loggedStep(s"Sendng the transaction", console) {
-        ctx.sendTransaction(signed)
+      if (!runCtx.isDryRun) {
+        val txId = loggedStep(s"Sendng the transaction", console) {
+          ctx.sendTransaction(signed)
+        }
+        console.println(s"Server returned tx id: $txId")
       }
-      txId
     })
-    console.println(s"Server returned tx id: $res")
   }
 }
 object SendCmd extends CmdDescriptor(
