@@ -31,4 +31,5 @@ matrix:
 script:
   - env
   - alias native-image="$JAVA_HOME/bin/native-image"
+  - which native-image
   - sbt graalvm-native-image:packageBin
