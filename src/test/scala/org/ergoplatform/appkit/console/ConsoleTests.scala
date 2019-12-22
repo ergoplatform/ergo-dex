@@ -1,5 +1,6 @@
-package org.ergoplatform.appkit.examples
+package org.ergoplatform.appkit.console
 
+import org.ergoplatform.appkit.examples.Example
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import org.scalatest.{PropSpec, Matchers}
 

@@ -1,9 +1,8 @@
-package org.ergoplatform.appkit.examples.ergotool
+package org.ergoplatform.appkit.ergotool
 
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.{NetworkType, Address}
-import org.ergoplatform.appkit.console.Console
-import org.ergoplatform.appkit.examples.ergotool.ErgoTool.RunContext
+import org.ergoplatform.appkit.ergotool.ErgoTool.RunContext
 
 case class CheckAddressCmd(toolConf: ErgoToolConfig, name: String, network: NetworkType, mnemonic: String, mnemonicPass: Array[Char], address: Address) extends Cmd {
   override def run(ctx: RunContext): Unit = {

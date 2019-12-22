@@ -1,8 +1,8 @@
-package org.ergoplatform.appkit.examples.ergotool
+package org.ergoplatform.appkit.ergotool
 
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.Mnemonic
-import org.ergoplatform.appkit.examples.ergotool.ErgoTool.RunContext
+import org.ergoplatform.appkit.ergotool.ErgoTool.RunContext
 
 case class MnemonicCmd(toolConf: ErgoToolConfig, name: String) extends Cmd {
   override def run(ctx: RunContext): Unit = {

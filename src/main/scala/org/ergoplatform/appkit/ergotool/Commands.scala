@@ -1,11 +1,11 @@
-package org.ergoplatform.appkit.examples.ergotool
+package org.ergoplatform.appkit.ergotool
 
 import java.util.Arrays
 
-import org.ergoplatform.appkit.{RestApiErgoClient, _}
+import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.console.Console
-import org.ergoplatform.appkit.examples.ergotool.ErgoTool.RunContext
+import org.ergoplatform.appkit.ergotool.ErgoTool.RunContext
 
 abstract class Cmd {
   def toolConf: ErgoToolConfig

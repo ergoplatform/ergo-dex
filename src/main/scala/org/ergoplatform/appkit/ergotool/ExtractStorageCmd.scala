@@ -1,11 +1,8 @@
-package org.ergoplatform.appkit.examples.ergotool
+package org.ergoplatform.appkit.ergotool
 
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.{NetworkType, SecretStorage}
-import java.io.PrintStream
-
-import org.ergoplatform.appkit.console.Console
-import org.ergoplatform.appkit.examples.ergotool.ErgoTool.RunContext
+import org.ergoplatform.appkit.ergotool.ErgoTool.RunContext
 import org.ergoplatform.wallet.secrets.ExtendedSecretKeySerializer
 import scorex.util.encode.Base16
 

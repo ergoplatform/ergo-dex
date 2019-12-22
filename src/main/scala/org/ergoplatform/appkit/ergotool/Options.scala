@@ -1,4 +1,4 @@
-package org.ergoplatform.appkit.examples.ergotool
+package org.ergoplatform.appkit.ergotool
 
 case class CmdOption(name: String, description: String, isFlag: Boolean = false) {
   def cmdText: String = s"--$name"

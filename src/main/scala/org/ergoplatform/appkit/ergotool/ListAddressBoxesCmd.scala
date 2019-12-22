@@ -1,9 +1,9 @@
-package org.ergoplatform.appkit.examples.ergotool
+package org.ergoplatform.appkit.ergotool
 
 import org.ergoplatform.appkit.JavaHelpers._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.{ErgoClient, Address, InputBox}
-import org.ergoplatform.appkit.examples.ergotool.ErgoTool.RunContext
+import org.ergoplatform.appkit.ergotool.ErgoTool.RunContext
 
 case class ListAddressBoxesCmd(toolConf: ErgoToolConfig, name: String, address: String, limit: Int) extends Cmd with RunWithErgoClient {
   override def runWithClient(ergoClient: ErgoClient, runCtx: RunContext): Unit = {

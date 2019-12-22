@@ -1,13 +1,11 @@
-package org.ergoplatform.appkit.examples.ergotool
+package org.ergoplatform.appkit.ergotool
 
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.{Mnemonic, SecretStorage}
-import java.io.PrintStream
-import java.nio.file.{CopyOption, Files, Paths, StandardCopyOption}
+import java.nio.file.{Files, StandardCopyOption, Paths}
 import java.util
 
-import org.ergoplatform.appkit.console.Console
-import org.ergoplatform.appkit.examples.ergotool.ErgoTool.RunContext
+import org.ergoplatform.appkit.ergotool.ErgoTool.RunContext
 
 case class CreateStorageCmd(
     toolConf: ErgoToolConfig, name: String,

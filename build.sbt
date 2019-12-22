@@ -1,3 +1,5 @@
+import sbt.Keys.publishMavenStyle
+
 enablePlugins(GraalVMNativeImagePlugin)
 
 lazy val sonatypePublic = "Sonatype Public" at "https://oss.sonatype.org/content/groups/public/"
@@ -7,10 +9,11 @@ lazy val sonatypeSnapshots = "Sonatype Snapshots" at "https://oss.sonatype.org/c
 resolvers ++= Seq(Resolver.mavenLocal, sonatypeReleases, sonatypeSnapshots, Resolver.mavenCentral)
 
 version := "3.1.0"
-val appkit = "org.ergoplatform" %% "ergo-appkit" % "sandboxed-fb4168bf-SNAPSHOT"
+val appkit = "org.ergoplatform" %% "ergo-appkit" % "sandboxed-5de4d211-SNAPSHOT"
 
 libraryDependencies ++= Seq(
-  appkit, (appkit % Test).classifier("tests").classifier("tests-sources"),
+  appkit, (appkit % Test).classifier("tests"),
+  //.classifier("tests-sources") // uncomment this for debuging to make sources available (doesn't work when appkit is published locally) ,
   "org.graalvm.sdk" % "graal-sdk" % "19.2.1",
   "com.squareup.okhttp3" % "mockwebserver" % "3.12.0",
 
@@ -39,7 +42,10 @@ scalacOptions in(Compile, compile) ++= (if (scalaBinaryVersion.value == "2.11") 
 
 assemblyJarName in assembly := s"appkit-scala-examples-${version.value}.jar"
 
+// See https://www.scala-sbt.org/sbt-native-packager/formats/graalvm-native-image.html
 graalVMNativeImageOptions ++= Seq(
+  "-H:ResourceConfigurationFiles=" + baseDirectory.value / "graal" / "META-INF" / "native-image" / "resource-config.json",
+  "-H:ReflectionConfigurationFiles=" + baseDirectory.value / "graal" / "META-INF" / "native-image" / "reflect-config.json",
   "--no-server",
   "--report-unsupported-elements-at-runtime",
   "--no-fallback",

@@ -1,4 +1,4 @@
-package org.ergoplatform.appkit.examples.ergotool
+package org.ergoplatform.appkit.ergotool
 
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit._
@@ -6,7 +6,7 @@ import java.io.File
 
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit.console.Console
-import org.ergoplatform.appkit.examples.ergotool.ErgoTool.RunContext
+import org.ergoplatform.appkit.ergotool.ErgoTool.RunContext
 
 case class SendCmd(toolConf: ErgoToolConfig, name: String, storageFile: File, storagePass: Array[Char], recipient: Address, amountToSend: Long) extends Cmd with RunWithErgoClient {
   def loggedStep[T](msg: String, console: Console)(step: => T): T = {

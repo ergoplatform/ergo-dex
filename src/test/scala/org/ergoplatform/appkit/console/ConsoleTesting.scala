@@ -1,9 +1,7 @@
-package org.ergoplatform.appkit.examples
+package org.ergoplatform.appkit.console
 
-import java.io.{StringReader, ByteArrayOutputStream, BufferedReader, PrintStream}
-
-import org.ergoplatform.appkit.console.{Console, TestConsole}
 import org.scalatest.Matchers
+import java.io.{StringReader, BufferedReader, ByteArrayOutputStream, PrintStream}
 
 trait ConsoleTesting { self: Matchers =>
 

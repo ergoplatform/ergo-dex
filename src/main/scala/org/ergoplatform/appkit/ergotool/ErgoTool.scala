@@ -1,4 +1,4 @@
-package org.ergoplatform.appkit.examples.ergotool
+package org.ergoplatform.appkit.ergotool
 
 import org.ergoplatform.appkit.{ErgoClient, RestApiErgoClient, NetworkType}
 
@@ -16,7 +16,7 @@ import scala.collection.mutable.ArrayBuffer
      --no-fallback -H:+TraceClassInitialization -H:+ReportExceptionStackTraces\
      -H:+AddAllCharsets -H:+AllowVMInspection -H:-RuntimeAssertions\
      --allow-incomplete-classpath \
-     --enable-url-protocols=http,https org.ergoplatform.appkit.examples.ergotool.ErgoTool ergotool
+     --enable-url-protocols=http,https org.ergoplatform.appkit.ergotool.ErgoTool ergotool
   */
 object ErgoTool {
   val commands: Map[String, CmdDescriptor] = Array(

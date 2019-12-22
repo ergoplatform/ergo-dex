@@ -1,7 +1,6 @@
-package org.ergoplatform.appkit.examples
+package org.ergoplatform.appkit.ergotool
 
-import org.ergoplatform.appkit.console.Console
-import org.ergoplatform.appkit.examples.ergotool.{ConfigOption, ErgoTool, ExtractStorageCmd}
+import org.ergoplatform.appkit.console.{ConsoleTesting, Console}
 import org.ergoplatform.appkit.examples.util.FileMockedErgoClient
 import org.scalatest.{PropSpec, Matchers}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
