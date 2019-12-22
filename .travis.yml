@@ -30,4 +30,4 @@ matrix:
 
 script:
   - gu install native-image
-  - travis_wait sbt graalvm-native-image:packageBin
+  - travis_wait 30 sbt graalvm-native-image:packageBin
