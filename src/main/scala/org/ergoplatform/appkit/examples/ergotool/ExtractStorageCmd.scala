@@ -37,7 +37,7 @@ case class ExtractStorageCmd(
   }
 }
 
-object ExtractStorageCmd extends CmdFactory(
+object ExtractStorageCmd extends CmdDescriptor(
   name = "extractStorage", cmdParamSyntax = "",
   description = "Reads the file, unlocks it using password and extract the requested property from the given storage file.") {
 

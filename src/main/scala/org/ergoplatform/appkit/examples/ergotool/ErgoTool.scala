@@ -19,7 +19,7 @@ import scala.collection.mutable.ArrayBuffer
      --enable-url-protocols=http,https org.ergoplatform.appkit.examples.ergotool.ErgoTool ergotool
   */
 object ErgoTool {
-  val commands: Map[String, CmdFactory] = Array(
+  val commands: Map[String, CmdDescriptor] = Array(
     AddressCmd, MnemonicCmd, CheckAddressCmd,
     ListAddressBoxesCmd,
     CreateStorageCmd, ExtractStorageCmd, SendCmd

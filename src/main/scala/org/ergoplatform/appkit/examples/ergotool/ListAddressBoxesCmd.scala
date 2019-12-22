@@ -15,7 +15,7 @@ case class ListAddressBoxesCmd(toolConf: ErgoToolConfig, name: String, address: 
     runCtx.console.print(res)
   }
 }
-object ListAddressBoxesCmd extends CmdFactory(
+object ListAddressBoxesCmd extends CmdDescriptor(
   name = "listAddressBoxes", cmdParamSyntax = "address [<limit>=10]",
   description = "list top <limit=10> confirmed unspent boxes owned by the given <address>") {
 

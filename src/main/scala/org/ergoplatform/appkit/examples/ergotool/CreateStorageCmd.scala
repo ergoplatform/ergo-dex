@@ -20,7 +20,7 @@ case class CreateStorageCmd(
     ctx.console.println(s"Storage File: $filePath")
   }
 }
-object CreateStorageCmd extends CmdFactory(
+object CreateStorageCmd extends CmdDescriptor(
   name = "createStorage", cmdParamSyntax = "[<storageDir>=\"storage\"] [<storageFileName>=\"secret.json\"]",
   description = "Creates an encrypted storage file for the mnemonic entered by user") {
 

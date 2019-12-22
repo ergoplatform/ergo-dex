@@ -36,13 +36,15 @@ trait RunWithErgoClient extends Cmd {
 
 /** Base class for all Cmd factories (usually companion objects)
  */
-abstract class CmdFactory(
-                             /** Command name used in command line. */
-                             val name: String,
+abstract class CmdDescriptor(
+     /** Command name used in command line. */
+     val name: String,
 
-                             /** parameters syntax specification */
-                             val cmdParamSyntax: String,
-                             val description: String) {
+     /** parameters syntax specification */
+     val cmdParamSyntax: String,
+     val description: String) {
+
+  /** Creates a new command instance based on the given [[RunContext]] */
   def parseCmd(ctx: RunContext): Cmd
 
   def error(msg: String) = {

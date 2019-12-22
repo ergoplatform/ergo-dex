@@ -56,7 +56,7 @@ case class SendCmd(toolConf: ErgoToolConfig, name: String, storageFile: File, st
     console.println(s"Server returned tx id: $res")
   }
 }
-object SendCmd extends CmdFactory(
+object SendCmd extends CmdDescriptor(
   name = "send", cmdParamSyntax = "<wallet file> <recipientAddr> <amountToSend>",
   description = "send the given <amountToSend> to the given <recipientAddr> using \n " +
       "the given <wallet file> to sign transaction (requests storage password)") {

@@ -15,7 +15,7 @@ case class AddressCmd(
   }
 }
 
-object AddressCmd extends CmdFactory(
+object AddressCmd extends CmdDescriptor(
   name = "address", cmdParamSyntax = "testnet|mainnet <mnemonic>",
   description = "return address for a given mnemonic and password pair") {
 

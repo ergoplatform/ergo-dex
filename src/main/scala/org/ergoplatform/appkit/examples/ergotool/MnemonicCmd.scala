@@ -11,7 +11,7 @@ case class MnemonicCmd(toolConf: ErgoToolConfig, name: String) extends Cmd {
   }
 }
 
-object MnemonicCmd extends CmdFactory(
+object MnemonicCmd extends CmdDescriptor(
   name = "mnemonic", cmdParamSyntax = "",
   description = "generate new mnemonic phrase using english words and default cryptographic strength") {
 

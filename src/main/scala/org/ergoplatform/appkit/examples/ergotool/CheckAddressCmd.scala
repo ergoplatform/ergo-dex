@@ -14,7 +14,7 @@ case class CheckAddressCmd(toolConf: ErgoToolConfig, name: String, network: Netw
   }
 }
 
-object CheckAddressCmd extends CmdFactory(
+object CheckAddressCmd extends CmdDescriptor(
   name = "checkAddress", cmdParamSyntax = "testnet|mainnet <mnemonic> <address>",
   description = "Check the given mnemonic and password pair correspond to the given address") {
 
