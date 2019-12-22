@@ -2,9 +2,7 @@
   "resources":[
     {"pattern":"javax/crypto/Cipher.class"}, 
     {"pattern":"library.properties"}, 
-    {"pattern":"org/scalatest/ScalaTestBundle.properties"}, 
-    {"pattern":"org/scalatest/Suite.class"}, 
-    {"pattern":"sun/net/idn/uidna.spp"}, 
+    {"pattern":"sun/net/idn/uidna.spp"},
     {"pattern":"sun/text/resources/unorm.icu"}, 
     {"pattern":"wordlist/english.txt"}
   ]
