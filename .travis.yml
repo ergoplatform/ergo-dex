@@ -26,7 +26,8 @@ matrix:
   include:
     # GraalVM
     - env: JDK='GraalVM 19'
-      install: . ./install-jdk.sh --url "https://github.com/oracle/graal/releases/download/vm-19.2.1/graalvm-ce-linux-amd64-19.2.1.tar.gz"
+      install: . ./install-jdk.sh --verbose --url "https://github.com/oracle/graal/releases/download/vm-19.2.1/graalvm-ce-linux-amd64-19.2.1.tar.gz"
 
 script:
+  - env
   - sbt graalvm-native-image:packageBin
