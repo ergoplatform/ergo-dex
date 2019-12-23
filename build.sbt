@@ -40,7 +40,7 @@ pomExtra in ThisBuild :=
 // see https://github.com/scala/community-builds/issues/796#issuecomment-423395500
 scalacOptions in(Compile, compile) ++= (if (scalaBinaryVersion.value == "2.11") Seq() else Seq("-release", "8"))
 
-assemblyJarName in assembly := s"appkit-scala-examples-${version.value}.jar"
+assemblyJarName in assembly := s"ergotool-${version.value}.jar"
 
 // See https://www.scala-sbt.org/sbt-native-packager/formats/graalvm-native-image.html
 graalVMNativeImageOptions ++= Seq(
