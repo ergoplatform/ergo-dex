@@ -18,7 +18,7 @@ object ErgoTool {
     CreateStorageCmd, ExtractStorageCmd, SendCmd
     ).map(c => (c.name, c)).toMap
 
-  val options: Seq[CmdOption] = Array(ConfigOption, NonInteractiveOption, DryRunOption)
+  val options: Seq[CmdOption] = Array(ConfigOption, DryRunOption)
 
   def main(args: Array[String]): Unit = {
     val console = Console.instance

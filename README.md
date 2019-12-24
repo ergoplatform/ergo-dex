@@ -166,6 +166,9 @@ Release packages are published on the
 [releases](https://github.com/aslesarenko/ergo-tool/releases) page. Please download the
 appropriate archive and extract it locally on you computer.
 
+## Commands
+
+
 ## Contributions
 
 All kinds of contributions are equally welcome. Don't hesitate to file a PR with fixes of
