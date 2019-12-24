@@ -7,30 +7,50 @@ import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.console.Console
 import org.ergoplatform.appkit.ergotool.ErgoTool.RunContext
 
+/** Base class for all commands which can be executed by ErgoTool.
+  * Inherit this class to implement a new command.
+  * @see [[RunWithErgoClient]] if your command need to communicate with blockchain.
+  */
 abstract class Cmd {
+  /** @return current tool configuration parameters */
   def toolConf: ErgoToolConfig
 
+  /** @return the name of this command (Example: `send`, `mnemonic` etc.) */
   def name: String
 
-  def seed: String = toolConf.getNode.getWallet.getMnemonic
-
-  def password: String = toolConf.getNode.getWallet.getPassword
-
+  /** @return the url of the Ergo blockchain node used to communicate with the network. */
   def apiUrl: String = toolConf.getNode.getNodeApi.getApiUrl
 
+  /** ApiKey which is used for Ergo node API authentication.
+    * This is a secrete key whose hash was used in Ergo node config.
+    * This is only necessary to communicate to the protected parts of node API.
+    */
   def apiKey: String = toolConf.getNode.getNodeApi.getApiKey
 
+  /** Returns the network type (MAINNET or TESTNET) [[ErgoTool]] is expected to communicate.
+    * This parameter should correspond to the real network type of the node pointed to by [[apiUrl]].
+    */
   def networkType: NetworkType = toolConf.getNode.getNetworkType
 
+  /** Runs this command using given [[ErgoTool.RunContext]].
+    * @param ctx context information of this command execution collected from command line,
+    * configuration file etc.
+    */
   def run(ctx: RunContext): Unit
 }
 
+/** This trait can be used to implement commands which need to communicate with Ergo blockchain.
+  * The default [[Cmd.run]] method is implemented and the new method with additional [[ErgoClient]]
+  * parameter is declared, which is called from the default implementation.
+  * To implement new command mix-in this train and implement [[RunWithErgoClient.runWithClient]] method.
+  */
 trait RunWithErgoClient extends Cmd {
   override def run(ctx: RunContext): Unit = {
     val ergoClient = ctx.clientFactory(ctx)
     runWithClient(ergoClient, ctx)
   }
 
+  /** Called from [[run]] method with ErgoClient instance ready for Ergo blockchain communication. */
   def runWithClient(ergoClient: ErgoClient, ctx: RunContext): Unit
 }
 
@@ -44,7 +64,7 @@ abstract class CmdDescriptor(
      val cmdParamSyntax: String,
      val description: String) {
 
-  /** Creates a new command instance based on the given [[RunContext]] */
+  /** Creates a new command instance based on the given [[ErgoTool.RunContext]] */
   def parseCmd(ctx: RunContext): Cmd
 
   def error(msg: String) = {

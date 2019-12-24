@@ -13,18 +13,20 @@ package org.ergoplatform.appkit.ergotool
  * If a CmdOption instance has [[CmdOption.isFlag]] set to `true` then such option doesn't have `optionValue`
  * part and the option is interpreted as Boolean value (`true` if it is present, `false` otherwise)
  *
- * @param name is an option name (e.g. `conf` for [[ConfigOption]] and `dry-run` for [[DryRunOption]])
+ * @param name The name of this option excluding prefix `--` (should not contain whitespaces) (Examples: `conf` for [[ConfigOption]] and `dry-run` for [[DryRunOption]])
  * @param description is a user readable description of the option
  * @param isFlag is set to true if the option is a <i>flag option</i> which doesn't have `optionValue`
  *               part (e.g. `--ni` or `--dry-run`)
  */
 case class CmdOption(name: String, description: String, isFlag: Boolean = false) {
+  /** The text of the command line with the name of this option. */
   def cmdText: String = s"--$name"
+  /** The string printed for this option in the Usage Help output. */
   def helpString: String = s"  $cmdText\n\t$description"
 }
 
 /** String option to specify path to a configuration file. The path is relative to current working directory.
-  * The file has json content corresponding to [[org.ergoplatform.appkit.config.ErgoToolConfig]].
+  * The file has json content corresponding to [[org.ergoplatform.appkit.config.ErgoToolConfig]] class.
   */
 object ConfigOption extends CmdOption(
   "conf",
