@@ -2,7 +2,6 @@ package org.ergoplatform.appkit.ergotool
 
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.{NetworkType, SecretStorage}
-import org.ergoplatform.appkit.ergotool.ErgoTool.RunContext
 import org.ergoplatform.wallet.secrets.ExtendedSecretKeySerializer
 import scorex.util.encode.Base16
 
@@ -10,7 +9,7 @@ case class ExtractStorageCmd(
     toolConf: ErgoToolConfig, name: String,
     storageFile: String, storagePass: Array[Char], prop: String, network: NetworkType) extends Cmd {
   import ExtractStorageCmd._
-  override def run(ctx: RunContext): Unit = {
+  override def run(ctx: AppContext): Unit = {
     val console = ctx.console
     val storage = SecretStorage.loadFrom(storageFile)
     storage.unlock(String.valueOf(storagePass))
@@ -54,7 +53,7 @@ object ExtractStorageCmd extends CmdDescriptor(
     if (supportedKeys.contains(prop)) prop
     else propErrorMsg
 
-  override def parseCmd(ctx: RunContext): Cmd = {
+  override def parseCmd(ctx: AppContext): Cmd = {
     val args = ctx.cmdArgs
     val storageFile = if (args.length > 1) args(1) else error("storage file is not specified")
     val prop = if (args.length > 2) parsePropName(args(2)) else propErrorMsg

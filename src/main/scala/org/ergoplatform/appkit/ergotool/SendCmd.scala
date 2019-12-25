@@ -6,7 +6,6 @@ import java.io.File
 
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit.console.Console
-import org.ergoplatform.appkit.ergotool.ErgoTool.RunContext
 
 case class SendCmd(toolConf: ErgoToolConfig, name: String, storageFile: File, storagePass: Array[Char], recipient: Address, amountToSend: Long) extends Cmd with RunWithErgoClient {
   def loggedStep[T](msg: String, console: Console)(step: => T): T = {
@@ -17,7 +16,7 @@ case class SendCmd(toolConf: ErgoToolConfig, name: String, storageFile: File, st
     res
   }
 
-  override def runWithClient(ergoClient: ErgoClient, runCtx: RunContext): Unit = {
+  override def runWithClient(ergoClient: ErgoClient, runCtx: AppContext): Unit = {
     val console = runCtx.console
     ergoClient.execute(ctx => {
       val senderProver = loggedStep("Creating prover", console) {
@@ -62,7 +61,7 @@ object SendCmd extends CmdDescriptor(
   description = "send the given <amountToSend> to the given <recipientAddr> using \n " +
       "the given <wallet file> to sign transaction (requests storage password)") {
 
-  override def parseCmd(ctx: RunContext): Cmd = {
+  override def parseCmd(ctx: AppContext): Cmd = {
     val args = ctx.cmdArgs
     val storageFile = new File(if (args.length > 1) args(1) else error("Wallet storage file path is not specified"))
     if (!storageFile.exists()) error(s"Specified wallet file is not found: $storageFile")

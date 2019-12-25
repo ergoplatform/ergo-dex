@@ -5,13 +5,11 @@ import org.ergoplatform.appkit.{Mnemonic, SecretStorage}
 import java.nio.file.{Files, StandardCopyOption, Paths}
 import java.util
 
-import org.ergoplatform.appkit.ergotool.ErgoTool.RunContext
-
 case class CreateStorageCmd(
     toolConf: ErgoToolConfig, name: String,
     mnemonic: Mnemonic, storagePass: Array[Char],
     storageDir: String, storageFileName: String) extends Cmd {
-  override def run(ctx: RunContext): Unit = {
+  override def run(ctx: AppContext): Unit = {
     val storage = SecretStorage.createFromMnemonicIn(storageDir, mnemonic, String.valueOf(storagePass))
     util.Arrays.fill(storagePass, 0.asInstanceOf[Char])
     val filePath = Files.move(storage.getFile.toPath, Paths.get(storageDir, storageFileName), StandardCopyOption.ATOMIC_MOVE)
@@ -22,7 +20,7 @@ object CreateStorageCmd extends CmdDescriptor(
   name = "createStorage", cmdParamSyntax = "[<storageDir>=\"storage\"] [<storageFileName>=\"secret.json\"]",
   description = "Creates an encrypted storage file for the mnemonic entered by user") {
 
-  override def parseCmd(ctx: RunContext): Cmd = {
+  override def parseCmd(ctx: AppContext): Cmd = {
     val args = ctx.cmdArgs
     val console = ctx.console
     val storageDir = if (args.length > 1) args(1) else "storage"

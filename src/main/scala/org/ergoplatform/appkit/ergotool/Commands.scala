@@ -5,7 +5,6 @@ import java.util.Arrays
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.console.Console
-import org.ergoplatform.appkit.ergotool.ErgoTool.RunContext
 
 /** Base class for all commands which can be executed by ErgoTool.
   * Inherit this class to implement a new command.
@@ -32,11 +31,13 @@ abstract class Cmd {
     */
   def networkType: NetworkType = toolConf.getNode.getNetworkType
 
-  /** Runs this command using given [[ErgoTool.RunContext]].
+  /** Runs this command using given [[AppContext]].
+ *
     * @param ctx context information of this command execution collected from command line,
     * configuration file etc.
+    * @throws RuntimeException when command execution fails
     */
-  def run(ctx: RunContext): Unit
+  def run(ctx: AppContext): Unit
 }
 
 /** This trait can be used to implement commands which need to communicate with Ergo blockchain.
@@ -45,28 +46,31 @@ abstract class Cmd {
   * To implement new command mix-in this train and implement [[RunWithErgoClient.runWithClient]] method.
   */
 trait RunWithErgoClient extends Cmd {
-  override def run(ctx: RunContext): Unit = {
+  override def run(ctx: AppContext): Unit = {
     val ergoClient = ctx.clientFactory(ctx)
     runWithClient(ergoClient, ctx)
   }
 
   /** Called from [[run]] method with ErgoClient instance ready for Ergo blockchain communication. */
-  def runWithClient(ergoClient: ErgoClient, ctx: RunContext): Unit
+  def runWithClient(ergoClient: ErgoClient, ctx: AppContext): Unit
 }
 
-/** Base class for all Cmd factories (usually companion objects)
+/** Base class for all Cmd descriptors (usually companion objects)
  */
 abstract class CmdDescriptor(
      /** Command name used in command line. */
      val name: String,
-
-     /** parameters syntax specification */
+     /** Specifies parameters syntax for this command. */
      val cmdParamSyntax: String,
+     /** Human readable description of the command. Used in Usage Help output. */
      val description: String) {
 
-  /** Creates a new command instance based on the given [[ErgoTool.RunContext]] */
-  def parseCmd(ctx: RunContext): Cmd
+  /** Creates a new command instance based on the given [[ErgoTool.AppContext]] */
+  def parseCmd(ctx: AppContext): Cmd
 
+  /** Called during command line parsing and instantiation of [[Cmd]] for execution.
+    * This is the prefered method to throw an exception.
+    */
   def error(msg: String) = {
     sys.error(s"Error executing command `$name`: $msg")
   }
@@ -77,12 +81,14 @@ abstract class CmdDescriptor(
     case _ => error(s"Invalid network type $network")
   }
 
-  /** Secure entry of the new password.
-   *
-   * @param nAttemps number of attempts
-   * @param block  code block which can request the user to enter a new password twice
-   * @return password returned by `block`
-   */
+  /** Secure double entry of the new password giving the user many attempts.
+    *
+    * @param nAttemps number of attempts before failing with exception
+    * @param block  code block which can request the user to enter a new password twice
+    * @return password returned by `block` as `Array[Char]` instead of `String`. This allows
+    *        the password to be erased as fast as possible and avoid leaking to GC.
+    * @throws RuntimeException
+    */
   def readNewPassword(nAttemps: Int, console: Console)(block: => (Array[Char], Array[Char])): Array[Char] = {
     var i = 0
     do {

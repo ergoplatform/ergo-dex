@@ -8,18 +8,22 @@ import org.ergoplatform.appkit.console.Console
 
 import scala.collection.mutable.ArrayBuffer
 
-/**
-   To generate native executable see instructons in README.
+/** ErgoTool implementation, contains main entry point of the console application.
+  *
+  * @see instructions in README to generate native executable
   */
 object ErgoTool {
+  /** Commands supported by this application. */
   val commands: Map[String, CmdDescriptor] = Array(
     AddressCmd, MnemonicCmd, CheckAddressCmd,
     ListAddressBoxesCmd,
     CreateStorageCmd, ExtractStorageCmd, SendCmd
     ).map(c => (c.name, c)).toMap
 
+  /** Options supported by this application */
   val options: Seq[CmdOption] = Array(ConfigOption, DryRunOption)
 
+  /** Main entry point of console application. */
   def main(args: Array[String]): Unit = {
     val console = Console.instance
     run(args, console, { ctx =>
@@ -27,35 +31,12 @@ object ErgoTool {
     })
   }
 
-  case class RunContext(
-    /** Arguments of command line passed to ErgoTool.main */
-    commandLineArgs: Seq[String],
-    /** Console interface to be used during command execution */
-    console: Console,
-    /** Options parsed from command line */
-    cmdOptions: Map[String, String],
-    /** Command args parsed from command line */
-    cmdArgs: Seq[String],
-    /** Tool configuration read from the file (either default or specified by --conf option */
-    toolConf: ErgoToolConfig,
-    /** Factory method which is used to create ErgoClient instance if and when it is needed */
-    clientFactory: RunContext => ErgoClient
-    ) {
-    def apiUrl: String = toolConf.getNode.getNodeApi.getApiUrl
-
-    def apiKey: String = toolConf.getNode.getNodeApi.getApiKey
-
-    def networkType: NetworkType = toolConf.getNode.getNetworkType
-
-    def isDryRun: Boolean = cmdOptions.contains(DryRunOption.name)
-  }
-
-  def run(args: Seq[String], console: Console, clientFactory: RunContext => ErgoClient): Unit = {
+  def run(args: Seq[String], console: Console, clientFactory: AppContext => ErgoClient): Unit = {
     try {
       val (cmdOptions, cmdArgs) = parseOptions(args)
       if (cmdArgs.isEmpty) sys.error(s"Please specify command name and parameters.")
       val toolConf = loadConfig(cmdOptions)
-      val ctx = RunContext(args, console, cmdOptions, cmdArgs, toolConf, clientFactory)
+      val ctx = AppContext(args, console, cmdOptions, cmdArgs, toolConf, clientFactory)
       val cmd = parseCmd(ctx)
       cmd.run(ctx)
     }
@@ -90,7 +71,7 @@ object ErgoTool {
     toolConf
   }
 
-  def parseCmd(ctx: RunContext): Cmd = {
+  def parseCmd(ctx: AppContext): Cmd = {
     val cmdName = ctx.cmdArgs(0)
     commands.get(cmdName) match {
       case Some(c) => c.parseCmd(ctx)
