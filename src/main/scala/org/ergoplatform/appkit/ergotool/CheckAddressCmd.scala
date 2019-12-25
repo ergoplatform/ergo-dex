@@ -2,10 +2,9 @@ package org.ergoplatform.appkit.ergotool
 
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.{NetworkType, Address}
-import org.ergoplatform.appkit.ergotool.ErgoTool.RunContext
 
 case class CheckAddressCmd(toolConf: ErgoToolConfig, name: String, network: NetworkType, mnemonic: String, mnemonicPass: Array[Char], address: Address) extends Cmd {
-  override def run(ctx: RunContext): Unit = {
+  override def run(ctx: AppContext): Unit = {
     val addressComputed = Address.fromMnemonic(network, mnemonic, String.valueOf(mnemonicPass))
     val res = if (addressComputed == address) "Ok"
               else s"$addressComputed != $address"
@@ -17,7 +16,7 @@ object CheckAddressCmd extends CmdDescriptor(
   name = "checkAddress", cmdParamSyntax = "testnet|mainnet <mnemonic> <address>",
   description = "Check the given mnemonic and password pair correspond to the given address") {
 
-  override def parseCmd(ctx: RunContext): Cmd = {
+  override def parseCmd(ctx: AppContext): Cmd = {
     val args = ctx.cmdArgs
     val network = if (args.length > 1) args(1) else error("network type is not specified")
     val networkType = network match {
