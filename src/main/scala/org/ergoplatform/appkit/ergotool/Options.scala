@@ -19,10 +19,17 @@ package org.ergoplatform.appkit.ergotool
  *               part (e.g. `--ni` or `--dry-run`)
  */
 case class CmdOption(name: String, description: String, isFlag: Boolean = false) {
+  import CmdOption._
   /** The text of the command line with the name of this option. */
-  def cmdText: String = s"--$name"
+  def cmdText: String = Prefix + name
   /** The string printed for this option in the Usage Help output. */
   def helpString: String = s"  $cmdText\n\t$description"
+}
+object CmdOption {
+  /** Prefix used in command line to denote option name. Every command line part which starts with
+    * Prefix is interpreted as an option name.
+    */
+  final val Prefix: String = "--"
 }
 
 /** String option to specify path to a configuration file. The path is relative to current working directory.

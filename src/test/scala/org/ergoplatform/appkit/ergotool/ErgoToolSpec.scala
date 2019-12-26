@@ -10,7 +10,6 @@ import java.util.{List => JList}
 import java.lang.{String => JString}
 import java.nio.file.{Files, Paths}
 
-/** To run in IDEA set `Working directory` in Run/Debug configuration. */
 class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks with ConsoleTesting {
 
   // test values which correspond to each other (see also addr.json storage file, which is obtained using this values)
