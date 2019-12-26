@@ -55,6 +55,8 @@ trait RunWithErgoClient extends Cmd {
   def runWithClient(ergoClient: ErgoClient, ctx: AppContext): Unit
 }
 
+case class CmdParameter(name: String, tpe: ErgoType[_])
+
 /** Base class for all Cmd descriptors (usually companion objects)
  */
 abstract class CmdDescriptor(
@@ -65,7 +67,9 @@ abstract class CmdDescriptor(
      /** Human readable description of the command. Used in Usage Help output. */
      val description: String) {
 
-  /** Creates a new command instance based on the given [[ErgoTool.AppContext]] */
+  /** Creates a new command instance based on the given [[ErgoTool.AppContext]]
+    * @throws UsageException when the command cannot be parsed or the usage is not correct
+    */
   def parseCmd(ctx: AppContext): Cmd
 
   /** Called during command line parsing and instantiation of [[Cmd]] for execution.
@@ -74,6 +78,9 @@ abstract class CmdDescriptor(
   def error(msg: String) = {
     sys.error(s"Error executing command `$name`: $msg")
   }
+
+  /** Can be used by concrete command descriptors to report usage errors. */
+  protected def usageError(msg: String) = throw UsageException(msg, Some(this))
 
   def parseNetwork(network: String): NetworkType = network match {
     case "testnet" => NetworkType.TESTNET
@@ -110,5 +117,31 @@ abstract class CmdDescriptor(
     } while (true)
     error("should never go here due to exhaustive `if` above")
   }
+
+  /** Outputs the usage help for this command to the given console */
+  def printUsage(console: Console) = {
+    val msg =
+      s"""
+        |Usage for $name
+        |ergo-tool $name ${cmdParamSyntax}\n\t${description}
+       """.stripMargin
+    console.println(msg)
+  }
+
 }
+
+/** Exception thrown by ErgoTool application when incorrect usage is detected.
+  * @param message error message
+  * @param cmdDescOpt  optional descriptor of the command which was incorrectly used
+  */
+case class UsageException(message: String, cmdDescOpt: Option[CmdDescriptor]) extends RuntimeException(message)
+
+/** Exception thrown by ErgoTool application before or after command execution.
+  * @see CmdException which should be thrown by commands during execution
+  */
+class ErgoToolException(message: String, cause: Throwable = null) extends RuntimeException(message, cause)
+
+/** Exception thrown by executing [[Cmd.run]], wrapping the cause if needed.
+  */
+class CmdException(message: String, cause: Throwable = null) extends RuntimeException(message, cause)
 

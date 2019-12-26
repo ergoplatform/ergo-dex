@@ -20,7 +20,7 @@ object ListAddressBoxesCmd extends CmdDescriptor(
 
   override def parseCmd(ctx: AppContext): Cmd = {
     val args = ctx.cmdArgs
-    val address = if (args.length > 1) args(1) else error(s"address is not specified")
+    val address = if (args.length > 1) args(1) else usageError(s"address is not specified")
     val limit = if (args.length > 2) args(2).toInt else 10
     ListAddressBoxesCmd(ctx.toolConf, name, address, limit)
   }

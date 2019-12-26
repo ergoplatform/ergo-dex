@@ -19,11 +19,19 @@ case class AppContext(
      /** Factory method which is used to create ErgoClient instance if and when it is needed */
      clientFactory: AppContext => ErgoClient
  ) {
+  /** Url of the Ergo node API end point
+    */
   def apiUrl: String = toolConf.getNode.getNodeApi.getApiUrl
 
+  /** ApiKey which is used for Ergo node API authentication.
+    * This is a secrete key whose hash was used in Ergo node config.
+    */
   def apiKey: String = toolConf.getNode.getNodeApi.getApiKey
 
+  /** Returns expected network type (Mainnet or Testnet)
+    */
   def networkType: NetworkType = toolConf.getNode.getNetworkType
 
+  /** Returns true if [[DryRunOption] is defined in command line. */
   def isDryRun: Boolean = cmdOptions.contains(DryRunOption.name)
 }
