@@ -26,27 +26,42 @@ object ErgoTool {
   /** Main entry point of console application. */
   def main(args: Array[String]): Unit = {
     val console = Console.instance
-    run(args, console, { ctx =>
+    run(args, console, clientFactory = { ctx =>
       RestApiErgoClient.create(ctx.apiUrl, ctx.networkType, ctx.apiKey)
     })
   }
 
-  def run(args: Seq[String], console: Console, clientFactory: AppContext => ErgoClient): Unit = {
+  /** Main application runner
+    * 1) Parse options from command line
+    * 2) load config file
+    * 3) create [[AppContext]]
+    * 4) parse and execute command
+    */
+  private[ergotool] def run(args: Seq[String], console: Console, clientFactory: AppContext => ErgoClient): Unit = {
     try {
       val (cmdOptions, cmdArgs) = parseOptions(args)
-      if (cmdArgs.isEmpty) sys.error(s"Please specify command name and parameters.")
+      if (cmdArgs.isEmpty) usageError(s"Please specify command name and parameters.", None)
       val toolConf = loadConfig(cmdOptions)
       val ctx = AppContext(args, console, cmdOptions, cmdArgs, toolConf, clientFactory)
       val cmd = parseCmd(ctx)
       cmd.run(ctx)
     }
-    catch { case NonFatal(t) =>
-      console.println(t.getMessage)
-      printUsage(console)
+    catch {
+      case ue: UsageException =>
+        console.println(ue.getMessage)
+        printUsage(console, ue.cmdDescOpt)
+      case NonFatal(t) =>
+        console.println(t.getMessage)
     }
   }
 
-  def parseOptions(args: Seq[String]): (Map[String, String], Seq[String]) = {
+  /** Should be used by ErgoTool to report usage errors */
+  private[ergotool] def usageError(msg: String, cmdDescOpt: Option[CmdDescriptor]) = throw UsageException(msg, cmdDescOpt)
+
+  /** Extracts options like `--conf myconf.json` from the command line.
+    * @param args the command line split by whitespace into parts
+    */
+  private[ergotool] def parseOptions(args: Seq[String]): (Map[String, String], Seq[String]) = {
     var resOptions = Map.empty[String, String]
     val resArgs: ArrayBuffer[String] = ArrayBuffer.empty
     resArgs ++= args.toArray.clone()
@@ -65,38 +80,52 @@ object ErgoTool {
     (resOptions, resArgs)
   }
 
+  /** Loads [[ErgoToolConfig]] from a file specified either by command line option `--conf` or from
+    * the default file location */
   def loadConfig(cmdOptions: Map[String, String]): ErgoToolConfig = {
     val configFile = cmdOptions.getOrElse(ConfigOption.name, "ergo_tool_config.json")
     val toolConf = ErgoToolConfig.load(configFile)
     toolConf
   }
 
+  /** Parses the command parameters form the command line using [[AppContext]] and returns a new instance
+    * of the command configured with the parsed parameters.
+    */
   def parseCmd(ctx: AppContext): Cmd = {
     val cmdName = ctx.cmdArgs(0)
     commands.get(cmdName) match {
-      case Some(c) => c.parseCmd(ctx)
+      case Some(c) =>
+        c.parseCmd(ctx)
       case _ =>
-        sys.error(s"Unknown command: $cmdName")
+        usageError(s"Unknown command: $cmdName", None)
     }
   }
 
-  def printUsage(console: Console): Unit = {
-    val actions = commands.toSeq.sortBy(_._1).map { case (name, c) =>
-      s"""  $name ${c.cmdParamSyntax}\n\t${c.description}""".stripMargin
-    }.mkString("\n")
-    val options = ErgoTool.options.sortBy(_.name).map(_.helpString).mkString("\n")
-    val msg =
-      s"""
-        |Usage:
-        |ergotool [options] action [action parameters]
-        |
-        |Available actions:
-        |$actions
-        |
-        |Options:
-        |$options
-     """.stripMargin
-    console.println(msg)
+  /** Prints usage help to the console for the given command (if defined).
+    * If the command is not defined, then print basic usage info about all commands.
+    */
+  def printUsage(console: Console, cmdDescOpt: Option[CmdDescriptor]): Unit = {
+    cmdDescOpt match {
+      case Some(desc) =>
+        desc.printUsage(console)
+      case _ =>
+        val actions = commands.toSeq.sortBy(_._1).map { case (name, c) =>
+          s"""  $name ${c.cmdParamSyntax}\n\t${c.description}""".stripMargin
+        }.mkString("\n")
+        val options = ErgoTool.options.sortBy(_.name).map(_.helpString).mkString("\n")
+        val msg =
+          s"""
+            |Usage:
+            |ergotool [options] action [action parameters]
+            |
+            |Available actions:
+            |$actions
+            |
+            |Options:
+            |$options
+          """.stripMargin
+        console.println(msg)
+    }
   }
 
 }
