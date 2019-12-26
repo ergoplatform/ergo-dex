@@ -175,6 +175,13 @@ If you wish to start hacking on the code, you can file an issue with the descrip
 what you want to do. 
 Not sure about your idea? Get in touch with a direct message.
 
+#### ScalaDoc API Reference
+
+ScalaDocs for the latest releases are always [available on project
+site](https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/ErgoTool$.html).
+Please submit a PR if
+you find typos or mistakes.
+
 #### Preparing for native image generation
 
 You may need to re-generate reflection and resources configs for native-image utility. 
@@ -196,3 +203,4 @@ TODO
 - [Ergo Appkit](https://github.com/aslesarenko/ergo-appkit)
 - [Introduction to Appkit](https://ergoplatform.org/en/blog/2019_12_03_top5/)
 - [Appkit Examples](https://github.com/aslesarenko/ergo-appkit-examples)
+- [ErgoTool ScalaDocs](https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/ErgoTool$.html)
