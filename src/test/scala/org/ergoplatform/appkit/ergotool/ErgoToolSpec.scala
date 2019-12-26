@@ -73,6 +73,7 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     testCommand("address", Seq("testnet", mnemonic),
       expectedConsoleScenario =
         s"""Mnemonic password> ::$mnemonicPassword;
+          |Repeat mnemonic password> ::$mnemonicPassword;
           |$addrStr::;
           |""".stripMargin)
   }

@@ -5,6 +5,7 @@ import java.util.Arrays
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.console.Console
+import org.ergoplatform.appkit.ergotool.CreateStorageCmd.readNewPassword
 
 /** Base class for all commands which can be executed by ErgoTool.
   * Inherit this class to implement a new command.
@@ -39,6 +40,7 @@ abstract class Cmd {
     */
   def run(ctx: AppContext): Unit
 
+  /** Helper method to throw a new [[CmdException]] from this command. */
   def error(msg: String) = throw CmdException(msg, this)
 }
 
@@ -67,7 +69,16 @@ abstract class CmdDescriptor(
      /** Specifies parameters syntax for this command. */
      val cmdParamSyntax: String,
      /** Human readable description of the command. Used in Usage Help output. */
-     val description: String) {
+     val description: String
+     ) {
+
+  val BaseDocUrl = "https://aslesarenko.github.io/ergo-tool/api"
+
+  /** Url of the ScalaDoc for this command. */
+  def docUrl: String = {
+    val classPath = this.getClass.getName.replace('.', '/').stripSuffix("$")
+    s"$BaseDocUrl/$classPath.html"
+  }
 
   /** Creates a new command instance based on the given [[AppContext]]
     * @throws UsageException when the command cannot be parsed or the usage is not correct
@@ -120,14 +131,24 @@ abstract class CmdDescriptor(
     error("should never go here due to exhaustive `if` above")
   }
 
+  def readNewPassword(prompt: String, secondPrompt: String)(implicit ctx: AppContext): Array[Char] = {
+    val console = ctx.console
+    readNewPassword(3, console) {
+      val p1 = console.readPassword(prompt)
+      val p2 = console.readPassword(secondPrompt)
+      (p1, p2)
+    }
+  }
+
   /** Outputs the usage help for this command to the given console */
   def printUsage(console: Console) = {
     val msg =
       s"""
-        |Usage for $name
-        |ergo-tool $name ${cmdParamSyntax}\n\t${description}
+        |Command: $name
+        |Usage: ergo-tool $name ${cmdParamSyntax}\n\t${description}
        """.stripMargin
-    console.println(msg)
+    val url = if (docUrl.isEmpty) "" else s"Doc page: $docUrl\n"
+    console.println(msg + url)
   }
 
 }
