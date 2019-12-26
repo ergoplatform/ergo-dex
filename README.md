@@ -5,7 +5,7 @@
 ErgoTool is a [command-line
 interface](https://en.wikipedia.org/wiki/Command-line_interface) for
 [Ergo](https://ergoplatform.org/) blockchain. It is implemented in Scala using
-[Ergo Appkit](https://github.com/aslesarenko/ergo-appkit) library. ErgoTool is Java
+[Ergo Appkit](https://github.com/aslesarenko/ergo-appkit) library. ErgoTool is a Java
 application and it can be executed on Java 8 or later compliant JRE. In addition ErgoTool
 can be compiled to a native executable using GraalVM's
 [native-image](https://www.graalvm.org/docs/reference-manual/native-image/). This
@@ -33,7 +33,7 @@ MacOS.
 
 You need to have [git](https://git-scm.com/) installed on your system.
 Open Terminal and use the following commands to clone the ErgoTool source code. 
-```shell
+```
 $ git clone https://github.com/aslesarenko/ergo-tool.git
 Cloning into 'ergo-tool'...
 remote: Enumerating objects: 238, done.
@@ -71,7 +71,7 @@ you should see the output which looks like the following
 Now run the compiled ErgoTool using the following command which runs the ErgoTool application.
 Note, you should run this command while in the root folder of the cloned ErgoTool repository.
 
-```shell
+```
 java -cp target/scala-2.12/ergotool-3.1.0.jar org.ergoplatform.appkit.ergotool.ErgoTool          
 Please specify command name and parameters.
 
