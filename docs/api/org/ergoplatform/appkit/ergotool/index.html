@@ -151,8 +151,8 @@
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../index.html" class="extype" name="org.ergoplatform.appkit">appkit</a></dd></dl></div>
     </li><li class="current-entities indented4">
                         <a class="object" href="AddressCmd$.html" title=""></a>
-                        <a class="class" href="AddressCmd.html" title=""></a>
-                        <a href="AddressCmd.html" title="">AddressCmd</a>
+                        <a class="class" href="AddressCmd.html" title="Given mnemonic, mnemonicPass and network the command computes the address of the given network type."></a>
+                        <a href="AddressCmd.html" title="Given mnemonic, mnemonicPass and network the command computes the address of the given network type.">AddressCmd</a>
                       </li><li class="current-entities indented4">
                         <span class="separator"></span>
                         <a class="class" href="AppContext.html" title="Application execution context."></a>
@@ -292,7 +292,7 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="org.ergoplatform.appkit.ergotool.AddressCmd" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+              <ol><li name="org.ergoplatform.appkit.ergotool.AddressCmd" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="AddressCmdextendsCmdwithProductwithSerializable"></a><a id="AddressCmd:AddressCmd"></a>
       <span class="permalink">
       <a href="../../../../org/ergoplatform/appkit/ergotool/index.html#AddressCmdextendsCmdwithProductwithSerializable" title="Permalink">
@@ -304,10 +304,18 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="" href="AddressCmd.html"><span class="name">AddressCmd</span></a><span class="params">(<span name="toolConf">toolConf: <span class="extype" name="org.ergoplatform.appkit.config.ErgoToolConfig">ErgoToolConfig</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="network">network: <span class="extype" name="org.ergoplatform.appkit.NetworkType">NetworkType</span></span>, <span name="mnemonic">mnemonic: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="mnemonicPass">mnemonicPass: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Char">Char</span>]</span>)</span><span class="result"> extends <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="Given mnemonic, mnemonicPass and network the command computes the address of the given network type." href="AddressCmd.html"><span class="name">AddressCmd</span></a><span class="params">(<span name="toolConf">toolConf: <span class="extype" name="org.ergoplatform.appkit.config.ErgoToolConfig">ErgoToolConfig</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="network">network: <span class="extype" name="org.ergoplatform.appkit.NetworkType">NetworkType</span></span>, <span name="mnemonic">mnemonic: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="mnemonicPass">mnemonicPass: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Char">Char</span>]</span>)</span><span class="result"> extends <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
-      
+      <p class="shortcomment cmt">Given <a href="AddressCmd.html#mnemonic:String" class="extmbr" name="org.ergoplatform.appkit.ergotool.AddressCmd#mnemonic">mnemonic</a>, <a href="AddressCmd.html#mnemonicPass:Array[Char]" class="extmbr" name="org.ergoplatform.appkit.ergotool.AddressCmd#mnemonicPass">mnemonicPass</a> and <a href="AddressCmd.html#network:org.ergoplatform.appkit.NetworkType" class="extmbr" name="org.ergoplatform.appkit.ergotool.AddressCmd#network">network</a> the command computes
+the address of the given network type.</p><div class="fullcomment"><div class="comment cmt"><p>Given <a href="AddressCmd.html#mnemonic:String" class="extmbr" name="org.ergoplatform.appkit.ergotool.AddressCmd#mnemonic">mnemonic</a>, <a href="AddressCmd.html#mnemonicPass:Array[Char]" class="extmbr" name="org.ergoplatform.appkit.ergotool.AddressCmd#mnemonicPass">mnemonicPass</a> and <a href="AddressCmd.html#network:org.ergoplatform.appkit.NetworkType" class="extmbr" name="org.ergoplatform.appkit.ergotool.AddressCmd#network">network</a> the command computes
+the address of the given network type.</p><p>The command do the following:<br>
+1) it uses (mnemonic, password) pair to generate secret key (unambiguously for each such pair)<br>
+2) it extracts public key (pk) which corresponds to the generated secret key <br>
+3) it construct pay-to-public-key address for pk (see <code>org.ergoplatform.P2PKAddress</code>)<br>
+4) it prints the text representation (Base58 string) of P2PKAddress bytes.
+</p></div><dl class="paramcmts block"><dt class="param">toolConf</dt><dd class="cmt"><p>configuration parameters to be used for operation</p></dd><dt class="param">name</dt><dd class="cmt"><p>command name</p></dd><dt class="param">network</dt><dd class="cmt"><p><span class="extype" name="NetworkType">NetworkType</span> of the target network for which the address should be generated</p></dd><dt class="param">mnemonic</dt><dd class="cmt"><p>secrete phrase which is used to generate (private, public) key pair, of which
+                    public key is used to generate the <span class="extype" name="Address">Address</span></p></dd><dt class="param">mnemonicPass</dt><dd class="cmt"><p>password which is used to additionally protect mnemonic</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="AddressCmd$.html" class="extype" name="org.ergoplatform.appkit.ergotool.AddressCmd">AddressCmd$</a> descriptor of the <code>address</code> command</p></span></dd></dl></div>
     </li><li name="org.ergoplatform.appkit.ergotool.AppContext" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="AppContextextendsProductwithSerializable"></a><a id="AppContext:AppContext"></a>
       <span class="permalink">
@@ -584,7 +592,7 @@ To implement new command mix-in this train and implement <a href="RunWithErgoCli
         <a title="" href="AddressCmd$.html"><span class="name">AddressCmd</span></a><span class="result"> extends <a href="CmdDescriptor.html" class="extype" name="org.ergoplatform.appkit.ergotool.CmdDescriptor">CmdDescriptor</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
-      
+      <p class="shortcomment cmt"></p>
     </li><li name="org.ergoplatform.appkit.ergotool.CheckAddressCmd" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="CheckAddressCmd"></a><a id="CheckAddressCmd:CheckAddressCmd"></a>
       <span class="permalink">
