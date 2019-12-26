@@ -184,10 +184,10 @@ Click on the command name to open its detailed description.
 
  Command     |  Description       
 -------------|--------------------
- [address](https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/AddressCmd.html)     | `testnet|mainnet <mnemonic>` <br/> Returns the address for a given mnemonic and password pair 
-checkAddress | `testnet|mainnet <mnemonic> <address>` <br/> Check the given mnemonic and password pair correspond to the given address
+ [address](https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/AddressCmd.html)     | `<networkType> <mnemonic>` <br/> Returns the address for a given mnemonic and password pair. Where `networkType` = `mainnet` or `testnet`
+checkAddress | `<networkType> <mnemonic> <address>` <br/> Check the given mnemonic and password pair correspond to the given address
 createStorage | `[<storageDir>="storage"] [<storageFileName>="secret.json"]` <br/> Creates an encrypted storage file for the mnemonic entered by user
-  extractStorage | `<storage file> address|masterKey|publicKey|secretKey mainnet|testnet` <br/> Reads the file, unlocks it using password and extract the requested property from the given storage file.
+  extractStorage | `<storage file> <property> <networkType>` <br/> Reads the file, unlocks it using password and extract the requested property from the given storage file. Where `property` is one of `address`, `masterKey`, `publicKey`, `secretKey`
   listAddressBoxes | `address [<limit>=10]` <br/> list top `limit=10` confirmed unspent boxes owned by the given `address`
   mnemonic | generate new mnemonic phrase using english words and default cryptographic strength
   send | `<wallet file> <recipientAddr> <amountToSend>` <br/> send the given `amountToSend` to the given `recipientAddr` using the given `wallet file` to sign the transaction (it will also request storage password)
