@@ -33,7 +33,7 @@ object CmdOption {
 }
 
 /** String option to specify path to a configuration file. The path is relative to current working directory.
-  * The file has json content corresponding to [[org.ergoplatform.appkit.config.ErgoToolConfig]] class.
+  * The file has json content corresponding to `ErgoToolConfig` class.
   */
 object ConfigOption extends CmdOption(
   "conf",

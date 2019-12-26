@@ -100,8 +100,6 @@ Options:
 	configuration file path (relative to local directory) e.g. `--conf ergo_tool.json`
   --dry-run
 	When used the command report what will be done without performing the actual operation.
-  --ni
-	turn on non-interactive mode
 ```
 
 The command prints usage information with the available commands and options.

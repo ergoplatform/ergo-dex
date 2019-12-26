@@ -35,13 +35,15 @@ abstract class Cmd {
  *
     * @param ctx context information of this command execution collected from command line,
     * configuration file etc.
-    * @throws RuntimeException when command execution fails
+    * @throws CmdException when command execution fails
     */
   def run(ctx: AppContext): Unit
+
+  def error(msg: String) = throw CmdException(msg, this)
 }
 
 /** This trait can be used to implement commands which need to communicate with Ergo blockchain.
-  * The default [[Cmd.run]] method is implemented and the new method with additional [[ErgoClient]]
+  * The default [[Cmd.run]] method is implemented and the new method with additional `ErgoClient`
   * parameter is declared, which is called from the default implementation.
   * To implement new command mix-in this train and implement [[RunWithErgoClient.runWithClient]] method.
   */
@@ -67,7 +69,7 @@ abstract class CmdDescriptor(
      /** Human readable description of the command. Used in Usage Help output. */
      val description: String) {
 
-  /** Creates a new command instance based on the given [[ErgoTool.AppContext]]
+  /** Creates a new command instance based on the given [[AppContext]]
     * @throws UsageException when the command cannot be parsed or the usage is not correct
     */
   def parseCmd(ctx: AppContext): Cmd
@@ -85,7 +87,7 @@ abstract class CmdDescriptor(
   def parseNetwork(network: String): NetworkType = network match {
     case "testnet" => NetworkType.TESTNET
     case "mainnet" => NetworkType.MAINNET
-    case _ => error(s"Invalid network type $network")
+    case _ => usageError(s"Invalid network type $network")
   }
 
   /** Secure double entry of the new password giving the user many attempts.
@@ -94,7 +96,7 @@ abstract class CmdDescriptor(
     * @param block  code block which can request the user to enter a new password twice
     * @return password returned by `block` as `Array[Char]` instead of `String`. This allows
     *        the password to be erased as fast as possible and avoid leaking to GC.
-    * @throws RuntimeException
+    * @throws UsageException
     */
   def readNewPassword(nAttemps: Int, console: Console)(block: => (Array[Char], Array[Char])): Array[Char] = {
     var i = 0
@@ -112,7 +114,7 @@ abstract class CmdDescriptor(
           console.println(s"Passwords are different, try again [${i + 1}/$nAttemps]")
           // and loop
         } else
-          error(s"Cannot continue without providing valid password")
+          usageError(s"Cannot continue without providing valid password")
       }
     } while (true)
     error("should never go here due to exhaustive `if` above")
@@ -139,9 +141,9 @@ case class UsageException(message: String, cmdDescOpt: Option[CmdDescriptor]) ex
 /** Exception thrown by ErgoTool application before or after command execution.
   * @see CmdException which should be thrown by commands during execution
   */
-class ErgoToolException(message: String, cause: Throwable = null) extends RuntimeException(message, cause)
+case class ErgoToolException(message: String, cause: Throwable = null) extends RuntimeException(message, cause)
 
 /** Exception thrown by executing [[Cmd.run]], wrapping the cause if needed.
   */
-class CmdException(message: String, cause: Throwable = null) extends RuntimeException(message, cause)
+case class CmdException(message: String, cmd: Cmd, cause: Throwable = null) extends RuntimeException(message, cause)
 

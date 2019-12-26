@@ -32,6 +32,6 @@ case class AppContext(
     */
   def networkType: NetworkType = toolConf.getNode.getNetworkType
 
-  /** Returns true if [[DryRunOption] is defined in command line. */
+  /** Returns true if [[DryRunOption]] is defined in command line. */
   def isDryRun: Boolean = cmdOptions.contains(DryRunOption.name)
 }
