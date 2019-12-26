@@ -173,7 +173,7 @@ $ ./ergo-tool --conf config.json address mainnet "some secrete mnemonic phrase"
 ```
 The command option is given by the name `conf` (with `--` prefix) and the value
 `config.json` separated by the whitespace. Options (name-value pairs) can go anywhere in
-the command line. All other component which remain after removing all options are the
+the command line. All other components which remain after removing all the options are the
 command name and parameters (`address`, `mainnet` and the mnemonic in the example).
 
 For further detail of how a command line is parsed see this
@@ -188,9 +188,9 @@ Click on the command name to open its detailed description.
 checkAddress | `testnet|mainnet <mnemonic> <address>` <br/> Check the given mnemonic and password pair correspond to the given address
 createStorage | `[<storageDir>="storage"] [<storageFileName>="secret.json"]` <br/> Creates an encrypted storage file for the mnemonic entered by user
   extractStorage | `<storage file> address|masterKey|publicKey|secretKey mainnet|testnet` <br/> Reads the file, unlocks it using password and extract the requested property from the given storage file.
-  listAddressBoxes | `address [<limit>=10]` <br/> list top <limit=10> confirmed unspent boxes owned by the given <address>
+  listAddressBoxes | `address [<limit>=10]` <br/> list top `limit=10` confirmed unspent boxes owned by the given `address`
   mnemonic | generate new mnemonic phrase using english words and default cryptographic strength
-  send | `<wallet file> <recipientAddr> <amountToSend>` <br/> send the given <amountToSend> to the given <recipientAddr> using the given <wallet file> to sign transaction (requests storage password)
+  send | `<wallet file> <recipientAddr> <amountToSend>` <br/> send the given `amountToSend` to the given `recipientAddr` using the given `wallet file` to sign the transaction (it will also request storage password)
          
 ## Contributions
 
