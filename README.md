@@ -1,5 +1,11 @@
 # ErgoTool: A Command Line Interface for Ergo
 
+ - [Introduction](#introduction)
+ - [Installation](#installation)
+ - [Commands](#commands)
+ - [Contributions](#contributions)
+ - [References](#references)
+ 
 ## Introduction
 
 ErgoTool is a [command-line
@@ -189,7 +195,7 @@ Click on the command name to open its detailed description.
 [createStorage](https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/CreateStorageCmd.html) | `[<storageDir>="storage"] [<storageFileName>="secret.json"]` <br/> Creates an encrypted storage file for the mnemonic entered by user
   [extractStorage](https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/ExtractStorageCmd.html) | `<storage file> <property> <networkType>` <br/> Reads the file, unlocks it using password and extract the requested property from the given storage file. Where `property` is one of `address`, `masterKey`, `publicKey`, `secretKey`
   [listAddressBoxes](https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html) | `address [<limit>=10]` <br/> list top `limit=10` confirmed unspent boxes owned by the given `address`
-  mnemonic | generate new mnemonic phrase using english words and default cryptographic strength
+  [mnemonic](https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/MnemonicCmd.html) | generate new mnemonic phrase using english words and default cryptographic strength
   [send](https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/SendCmd.html) | `<wallet file> <recipientAddr> <amountToSend>` <br/> send the given `amountToSend` to the given `recipientAddr` using the given `wallet file` to sign the transaction (it will also request storage password)
          
 ## Contributions

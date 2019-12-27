@@ -17,6 +17,7 @@ import scorex.util.encode.Base16
   *     and encode as base16<br/>
   *   - "secretKey" => get bytes of the secret key and encode as base16<br/>
   *   - "publicKey" => get bytes of the public key and encode as base16<br/>
+  *
   * 5) print obtained secret string to the console output
   *
   * Note, a storage file doesn't contain network type information, this the same storage can be used
