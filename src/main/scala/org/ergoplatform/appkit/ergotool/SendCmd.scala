@@ -7,6 +7,24 @@ import java.io.File
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit.console.Console
 
+/** Creates and sends a new transaction to transfer Ergs from one address to another.
+  *
+  * Steps:<br/>
+  * 1) request storage password from the user<br/>
+  * 2) read storage file, unlock using password and get secret<br/>
+  * 3) get master public key and compute sender's address<br/>
+  * 4) load available coins belonging to the sender's address<br/>
+  * 5) select coins to cover amountToSend, compute transaction fee and amount of change<br/>
+  * 6) create and sign (using secret key) transaction<br/>
+  * 7) if no `--dry-run` option is specified, send the transaction to the network<br/>
+  *    otherwise skip sending<br/>
+  * 8) serialize transaction to Json and print to the console<br/>
+  *
+  * @param storageFile storage with secret key of the sender
+  * @param storagePass password to access sender secret key in the storage
+  * @param recipient    address of the recepient of the transfer
+  * @param amountToSend amount of NanoErg to transfer to recipient
+  */
 case class SendCmd(toolConf: ErgoToolConfig, name: String, storageFile: File, storagePass: Array[Char], recipient: Address, amountToSend: Long) extends Cmd with RunWithErgoClient {
   def loggedStep[T](msg: String, console: Console)(step: => T): T = {
     console.print(msg + "...")

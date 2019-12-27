@@ -7,7 +7,7 @@ import org.ergoplatform.appkit.{NetworkType, Address}
   * the address of the given network type.
   *
   * The command do the following:<br>
-  * 1) it uses (mnemonic, password) pair to generate secret key (unambiguously for each such pair)<br>
+  * 1) it uses (mnemonic, password) pair to generate master secret key (unambiguously for each such pair)<br>
   * 2) it extracts public key (pk) which corresponds to the generated secret key <br>
   * 3) it construct pay-to-public-key address for pk (see `org.ergoplatform.P2PKAddress`)<br>
   * 4) it prints the text representation (Base58 string) of P2PKAddress bytes.
@@ -15,7 +15,7 @@ import org.ergoplatform.appkit.{NetworkType, Address}
   * @param toolConf     configuration parameters to be used for operation
   * @param name         command name
   * @param network      [[NetworkType]] of the target network for which the address should be generated
-  * @param mnemonic     secrete phrase which is used to generate (private, public) key pair, of which
+  * @param mnemonic     secret phrase which is used to generate (private, public) key pair, of which
   *                     public key is used to generate the [[Address]]
   * @param mnemonicPass password which is used to additionally protect mnemonic
   * @see [[AddressCmd$]] descriptor of the `address` command

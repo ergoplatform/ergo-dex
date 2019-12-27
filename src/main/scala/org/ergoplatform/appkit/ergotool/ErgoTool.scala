@@ -29,10 +29,10 @@ object ErgoTool {
     })
   }
 
-  /** Main application runner
-    * 1) Parse options from command line (see [[ErgoTool.parseOptions]]
-    * 2) load config file
-    * 3) create [[AppContext]]
+  /** Main application runner<br/>
+    * 1) Parse options from command line (see [[ErgoTool.parseOptions]]<br/>
+    * 2) load config file<br/>
+    * 3) create [[AppContext]]<br/>
     * 4) parse command parameters, create and execute command
     */
   private[ergotool] def run(args: Seq[String], console: Console, clientFactory: AppContext => ErgoClient): Unit = {
@@ -42,7 +42,15 @@ object ErgoTool {
       val toolConf = loadConfig(cmdOptions)
       val ctx = AppContext(args, console, cmdOptions, cmdArgs, toolConf, clientFactory)
       val cmd = parseCmd(ctx)
-      cmd.run(ctx)
+      try {
+        cmd.run(ctx)
+      }
+      catch {
+        case e: CmdException => throw e
+        case e: UsageException => throw e
+        case NonFatal(t) =>
+          throw CmdException(s"Error executing command", cmd, t)
+      }
     }
     catch {
       case ue: UsageException =>

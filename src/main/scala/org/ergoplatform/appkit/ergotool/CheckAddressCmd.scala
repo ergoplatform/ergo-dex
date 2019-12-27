@@ -3,13 +3,35 @@ package org.ergoplatform.appkit.ergotool
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.{NetworkType, Address}
 
-case class CheckAddressCmd(toolConf: ErgoToolConfig, name: String, network: NetworkType, mnemonic: String, mnemonicPass: Array[Char], address: Address) extends Cmd {
+/** Given [[network]], [[mnemonic]], [[mnemonicPass]] and [[address]] checks that the address
+  * belongs to the given network and corresponds to the given mnemonic and mnemonic password.
+  *
+  * Steps:<br/>
+  * 1) The network, mnemonic and mnemonicPass parameters are used to compute new address (see [[AddressCmd]])<br/>
+  * 2) if computed address equals to the given address then print `Ok`
+  *    otherwise print `Error`
+  *
+  * @param network      network type
+  * @param mnemonic     mnemonic phrase
+  * @param mnemonicPass mnemonic password
+  * @param address      address to check
+  */
+case class CheckAddressCmd(
+    toolConf: ErgoToolConfig,
+    name: String,
+    network: NetworkType,
+    mnemonic: String,
+    mnemonicPass: Array[Char],
+    address: Address) extends Cmd {
+
   override def run(ctx: AppContext): Unit = {
-    val addressComputed = Address.fromMnemonic(network, mnemonic, String.valueOf(mnemonicPass))
-    val res = if (addressComputed == address) "Ok"
-              else s"$addressComputed != $address"
+    val computedAddress = Address.fromMnemonic(network, mnemonic, String.valueOf(mnemonicPass))
+    val computedNetwork = computedAddress.getNetworkType
+    val okNetwork = computedNetwork == network
+    val res = if (okNetwork && computedAddress == address) "Ok" else s"Error"
     ctx.console.print(res)
   }
+
 }
 
 object CheckAddressCmd extends CmdDescriptor(

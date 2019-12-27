@@ -5,24 +5,23 @@ import java.util.Arrays
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.console.Console
-import org.ergoplatform.appkit.ergotool.CreateStorageCmd.readNewPassword
 
 /** Base class for all commands which can be executed by ErgoTool.
   * Inherit this class to implement a new command.
   * @see [[RunWithErgoClient]] if your command need to communicate with blockchain.
   */
 abstract class Cmd {
-  /** @return current tool configuration parameters */
+  /** Returns current tool configuration parameters */
   def toolConf: ErgoToolConfig
 
-  /** @return the name of this command (Example: `send`, `mnemonic` etc.) */
+  /** Returns the name of this command (Example: `send`, `mnemonic` etc.) */
   def name: String
 
-  /** @return the url of the Ergo blockchain node used to communicate with the network. */
+  /** Returns the url of the Ergo blockchain node used to communicate with the network. */
   def apiUrl: String = toolConf.getNode.getNodeApi.getApiUrl
 
   /** ApiKey which is used for Ergo node API authentication.
-    * This is a secrete key whose hash was used in Ergo node config.
+    * This is a secret key whose hash was used in Ergo node config.
     * This is only necessary to communicate to the protected parts of node API.
     */
   def apiKey: String = toolConf.getNode.getNodeApi.getApiKey

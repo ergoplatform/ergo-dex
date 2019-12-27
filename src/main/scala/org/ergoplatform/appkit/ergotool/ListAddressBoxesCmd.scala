@@ -4,6 +4,11 @@ import org.ergoplatform.appkit.JavaHelpers._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.{ErgoClient, Address, InputBox}
 
+/** Lists unspent outputs (aka boxes or coins) belonging to the given address.
+  *
+  * @param address string encoding of the address
+  * @param limit   limit the size of the list (optional, default is 10)
+  */
 case class ListAddressBoxesCmd(toolConf: ErgoToolConfig, name: String, address: String, limit: Int) extends Cmd with RunWithErgoClient {
   override def runWithClient(ergoClient: ErgoClient, runCtx: AppContext): Unit = {
     val res: String = ergoClient.execute(ctx => {

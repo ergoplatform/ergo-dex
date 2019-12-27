@@ -5,6 +5,28 @@ import org.ergoplatform.appkit.{NetworkType, SecretStorage}
 import org.ergoplatform.wallet.secrets.ExtendedSecretKeySerializer
 import scorex.util.encode.Base16
 
+/** Extracts secret data from encrypted storage file (e.g. created by [[CreateStorageCmd]]).
+  *
+  * Steps:<br/>
+  * 1) request storage password ([[storagePass]])<br/>
+  * 2) load encrypted data from storageFile into [[SecretStorage]] instance<br/>
+  * 3) unlock the instance using storagePass and retrieve secret data from storage<br/>
+  * 4) depending on the parameter `prop`:<br/>
+  *   - "address" => get master key address for the given `network`<br/>
+  *   - "masterKey" => serialie [[org.ergoplatform.wallet.secrets.ExtendedSecretKey]] into bytes<br/>
+  *     and encode as base16<br/>
+  *   - "secretKey" => get bytes of the secret key and encode as base16<br/>
+  *   - "publicKey" => get bytes of the public key and encode as base16<br/>
+  * 5) print obtained secret string to the console output
+  *
+  * Note, a storage file doesn't contain network type information, this the same storage can be used
+  * to obtain address both from mainnet and from testnet.
+  *
+  * @param storageFile path to encrypted storage file
+  * @param storagePass encryption password necessary to access storage file content
+  * @param prop        name of the secret data stored in the file (e.g. [[PropAddress]])
+  * @param network     network type
+  */
 case class ExtractStorageCmd(
     toolConf: ErgoToolConfig, name: String,
     storageFile: String, storagePass: Array[Char], prop: String, network: NetworkType) extends Cmd {

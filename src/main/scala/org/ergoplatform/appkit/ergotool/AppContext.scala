@@ -24,7 +24,7 @@ case class AppContext(
   def apiUrl: String = toolConf.getNode.getNodeApi.getApiUrl
 
   /** ApiKey which is used for Ergo node API authentication.
-    * This is a secrete key whose hash was used in Ergo node config.
+    * This is a secret key whose hash was used in Ergo node config.
     */
   def apiKey: String = toolConf.getNode.getNodeApi.getApiKey
 
