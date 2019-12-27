@@ -150,7 +150,7 @@
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../index.html" class="extype" name="org.ergoplatform.appkit">appkit</a></dd></dl></div>
     </li><li class="current-entities indented4">
-                        <a class="object" href="AddressCmd$.html" title=""></a>
+                        <a class="object" href="AddressCmd$.html" title="Descriptor and parser of the address command."></a>
                         <a class="class" href="AddressCmd.html" title="Given mnemonic, mnemonicPass and network the command computes the address of the given network type."></a>
                         <a href="AddressCmd.html" title="Given mnemonic, mnemonicPass and network the command computes the address of the given network type.">AddressCmd</a>
                       </li><li class="current-entities indented4">
@@ -159,8 +159,8 @@
                         <a href="AppContext.html" title="Application execution context.">AppContext</a>
                       </li><li class="current-entities indented4">
                         <a class="object" href="CheckAddressCmd$.html" title=""></a>
-                        <a class="class" href="CheckAddressCmd.html" title=""></a>
-                        <a href="CheckAddressCmd.html" title="">CheckAddressCmd</a>
+                        <a class="class" href="CheckAddressCmd.html" title="Given network, mnemonic, mnemonicPass and address checks that the address belongs to the given network and corresponds to the given mnemonic and mnemonic password."></a>
+                        <a href="CheckAddressCmd.html" title="Given network, mnemonic, mnemonicPass and address checks that the address belongs to the given network and corresponds to the given mnemonic and mnemonic password.">CheckAddressCmd</a>
                       </li><li class="current-entities indented4">
                         <span class="separator"></span>
                         <a class="class" href="Cmd.html" title="Base class for all commands which can be executed by ErgoTool."></a>
@@ -191,8 +191,8 @@
                         <a href="ConfigOption$.html" title="String option to specify path to a configuration file.">ConfigOption</a>
                       </li><li class="current-entities indented4">
                         <a class="object" href="CreateStorageCmd$.html" title=""></a>
-                        <a class="class" href="CreateStorageCmd.html" title=""></a>
-                        <a href="CreateStorageCmd.html" title="">CreateStorageCmd</a>
+                        <a class="class" href="CreateStorageCmd.html" title="Create a new json file with encrypted content storing a secret key."></a>
+                        <a href="CreateStorageCmd.html" title="Create a new json file with encrypted content storing a secret key.">CreateStorageCmd</a>
                       </li><li class="current-entities indented4">
                         <span class="separator"></span>
                         <a class="object" href="DryRunOption$.html" title="Flag option to prevent the command to perform actual operation and instead forces it to report planned actions."></a>
@@ -207,24 +207,24 @@
                         <a href="ErgoToolException.html" title="Exception thrown by ErgoTool application before or after command execution.">ErgoToolException</a>
                       </li><li class="current-entities indented4">
                         <a class="object" href="ExtractStorageCmd$.html" title=""></a>
-                        <a class="class" href="ExtractStorageCmd.html" title=""></a>
-                        <a href="ExtractStorageCmd.html" title="">ExtractStorageCmd</a>
+                        <a class="class" href="ExtractStorageCmd.html" title="Extracts secret data from encrypted storage file (e.g."></a>
+                        <a href="ExtractStorageCmd.html" title="Extracts secret data from encrypted storage file (e.g.">ExtractStorageCmd</a>
                       </li><li class="current-entities indented4">
                         <a class="object" href="ListAddressBoxesCmd$.html" title=""></a>
-                        <a class="class" href="ListAddressBoxesCmd.html" title=""></a>
-                        <a href="ListAddressBoxesCmd.html" title="">ListAddressBoxesCmd</a>
+                        <a class="class" href="ListAddressBoxesCmd.html" title="Lists unspent outputs (aka boxes or coins) belonging to the given address."></a>
+                        <a href="ListAddressBoxesCmd.html" title="Lists unspent outputs (aka boxes or coins) belonging to the given address.">ListAddressBoxesCmd</a>
                       </li><li class="current-entities indented4">
                         <a class="object" href="MnemonicCmd$.html" title=""></a>
-                        <a class="class" href="MnemonicCmd.html" title=""></a>
-                        <a href="MnemonicCmd.html" title="">MnemonicCmd</a>
+                        <a class="class" href="MnemonicCmd.html" title="Generates a new mnemonic phrase using english words and default cryptographic strength parameters (number of random bits, which is 160 by default)."></a>
+                        <a href="MnemonicCmd.html" title="Generates a new mnemonic phrase using english words and default cryptographic strength parameters (number of random bits, which is 160 by default).">MnemonicCmd</a>
                       </li><li class="current-entities indented4">
                         <span class="separator"></span>
                         <a class="trait" href="RunWithErgoClient.html" title="This trait can be used to implement commands which need to communicate with Ergo blockchain."></a>
                         <a href="RunWithErgoClient.html" title="This trait can be used to implement commands which need to communicate with Ergo blockchain.">RunWithErgoClient</a>
                       </li><li class="current-entities indented4">
                         <a class="object" href="SendCmd$.html" title=""></a>
-                        <a class="class" href="SendCmd.html" title=""></a>
-                        <a href="SendCmd.html" title="">SendCmd</a>
+                        <a class="class" href="SendCmd.html" title="Creates and sends a new transaction to transfer Ergs from one address to another."></a>
+                        <a href="SendCmd.html" title="Creates and sends a new transaction to transfer Ergs from one address to another.">SendCmd</a>
                       </li><li class="current-entities indented4">
                         <span class="separator"></span>
                         <a class="class" href="UsageException.html" title="Exception thrown by ErgoTool application when incorrect usage is detected."></a>
@@ -310,11 +310,11 @@
       <p class="shortcomment cmt">Given <a href="AddressCmd.html#mnemonic:String" class="extmbr" name="org.ergoplatform.appkit.ergotool.AddressCmd#mnemonic">mnemonic</a>, <a href="AddressCmd.html#mnemonicPass:Array[Char]" class="extmbr" name="org.ergoplatform.appkit.ergotool.AddressCmd#mnemonicPass">mnemonicPass</a> and <a href="AddressCmd.html#network:org.ergoplatform.appkit.NetworkType" class="extmbr" name="org.ergoplatform.appkit.ergotool.AddressCmd#network">network</a> the command computes
 the address of the given network type.</p><div class="fullcomment"><div class="comment cmt"><p>Given <a href="AddressCmd.html#mnemonic:String" class="extmbr" name="org.ergoplatform.appkit.ergotool.AddressCmd#mnemonic">mnemonic</a>, <a href="AddressCmd.html#mnemonicPass:Array[Char]" class="extmbr" name="org.ergoplatform.appkit.ergotool.AddressCmd#mnemonicPass">mnemonicPass</a> and <a href="AddressCmd.html#network:org.ergoplatform.appkit.NetworkType" class="extmbr" name="org.ergoplatform.appkit.ergotool.AddressCmd#network">network</a> the command computes
 the address of the given network type.</p><p>The command do the following:<br>
-1) it uses (mnemonic, password) pair to generate secret key (unambiguously for each such pair)<br>
+1) it uses (mnemonic, password) pair to generate master secret key (unambiguously for each such pair)<br>
 2) it extracts public key (pk) which corresponds to the generated secret key <br>
 3) it construct pay-to-public-key address for pk (see <code>org.ergoplatform.P2PKAddress</code>)<br>
 4) it prints the text representation (Base58 string) of P2PKAddress bytes.
-</p></div><dl class="paramcmts block"><dt class="param">toolConf</dt><dd class="cmt"><p>configuration parameters to be used for operation</p></dd><dt class="param">name</dt><dd class="cmt"><p>command name</p></dd><dt class="param">network</dt><dd class="cmt"><p><span class="extype" name="NetworkType">NetworkType</span> of the target network for which the address should be generated</p></dd><dt class="param">mnemonic</dt><dd class="cmt"><p>secrete phrase which is used to generate (private, public) key pair, of which
+</p></div><dl class="paramcmts block"><dt class="param">toolConf</dt><dd class="cmt"><p>configuration parameters to be used for operation</p></dd><dt class="param">name</dt><dd class="cmt"><p>command name</p></dd><dt class="param">network</dt><dd class="cmt"><p><span class="extype" name="NetworkType">NetworkType</span> of the target network for which the address should be generated</p></dd><dt class="param">mnemonic</dt><dd class="cmt"><p>secret phrase which is used to generate (private, public) key pair, of which
                     public key is used to generate the <span class="extype" name="Address">Address</span></p></dd><dt class="param">mnemonicPass</dt><dd class="cmt"><p>password which is used to additionally protect mnemonic</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="AddressCmd$.html" class="extype" name="org.ergoplatform.appkit.ergotool.AddressCmd">AddressCmd$</a> descriptor of the <code>address</code> command</p></span></dd></dl></div>
     </li><li name="org.ergoplatform.appkit.ergotool.AppContext" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="AppContextextendsProductwithSerializable"></a><a id="AppContext:AppContext"></a>
@@ -332,7 +332,7 @@ the address of the given network type.</p><p>The command do the following:<br>
       </span>
       
       <p class="shortcomment cmt">Application execution context.</p><div class="fullcomment"><div class="comment cmt"><p>Application execution context. Contains all the data necessary to parse and execute command.</p></div></div>
-    </li><li name="org.ergoplatform.appkit.ergotool.CheckAddressCmd" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="org.ergoplatform.appkit.ergotool.CheckAddressCmd" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="CheckAddressCmdextendsCmdwithProductwithSerializable"></a><a id="CheckAddressCmd:CheckAddressCmd"></a>
       <span class="permalink">
       <a href="../../../../org/ergoplatform/appkit/ergotool/index.html#CheckAddressCmdextendsCmdwithProductwithSerializable" title="Permalink">
@@ -344,10 +344,16 @@ the address of the given network type.</p><p>The command do the following:<br>
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="" href="CheckAddressCmd.html"><span class="name">CheckAddressCmd</span></a><span class="params">(<span name="toolConf">toolConf: <span class="extype" name="org.ergoplatform.appkit.config.ErgoToolConfig">ErgoToolConfig</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="network">network: <span class="extype" name="org.ergoplatform.appkit.NetworkType">NetworkType</span></span>, <span name="mnemonic">mnemonic: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="mnemonicPass">mnemonicPass: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Char">Char</span>]</span>, <span name="address">address: <span class="extype" name="org.ergoplatform.appkit.Address">Address</span></span>)</span><span class="result"> extends <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="Given network, mnemonic, mnemonicPass and address checks that the address belongs to the given network and corresponds to the given mnemonic and mnemonic password." href="CheckAddressCmd.html"><span class="name">CheckAddressCmd</span></a><span class="params">(<span name="toolConf">toolConf: <span class="extype" name="org.ergoplatform.appkit.config.ErgoToolConfig">ErgoToolConfig</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="network">network: <span class="extype" name="org.ergoplatform.appkit.NetworkType">NetworkType</span></span>, <span name="mnemonic">mnemonic: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="mnemonicPass">mnemonicPass: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Char">Char</span>]</span>, <span name="address">address: <span class="extype" name="org.ergoplatform.appkit.Address">Address</span></span>)</span><span class="result"> extends <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
-      
+      <p class="shortcomment cmt">Given <a href="CheckAddressCmd.html#network:org.ergoplatform.appkit.NetworkType" class="extmbr" name="org.ergoplatform.appkit.ergotool.CheckAddressCmd#network">network</a>, <a href="CheckAddressCmd.html#mnemonic:String" class="extmbr" name="org.ergoplatform.appkit.ergotool.CheckAddressCmd#mnemonic">mnemonic</a>, <a href="CheckAddressCmd.html#mnemonicPass:Array[Char]" class="extmbr" name="org.ergoplatform.appkit.ergotool.CheckAddressCmd#mnemonicPass">mnemonicPass</a> and <a href="CheckAddressCmd.html#address:org.ergoplatform.appkit.Address" class="extmbr" name="org.ergoplatform.appkit.ergotool.CheckAddressCmd#address">address</a> checks that the address
+belongs to the given network and corresponds to the given mnemonic and mnemonic password.</p><div class="fullcomment"><div class="comment cmt"><p>Given <a href="CheckAddressCmd.html#network:org.ergoplatform.appkit.NetworkType" class="extmbr" name="org.ergoplatform.appkit.ergotool.CheckAddressCmd#network">network</a>, <a href="CheckAddressCmd.html#mnemonic:String" class="extmbr" name="org.ergoplatform.appkit.ergotool.CheckAddressCmd#mnemonic">mnemonic</a>, <a href="CheckAddressCmd.html#mnemonicPass:Array[Char]" class="extmbr" name="org.ergoplatform.appkit.ergotool.CheckAddressCmd#mnemonicPass">mnemonicPass</a> and <a href="CheckAddressCmd.html#address:org.ergoplatform.appkit.Address" class="extmbr" name="org.ergoplatform.appkit.ergotool.CheckAddressCmd#address">address</a> checks that the address
+belongs to the given network and corresponds to the given mnemonic and mnemonic password.</p><p>Steps:<br/>
+1) The network, mnemonic and mnemonicPass parameters are used to compute new address (see <a href="AddressCmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.AddressCmd">AddressCmd</a>)<br/>
+2) if computed address equals to the given address then print <code>Ok</code>
+   otherwise print <code>Error</code>
+</p></div><dl class="paramcmts block"><dt class="param">network</dt><dd class="cmt"><p>network type</p></dd><dt class="param">mnemonic</dt><dd class="cmt"><p>mnemonic phrase</p></dd><dt class="param">mnemonicPass</dt><dd class="cmt"><p>mnemonic password</p></dd><dt class="param">address</dt><dd class="cmt"><p>address to check</p></dd></dl></div>
     </li><li name="org.ergoplatform.appkit.ergotool.Cmd" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="CmdextendsAnyRef"></a><a id="Cmd:Cmd"></a>
       <span class="permalink">
@@ -437,7 +443,7 @@ part and the option is interpreted as Boolean value (<code>true</code> if it is 
       </span>
       
       
-    </li><li name="org.ergoplatform.appkit.ergotool.CreateStorageCmd" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="org.ergoplatform.appkit.ergotool.CreateStorageCmd" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="CreateStorageCmdextendsCmdwithProductwithSerializable"></a><a id="CreateStorageCmd:CreateStorageCmd"></a>
       <span class="permalink">
       <a href="../../../../org/ergoplatform/appkit/ergotool/index.html#CreateStorageCmdextendsCmdwithProductwithSerializable" title="Permalink">
@@ -449,10 +455,24 @@ part and the option is interpreted as Boolean value (<code>true</code> if it is 
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="" href="CreateStorageCmd.html"><span class="name">CreateStorageCmd</span></a><span class="params">(<span name="toolConf">toolConf: <span class="extype" name="org.ergoplatform.appkit.config.ErgoToolConfig">ErgoToolConfig</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="mnemonic">mnemonic: <span class="extype" name="org.ergoplatform.appkit.Mnemonic">Mnemonic</span></span>, <span name="storagePass">storagePass: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Char">Char</span>]</span>, <span name="storageDir">storageDir: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="storageFileName">storageFileName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="Create a new json file with encrypted content storing a secret key." href="CreateStorageCmd.html"><span class="name">CreateStorageCmd</span></a><span class="params">(<span name="toolConf">toolConf: <span class="extype" name="org.ergoplatform.appkit.config.ErgoToolConfig">ErgoToolConfig</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="mnemonic">mnemonic: <span class="extype" name="org.ergoplatform.appkit.Mnemonic">Mnemonic</span></span>, <span name="storagePass">storagePass: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Char">Char</span>]</span>, <span name="storageDir">storageDir: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="storageFileName">storageFileName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
-      
+      <p class="shortcomment cmt">Create a new json file with encrypted content storing a secret key.</p><div class="fullcomment"><div class="comment cmt"><p>Create a new json file with encrypted content storing a secret key.</p><p>The format of secret file corresponds to <span class="extype" name="org.ergoplatform.wallet.secrets.EncryptedSecret">org.ergoplatform.wallet.secrets.EncryptedSecret</span>.
+By default it uses the following cipher parameters <code>{&quot;prf&quot;:&quot;HmacSHA256&quot;,&quot;c&quot;:128000,&quot;dkLen&quot;:256}</code>
+which information is openly stored in the storage file in order to be able to decipher it (see
+<span class="extype" name="org.ergoplatform.wallet.settings.EncryptionSettings">org.ergoplatform.wallet.settings.EncryptionSettings</span>).</p><p>Command steps:<br/>
+1) request the user to enter a mnemonic phrase (or read it from input stream)<br/>
+2) request the user to enter a mnemonic password twice<br/>
+3) request the user to enter a storage encryption password twice (<a href="CreateStorageCmd.html#storagePass:Array[Char]" class="extmbr" name="org.ergoplatform.appkit.ergotool.CreateStorageCmd#storagePass">storagePass</a><br/>
+4) use the (mnemonic, mnemonicPass) pair instance to generate secret <code>seed</code> (see <span class="extype" name="Mnemonic.toSeed">Mnemonic.toSeed</span>)<br/>
+5) use <a href="CreateStorageCmd.html#storagePass:Array[Char]" class="extmbr" name="org.ergoplatform.appkit.ergotool.CreateStorageCmd#storagePass">storagePass</a> to encrypt <code>seed</code> with AES using &quot;AES/GCM/NoPadding&quot; <span class="extype" name="javax.crypto.Cipher">javax.crypto.Cipher</span><br/>
+6) save encrypted <code>seed</code> (along with additional data necessary for decryption) in the given file
+   (<a href="CreateStorageCmd.html#storageFileName:String" class="extmbr" name="org.ergoplatform.appkit.ergotool.CreateStorageCmd#storageFileName">storageFileName</a>) of the given directory (<a href="CreateStorageCmd.html#storageDir:String" class="extmbr" name="org.ergoplatform.appkit.ergotool.CreateStorageCmd#storageDir">storageDir</a>).<br/>
+7) print the path to the created file to the console output
+</p></div><dl class="paramcmts block"><dt class="param">mnemonic</dt><dd class="cmt"><p>instance of <span class="extype" name="Mnemonic">Mnemonic</span> holding both mnemonic phrase and mnemonic password.</p></dd><dt class="param">storagePass</dt><dd class="cmt"><p>password used to encrypt the file and which is necessary to access and
+                   decipher the file.</p></dd><dt class="param">storageDir</dt><dd class="cmt"><p>directory (relative to the current) where to put storage file (default is
+                   &quot;storage&quot;)</p></dd><dt class="param">storageFileName</dt><dd class="cmt"><p>name of the storage file (default is &quot;secret.json&quot;)</p></dd></dl></div>
     </li><li name="org.ergoplatform.appkit.ergotool.ErgoToolException" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ErgoToolExceptionextendsRuntimeExceptionwithProductwithSerializable"></a><a id="ErgoToolException:ErgoToolException"></a>
       <span class="permalink">
@@ -469,7 +489,7 @@ part and the option is interpreted as Boolean value (<code>true</code> if it is 
       </span>
       
       <p class="shortcomment cmt">Exception thrown by ErgoTool application before or after command execution.</p><div class="fullcomment"><div class="comment cmt"><p>Exception thrown by ErgoTool application before or after command execution.</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p>CmdException which should be thrown by commands during execution</p></span></dd></dl></div>
-    </li><li name="org.ergoplatform.appkit.ergotool.ExtractStorageCmd" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="org.ergoplatform.appkit.ergotool.ExtractStorageCmd" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ExtractStorageCmdextendsCmdwithProductwithSerializable"></a><a id="ExtractStorageCmd:ExtractStorageCmd"></a>
       <span class="permalink">
       <a href="../../../../org/ergoplatform/appkit/ergotool/index.html#ExtractStorageCmdextendsCmdwithProductwithSerializable" title="Permalink">
@@ -481,11 +501,19 @@ part and the option is interpreted as Boolean value (<code>true</code> if it is 
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="" href="ExtractStorageCmd.html"><span class="name">ExtractStorageCmd</span></a><span class="params">(<span name="toolConf">toolConf: <span class="extype" name="org.ergoplatform.appkit.config.ErgoToolConfig">ErgoToolConfig</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="storageFile">storageFile: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="storagePass">storagePass: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Char">Char</span>]</span>, <span name="prop">prop: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="network">network: <span class="extype" name="org.ergoplatform.appkit.NetworkType">NetworkType</span></span>)</span><span class="result"> extends <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="Extracts secret data from encrypted storage file (e.g." href="ExtractStorageCmd.html"><span class="name">ExtractStorageCmd</span></a><span class="params">(<span name="toolConf">toolConf: <span class="extype" name="org.ergoplatform.appkit.config.ErgoToolConfig">ErgoToolConfig</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="storageFile">storageFile: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="storagePass">storagePass: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Char">Char</span>]</span>, <span name="prop">prop: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="network">network: <span class="extype" name="org.ergoplatform.appkit.NetworkType">NetworkType</span></span>)</span><span class="result"> extends <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
-      
-    </li><li name="org.ergoplatform.appkit.ergotool.ListAddressBoxesCmd" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <p class="shortcomment cmt">Extracts secret data from encrypted storage file (e.g.</p><div class="fullcomment"><div class="comment cmt"><p>Extracts secret data from encrypted storage file (e.g. created by <a href="CreateStorageCmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.CreateStorageCmd">CreateStorageCmd</a>).</p><p>Steps:<br/>
+1) request storage password (<a href="ExtractStorageCmd.html#storagePass:Array[Char]" class="extmbr" name="org.ergoplatform.appkit.ergotool.ExtractStorageCmd#storagePass">storagePass</a>)<br/>
+2) load encrypted data from storageFile into <span class="extype" name="SecretStorage">SecretStorage</span> instance<br/>
+3) unlock the instance using storagePass and retrieve secret data from storage<br/>
+4) depending on the parameter <code>prop</code>:<br/></p><ul><li>&quot;address&quot; =&gt; get master key address for the given <code>network</code><br/></li><li>&quot;masterKey&quot; =&gt; serialie <span class="extype" name="org.ergoplatform.wallet.secrets.ExtendedSecretKey">org.ergoplatform.wallet.secrets.ExtendedSecretKey</span> into bytes<br/>
+    and encode as base16<br/></li><li>&quot;secretKey&quot; =&gt; get bytes of the secret key and encode as base16<br/></li><li>&quot;publicKey&quot; =&gt; get bytes of the public key and encode as base16<br/>
+5) print obtained secret string to the console output</li></ul><p>Note, a storage file doesn't contain network type information, this the same storage can be used
+to obtain address both from mainnet and from testnet.
+</p></div><dl class="paramcmts block"><dt class="param">storageFile</dt><dd class="cmt"><p>path to encrypted storage file</p></dd><dt class="param">storagePass</dt><dd class="cmt"><p>encryption password necessary to access storage file content</p></dd><dt class="param">prop</dt><dd class="cmt"><p>name of the secret data stored in the file (e.g. <span class="extype" name="PropAddress">PropAddress</span>)</p></dd><dt class="param">network</dt><dd class="cmt"><p>network type</p></dd></dl></div>
+    </li><li name="org.ergoplatform.appkit.ergotool.ListAddressBoxesCmd" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ListAddressBoxesCmdextendsCmdwithRunWithErgoClientwithProductwithSerializable"></a><a id="ListAddressBoxesCmd:ListAddressBoxesCmd"></a>
       <span class="permalink">
       <a href="../../../../org/ergoplatform/appkit/ergotool/index.html#ListAddressBoxesCmdextendsCmdwithRunWithErgoClientwithProductwithSerializable" title="Permalink">
@@ -497,11 +525,12 @@ part and the option is interpreted as Boolean value (<code>true</code> if it is 
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="" href="ListAddressBoxesCmd.html"><span class="name">ListAddressBoxesCmd</span></a><span class="params">(<span name="toolConf">toolConf: <span class="extype" name="org.ergoplatform.appkit.config.ErgoToolConfig">ErgoToolConfig</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="address">address: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="limit">limit: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a> with <a href="RunWithErgoClient.html" class="extype" name="org.ergoplatform.appkit.ergotool.RunWithErgoClient">RunWithErgoClient</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="Lists unspent outputs (aka boxes or coins) belonging to the given address." href="ListAddressBoxesCmd.html"><span class="name">ListAddressBoxesCmd</span></a><span class="params">(<span name="toolConf">toolConf: <span class="extype" name="org.ergoplatform.appkit.config.ErgoToolConfig">ErgoToolConfig</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="address">address: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="limit">limit: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a> with <a href="RunWithErgoClient.html" class="extype" name="org.ergoplatform.appkit.ergotool.RunWithErgoClient">RunWithErgoClient</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
-      
-    </li><li name="org.ergoplatform.appkit.ergotool.MnemonicCmd" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <p class="shortcomment cmt">Lists unspent outputs (aka boxes or coins) belonging to the given address.</p><div class="fullcomment"><div class="comment cmt"><p>Lists unspent outputs (aka boxes or coins) belonging to the given address.
+</p></div><dl class="paramcmts block"><dt class="param">address</dt><dd class="cmt"><p>string encoding of the address</p></dd><dt class="param">limit</dt><dd class="cmt"><p>limit the size of the list (optional, default is 10)</p></dd></dl></div>
+    </li><li name="org.ergoplatform.appkit.ergotool.MnemonicCmd" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="MnemonicCmdextendsCmdwithProductwithSerializable"></a><a id="MnemonicCmd:MnemonicCmd"></a>
       <span class="permalink">
       <a href="../../../../org/ergoplatform/appkit/ergotool/index.html#MnemonicCmdextendsCmdwithProductwithSerializable" title="Permalink">
@@ -513,10 +542,14 @@ part and the option is interpreted as Boolean value (<code>true</code> if it is 
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="" href="MnemonicCmd.html"><span class="name">MnemonicCmd</span></a><span class="params">(<span name="toolConf">toolConf: <span class="extype" name="org.ergoplatform.appkit.config.ErgoToolConfig">ErgoToolConfig</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="Generates a new mnemonic phrase using english words and default cryptographic strength parameters (number of random bits, which is 160 by default)." href="MnemonicCmd.html"><span class="name">MnemonicCmd</span></a><span class="params">(<span name="toolConf">toolConf: <span class="extype" name="org.ergoplatform.appkit.config.ErgoToolConfig">ErgoToolConfig</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
-      
+      <p class="shortcomment cmt">Generates a new mnemonic phrase using english words and default cryptographic strength
+parameters (number of random bits, which is 160 by default).</p><div class="fullcomment"><div class="comment cmt"><p>Generates a new mnemonic phrase using english words and default cryptographic strength
+parameters (number of random bits, which is 160 by default).
+The command doesn't have parameters.</p><p>Prints the generated mnemonic to the console output.
+</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><span class="extype" name="Mnemonic">Mnemonic</span></p></span></dd></dl></div>
     </li><li name="org.ergoplatform.appkit.ergotool.RunWithErgoClient" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="RunWithErgoClientextendsCmd"></a><a id="RunWithErgoClient:RunWithErgoClient"></a>
       <span class="permalink">
@@ -537,7 +570,7 @@ The default <a href="Cmd.html#run(ctx:org.ergoplatform.appkit.ergotool.AppContex
 parameter is declared, which is called from the default implementation.
 To implement new command mix-in this train and implement <a href="RunWithErgoClient.html#runWithClient(ergoClient:org.ergoplatform.appkit.ErgoClient,ctx:org.ergoplatform.appkit.ergotool.AppContext):Unit" class="extmbr" name="org.ergoplatform.appkit.ergotool.RunWithErgoClient#runWithClient">RunWithErgoClient.runWithClient</a> method.
 </p></div></div>
-    </li><li name="org.ergoplatform.appkit.ergotool.SendCmd" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="org.ergoplatform.appkit.ergotool.SendCmd" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="SendCmdextendsCmdwithRunWithErgoClientwithProductwithSerializable"></a><a id="SendCmd:SendCmd"></a>
       <span class="permalink">
       <a href="../../../../org/ergoplatform/appkit/ergotool/index.html#SendCmdextendsCmdwithRunWithErgoClientwithProductwithSerializable" title="Permalink">
@@ -549,10 +582,20 @@ To implement new command mix-in this train and implement <a href="RunWithErgoCli
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a title="" href="SendCmd.html"><span class="name">SendCmd</span></a><span class="params">(<span name="toolConf">toolConf: <span class="extype" name="org.ergoplatform.appkit.config.ErgoToolConfig">ErgoToolConfig</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="storageFile">storageFile: <span class="extype" name="java.io.File">File</span></span>, <span name="storagePass">storagePass: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Char">Char</span>]</span>, <span name="recipient">recipient: <span class="extype" name="org.ergoplatform.appkit.Address">Address</span></span>, <span name="amountToSend">amountToSend: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result"> extends <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a> with <a href="RunWithErgoClient.html" class="extype" name="org.ergoplatform.appkit.ergotool.RunWithErgoClient">RunWithErgoClient</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="Creates and sends a new transaction to transfer Ergs from one address to another." href="SendCmd.html"><span class="name">SendCmd</span></a><span class="params">(<span name="toolConf">toolConf: <span class="extype" name="org.ergoplatform.appkit.config.ErgoToolConfig">ErgoToolConfig</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="storageFile">storageFile: <span class="extype" name="java.io.File">File</span></span>, <span name="storagePass">storagePass: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Char">Char</span>]</span>, <span name="recipient">recipient: <span class="extype" name="org.ergoplatform.appkit.Address">Address</span></span>, <span name="amountToSend">amountToSend: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result"> extends <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a> with <a href="RunWithErgoClient.html" class="extype" name="org.ergoplatform.appkit.ergotool.RunWithErgoClient">RunWithErgoClient</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
-      
+      <p class="shortcomment cmt">Creates and sends a new transaction to transfer Ergs from one address to another.</p><div class="fullcomment"><div class="comment cmt"><p>Creates and sends a new transaction to transfer Ergs from one address to another.</p><p>Steps:<br/>
+1) request storage password from the user<br/>
+2) read storage file, unlock using password and get secret<br/>
+3) get master public key and compute sender's address<br/>
+4) load available coins belonging to the sender's address<br/>
+5) select coins to cover amountToSend, compute transaction fee and amount of change<br/>
+6) create and sign (using secret key) transaction<br/>
+7) if no <code>--dry-run</code> option is specified, send the transaction to the network<br/>
+   otherwise skip sending<br/>
+8) serialize transaction to Json and print to the console<br/>
+</p></div><dl class="paramcmts block"><dt class="param">storageFile</dt><dd class="cmt"><p>storage with secret key of the sender</p></dd><dt class="param">storagePass</dt><dd class="cmt"><p>password to access sender secret key in the storage</p></dd><dt class="param">recipient</dt><dd class="cmt"><p>address of the recepient of the transfer</p></dd><dt class="param">amountToSend</dt><dd class="cmt"><p>amount of NanoErg to transfer to recipient</p></dd></dl></div>
     </li><li name="org.ergoplatform.appkit.ergotool.UsageException" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="UsageExceptionextendsRuntimeExceptionwithProductwithSerializable"></a><a id="UsageException:UsageException"></a>
       <span class="permalink">
@@ -589,10 +632,10 @@ To implement new command mix-in this train and implement <a href="RunWithErgoCli
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a title="" href="AddressCmd$.html"><span class="name">AddressCmd</span></a><span class="result"> extends <a href="CmdDescriptor.html" class="extype" name="org.ergoplatform.appkit.ergotool.CmdDescriptor">CmdDescriptor</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a title="Descriptor and parser of the address command." href="AddressCmd$.html"><span class="name">AddressCmd</span></a><span class="result"> extends <a href="CmdDescriptor.html" class="extype" name="org.ergoplatform.appkit.ergotool.CmdDescriptor">CmdDescriptor</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       
-      <p class="shortcomment cmt"></p>
+      <p class="shortcomment cmt">Descriptor and parser of the <code>address</code> command.</p>
     </li><li name="org.ergoplatform.appkit.ergotool.CheckAddressCmd" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="CheckAddressCmd"></a><a id="CheckAddressCmd:CheckAddressCmd"></a>
       <span class="permalink">

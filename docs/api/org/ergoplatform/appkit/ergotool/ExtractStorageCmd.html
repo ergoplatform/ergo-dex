@@ -134,7 +134,7 @@
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../index.html" class="extype" name="org.ergoplatform.appkit">appkit</a></dd></dl></div>
     </li><li class="current-entities indented4">
-                        <a class="object" href="AddressCmd$.html" title=""></a>
+                        <a class="object" href="AddressCmd$.html" title="Descriptor and parser of the address command."></a>
                         <a class="class" href="AddressCmd.html" title="Given mnemonic, mnemonicPass and network the command computes the address of the given network type."></a>
                         <a href="AddressCmd.html" title="Given mnemonic, mnemonicPass and network the command computes the address of the given network type.">AddressCmd</a>
                       </li><li class="current-entities indented4">
@@ -143,8 +143,8 @@
                         <a href="AppContext.html" title="Application execution context.">AppContext</a>
                       </li><li class="current-entities indented4">
                         <a class="object" href="CheckAddressCmd$.html" title=""></a>
-                        <a class="class" href="CheckAddressCmd.html" title=""></a>
-                        <a href="CheckAddressCmd.html" title="">CheckAddressCmd</a>
+                        <a class="class" href="CheckAddressCmd.html" title="Given network, mnemonic, mnemonicPass and address checks that the address belongs to the given network and corresponds to the given mnemonic and mnemonic password."></a>
+                        <a href="CheckAddressCmd.html" title="Given network, mnemonic, mnemonicPass and address checks that the address belongs to the given network and corresponds to the given mnemonic and mnemonic password.">CheckAddressCmd</a>
                       </li><li class="current-entities indented4">
                         <span class="separator"></span>
                         <a class="class" href="Cmd.html" title="Base class for all commands which can be executed by ErgoTool."></a>
@@ -175,8 +175,8 @@
                         <a href="ConfigOption$.html" title="String option to specify path to a configuration file.">ConfigOption</a>
                       </li><li class="current-entities indented4">
                         <a class="object" href="CreateStorageCmd$.html" title=""></a>
-                        <a class="class" href="CreateStorageCmd.html" title=""></a>
-                        <a href="CreateStorageCmd.html" title="">CreateStorageCmd</a>
+                        <a class="class" href="CreateStorageCmd.html" title="Create a new json file with encrypted content storing a secret key."></a>
+                        <a href="CreateStorageCmd.html" title="Create a new json file with encrypted content storing a secret key.">CreateStorageCmd</a>
                       </li><li class="current-entities indented4">
                         <span class="separator"></span>
                         <a class="object" href="DryRunOption$.html" title="Flag option to prevent the command to perform actual operation and instead forces it to report planned actions."></a>
@@ -191,24 +191,24 @@
                         <a href="ErgoToolException.html" title="Exception thrown by ErgoTool application before or after command execution.">ErgoToolException</a>
                       </li><li class="current-entities indented4">
                         <a class="object" href="ExtractStorageCmd$.html" title=""></a>
-                        <a class="class" href="" title=""></a>
-                        <a href="" title="">ExtractStorageCmd</a>
+                        <a class="class" href="" title="Extracts secret data from encrypted storage file (e.g."></a>
+                        <a href="" title="Extracts secret data from encrypted storage file (e.g.">ExtractStorageCmd</a>
                       </li><li class="current-entities indented4">
                         <a class="object" href="ListAddressBoxesCmd$.html" title=""></a>
-                        <a class="class" href="ListAddressBoxesCmd.html" title=""></a>
-                        <a href="ListAddressBoxesCmd.html" title="">ListAddressBoxesCmd</a>
+                        <a class="class" href="ListAddressBoxesCmd.html" title="Lists unspent outputs (aka boxes or coins) belonging to the given address."></a>
+                        <a href="ListAddressBoxesCmd.html" title="Lists unspent outputs (aka boxes or coins) belonging to the given address.">ListAddressBoxesCmd</a>
                       </li><li class="current-entities indented4">
                         <a class="object" href="MnemonicCmd$.html" title=""></a>
-                        <a class="class" href="MnemonicCmd.html" title=""></a>
-                        <a href="MnemonicCmd.html" title="">MnemonicCmd</a>
+                        <a class="class" href="MnemonicCmd.html" title="Generates a new mnemonic phrase using english words and default cryptographic strength parameters (number of random bits, which is 160 by default)."></a>
+                        <a href="MnemonicCmd.html" title="Generates a new mnemonic phrase using english words and default cryptographic strength parameters (number of random bits, which is 160 by default).">MnemonicCmd</a>
                       </li><li class="current-entities indented4">
                         <span class="separator"></span>
                         <a class="trait" href="RunWithErgoClient.html" title="This trait can be used to implement commands which need to communicate with Ergo blockchain."></a>
                         <a href="RunWithErgoClient.html" title="This trait can be used to implement commands which need to communicate with Ergo blockchain.">RunWithErgoClient</a>
                       </li><li class="current-entities indented4">
                         <a class="object" href="SendCmd$.html" title=""></a>
-                        <a class="class" href="SendCmd.html" title=""></a>
-                        <a href="SendCmd.html" title="">SendCmd</a>
+                        <a class="class" href="SendCmd.html" title="Creates and sends a new transaction to transfer Ergs from one address to another."></a>
+                        <a href="SendCmd.html" title="Creates and sends a new transaction to transfer Ergs from one address to another.">SendCmd</a>
                       </li><li class="current-entities indented4">
                         <span class="separator"></span>
                         <a class="class" href="UsageException.html" title="Exception thrown by ErgoTool application when incorrect usage is detected."></a>
@@ -243,7 +243,15 @@
       </h4>
 
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Extracts secret data from encrypted storage file (e.g. created by <a href="CreateStorageCmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.CreateStorageCmd">CreateStorageCmd</a>).</p><p>Steps:<br/>
+1) request storage password (<a href="#storagePass:Array[Char]" class="extmbr" name="org.ergoplatform.appkit.ergotool.ExtractStorageCmd#storagePass">storagePass</a>)<br/>
+2) load encrypted data from storageFile into <span class="extype" name="SecretStorage">SecretStorage</span> instance<br/>
+3) unlock the instance using storagePass and retrieve secret data from storage<br/>
+4) depending on the parameter <code>prop</code>:<br/></p><ul><li>&quot;address&quot; =&gt; get master key address for the given <code>network</code><br/></li><li>&quot;masterKey&quot; =&gt; serialie <span class="extype" name="org.ergoplatform.wallet.secrets.ExtendedSecretKey">org.ergoplatform.wallet.secrets.ExtendedSecretKey</span> into bytes<br/>
+    and encode as base16<br/></li><li>&quot;secretKey&quot; =&gt; get bytes of the secret key and encode as base16<br/></li><li>&quot;publicKey&quot; =&gt; get bytes of the public key and encode as base16<br/>
+5) print obtained secret string to the console output</li></ul><p>Note, a storage file doesn't contain network type information, this the same storage can be used
+to obtain address both from mainnet and from testnet.
+</p></div><dl class="paramcmts block"><dt class="param">storageFile</dt><dd class="cmt"><p>path to encrypted storage file</p></dd><dt class="param">storagePass</dt><dd class="cmt"><p>encryption password necessary to access storage file content</p></dd><dt class="param">prop</dt><dd class="cmt"><p>name of the secret data stored in the file (e.g. <span class="extype" name="PropAddress">PropAddress</span>)</p></dd><dt class="param">network</dt><dd class="cmt"><p>network type</p></dd></dl><div class="toggleContainer block">
           <span class="toggle">
             Linear Supertypes
           </span>
@@ -293,7 +301,7 @@
         <div id="allMembers">
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
-              <ol><li name="org.ergoplatform.appkit.ergotool.ExtractStorageCmd#&lt;init&gt;" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+              <ol><li name="org.ergoplatform.appkit.ergotool.ExtractStorageCmd#&lt;init&gt;" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="&lt;init&gt;(toolConf:org.ergoplatform.appkit.config.ErgoToolConfig,name:String,storageFile:String,storagePass:Array[Char],prop:String,network:org.ergoplatform.appkit.NetworkType):org.ergoplatform.appkit.ergotool.ExtractStorageCmd"></a><a id="&lt;init&gt;:ExtractStorageCmd"></a>
       <span class="permalink">
       <a href="../../../../org/ergoplatform/appkit/ergotool/ExtractStorageCmd.html#&lt;init&gt;(toolConf:org.ergoplatform.appkit.config.ErgoToolConfig,name:String,storageFile:String,storagePass:Array[Char],prop:String,network:org.ergoplatform.appkit.NetworkType):org.ergoplatform.appkit.ergotool.ExtractStorageCmd" title="Permalink">
@@ -308,7 +316,7 @@
         <span class="name">ExtractStorageCmd</span><span class="params">(<span name="toolConf">toolConf: <span class="extype" name="org.ergoplatform.appkit.config.ErgoToolConfig">ErgoToolConfig</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="storageFile">storageFile: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="storagePass">storagePass: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Char">Char</span>]</span>, <span name="prop">prop: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="network">network: <span class="extype" name="org.ergoplatform.appkit.NetworkType">NetworkType</span></span>)</span>
       </span>
       
-      
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">storageFile</dt><dd class="cmt"><p>path to encrypted storage file</p></dd><dt class="param">storagePass</dt><dd class="cmt"><p>encryption password necessary to access storage file content</p></dd><dt class="param">prop</dt><dd class="cmt"><p>name of the secret data stored in the file (e.g. <span class="extype" name="PropAddress">PropAddress</span>)</p></dd><dt class="param">network</dt><dd class="cmt"><p>network type</p></dd></dl></div>
     </li></ol>
             </div>
 
@@ -383,7 +391,7 @@
       </span>
       
       <p class="shortcomment cmt">ApiKey which is used for Ergo node API authentication.</p><div class="fullcomment"><div class="comment cmt"><p>ApiKey which is used for Ergo node API authentication.
-This is a secrete key whose hash was used in Ergo node config.
+This is a secret key whose hash was used in Ergo node config.
 This is only necessary to communicate to the protected parts of node API.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a></dd></dl></div>
     </li><li name="org.ergoplatform.appkit.ergotool.Cmd#apiUrl" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -401,7 +409,7 @@ This is only necessary to communicate to the protected parts of node API.
         <span class="name">apiUrl</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>the url of the Ergo blockchain node used to communicate with the network.</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a></dd></dl></div>
+      <p class="shortcomment cmt">Returns the url of the Ergo blockchain node used to communicate with the network.</p><div class="fullcomment"><div class="comment cmt"><p>Returns the url of the Ergo blockchain node used to communicate with the network.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a></dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <span class="permalink">
@@ -546,7 +554,7 @@ This is only necessary to communicate to the protected parts of node API.
         <span class="name">name</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>the name of this command (Example: <code>send</code>, <code>mnemonic</code> etc.)</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="org.ergoplatform.appkit.ergotool.ExtractStorageCmd">ExtractStorageCmd</a> → <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a></dd></dl></div>
+      <p class="shortcomment cmt">Returns the name of this command (Example: <code>send</code>, <code>mnemonic</code> etc.)</p><div class="fullcomment"><div class="comment cmt"><p>Returns the name of this command (Example: <code>send</code>, <code>mnemonic</code> etc.)</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="org.ergoplatform.appkit.ergotool.ExtractStorageCmd">ExtractStorageCmd</a> → <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a></dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a><a id="ne(AnyRef):Boolean"></a>
       <span class="permalink">
@@ -732,7 +740,7 @@ configuration file etc.</p></dd></dl><dl class="attributes block"> <dt>Definitio
         <span class="name">toolConf</span><span class="result">: <span class="extype" name="org.ergoplatform.appkit.config.ErgoToolConfig">ErgoToolConfig</span></span>
       </span>
       
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>current tool configuration parameters</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="org.ergoplatform.appkit.ergotool.ExtractStorageCmd">ExtractStorageCmd</a> → <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a></dd></dl></div>
+      <p class="shortcomment cmt">Returns current tool configuration parameters</p><div class="fullcomment"><div class="comment cmt"><p>Returns current tool configuration parameters</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="org.ergoplatform.appkit.ergotool.ExtractStorageCmd">ExtractStorageCmd</a> → <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a></dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <span class="permalink">

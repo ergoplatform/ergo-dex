@@ -134,7 +134,7 @@
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../index.html" class="extype" name="org.ergoplatform.appkit">appkit</a></dd></dl></div>
     </li><li class="current-entities indented4">
-                        <a class="object" href="AddressCmd$.html" title=""></a>
+                        <a class="object" href="AddressCmd$.html" title="Descriptor and parser of the address command."></a>
                         <a class="class" href="AddressCmd.html" title="Given mnemonic, mnemonicPass and network the command computes the address of the given network type."></a>
                         <a href="AddressCmd.html" title="Given mnemonic, mnemonicPass and network the command computes the address of the given network type.">AddressCmd</a>
                       </li><li class="current-entities indented4">
@@ -143,8 +143,8 @@
                         <a href="AppContext.html" title="Application execution context.">AppContext</a>
                       </li><li class="current-entities indented4">
                         <a class="object" href="CheckAddressCmd$.html" title=""></a>
-                        <a class="class" href="CheckAddressCmd.html" title=""></a>
-                        <a href="CheckAddressCmd.html" title="">CheckAddressCmd</a>
+                        <a class="class" href="CheckAddressCmd.html" title="Given network, mnemonic, mnemonicPass and address checks that the address belongs to the given network and corresponds to the given mnemonic and mnemonic password."></a>
+                        <a href="CheckAddressCmd.html" title="Given network, mnemonic, mnemonicPass and address checks that the address belongs to the given network and corresponds to the given mnemonic and mnemonic password.">CheckAddressCmd</a>
                       </li><li class="current-entities indented4">
                         <span class="separator"></span>
                         <a class="class" href="Cmd.html" title="Base class for all commands which can be executed by ErgoTool."></a>
@@ -175,8 +175,8 @@
                         <a href="ConfigOption$.html" title="String option to specify path to a configuration file.">ConfigOption</a>
                       </li><li class="current-entities indented4">
                         <a class="object" href="CreateStorageCmd$.html" title=""></a>
-                        <a class="class" href="CreateStorageCmd.html" title=""></a>
-                        <a href="CreateStorageCmd.html" title="">CreateStorageCmd</a>
+                        <a class="class" href="CreateStorageCmd.html" title="Create a new json file with encrypted content storing a secret key."></a>
+                        <a href="CreateStorageCmd.html" title="Create a new json file with encrypted content storing a secret key.">CreateStorageCmd</a>
                       </li><li class="current-entities indented4">
                         <span class="separator"></span>
                         <a class="object" href="DryRunOption$.html" title="Flag option to prevent the command to perform actual operation and instead forces it to report planned actions."></a>
@@ -191,24 +191,24 @@
                         <a href="ErgoToolException.html" title="Exception thrown by ErgoTool application before or after command execution.">ErgoToolException</a>
                       </li><li class="current-entities indented4">
                         <a class="object" href="ExtractStorageCmd$.html" title=""></a>
-                        <a class="class" href="ExtractStorageCmd.html" title=""></a>
-                        <a href="ExtractStorageCmd.html" title="">ExtractStorageCmd</a>
+                        <a class="class" href="ExtractStorageCmd.html" title="Extracts secret data from encrypted storage file (e.g."></a>
+                        <a href="ExtractStorageCmd.html" title="Extracts secret data from encrypted storage file (e.g.">ExtractStorageCmd</a>
                       </li><li class="current-entities indented4">
                         <a class="object" href="ListAddressBoxesCmd$.html" title=""></a>
-                        <a class="class" href="ListAddressBoxesCmd.html" title=""></a>
-                        <a href="ListAddressBoxesCmd.html" title="">ListAddressBoxesCmd</a>
+                        <a class="class" href="ListAddressBoxesCmd.html" title="Lists unspent outputs (aka boxes or coins) belonging to the given address."></a>
+                        <a href="ListAddressBoxesCmd.html" title="Lists unspent outputs (aka boxes or coins) belonging to the given address.">ListAddressBoxesCmd</a>
                       </li><li class="current-entities indented4">
                         <a class="object" href="MnemonicCmd$.html" title=""></a>
-                        <a class="class" href="MnemonicCmd.html" title=""></a>
-                        <a href="MnemonicCmd.html" title="">MnemonicCmd</a>
+                        <a class="class" href="MnemonicCmd.html" title="Generates a new mnemonic phrase using english words and default cryptographic strength parameters (number of random bits, which is 160 by default)."></a>
+                        <a href="MnemonicCmd.html" title="Generates a new mnemonic phrase using english words and default cryptographic strength parameters (number of random bits, which is 160 by default).">MnemonicCmd</a>
                       </li><li class="current-entities indented4">
                         <span class="separator"></span>
                         <a class="trait" href="RunWithErgoClient.html" title="This trait can be used to implement commands which need to communicate with Ergo blockchain."></a>
                         <a href="RunWithErgoClient.html" title="This trait can be used to implement commands which need to communicate with Ergo blockchain.">RunWithErgoClient</a>
                       </li><li class="current-entities indented4">
                         <a class="object" href="" title=""></a>
-                        <a class="class" href="SendCmd.html" title=""></a>
-                        <a href="SendCmd.html" title="">SendCmd</a>
+                        <a class="class" href="SendCmd.html" title="Creates and sends a new transaction to transfer Ergs from one address to another."></a>
+                        <a href="SendCmd.html" title="Creates and sends a new transaction to transfer Ergs from one address to another.">SendCmd</a>
                       </li><li class="current-entities indented4">
                         <span class="separator"></span>
                         <a class="class" href="UsageException.html" title="Exception thrown by ErgoTool application when incorrect usage is detected."></a>
@@ -348,6 +348,22 @@
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="org.ergoplatform.appkit.ergotool.CmdDescriptor#BaseDocUrl" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="BaseDocUrl:String"></a>
+      <span class="permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/SendCmd$.html#BaseDocUrl:String" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">BaseDocUrl</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="CmdDescriptor.html" class="extype" name="org.ergoplatform.appkit.ergotool.CmdDescriptor">CmdDescriptor</a></dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <span class="permalink">
@@ -420,6 +436,22 @@
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="CmdDescriptor.html" class="extype" name="org.ergoplatform.appkit.ergotool.CmdDescriptor">CmdDescriptor</a></dd></dl></div>
+    </li><li name="org.ergoplatform.appkit.ergotool.CmdDescriptor#docUrl" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="docUrl:String"></a>
+      <span class="permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/SendCmd$.html#docUrl:String" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">docUrl</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      
+      <p class="shortcomment cmt">Url of the ScalaDoc for this command.</p><div class="fullcomment"><div class="comment cmt"><p>Url of the ScalaDoc for this command.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="CmdDescriptor.html" class="extype" name="org.ergoplatform.appkit.ergotool.CmdDescriptor">CmdDescriptor</a></dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a><a id="eq(AnyRef):Boolean"></a>
       <span class="permalink">
@@ -664,6 +696,22 @@ This is the prefered method to throw an exception.
       </span>
       
       <p class="shortcomment cmt">Outputs the usage help for this command to the given console</p><div class="fullcomment"><div class="comment cmt"><p>Outputs the usage help for this command to the given console</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="CmdDescriptor.html" class="extype" name="org.ergoplatform.appkit.ergotool.CmdDescriptor">CmdDescriptor</a></dd></dl></div>
+    </li><li name="org.ergoplatform.appkit.ergotool.CmdDescriptor#readNewPassword" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="readNewPassword(prompt:String,secondPrompt:String)(implicitctx:org.ergoplatform.appkit.ergotool.AppContext):Array[Char]"></a><a id="readNewPassword(String,String)(AppContext):Array[Char]"></a>
+      <span class="permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/SendCmd$.html#readNewPassword(prompt:String,secondPrompt:String)(implicitctx:org.ergoplatform.appkit.ergotool.AppContext):Array[Char]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">readNewPassword</span><span class="params">(<span name="prompt">prompt: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="secondPrompt">secondPrompt: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ctx">ctx: <a href="AppContext.html" class="extype" name="org.ergoplatform.appkit.ergotool.AppContext">AppContext</a></span>)</span><span class="result">: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Char">Char</span>]</span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="CmdDescriptor.html" class="extype" name="org.ergoplatform.appkit.ergotool.CmdDescriptor">CmdDescriptor</a></dd></dl></div>
     </li><li name="org.ergoplatform.appkit.ergotool.CmdDescriptor#readNewPassword" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="readNewPassword(nAttemps:Int,console:org.ergoplatform.appkit.console.Console)(block:=&gt;(Array[Char],Array[Char])):Array[Char]"></a><a id="readNewPassword(Int,Console)(⇒(Array[Char],Array[Char])):Array[Char]"></a>
       <span class="permalink">
