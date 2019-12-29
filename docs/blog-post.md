@@ -255,20 +255,21 @@ stored on local disk unencrypted and surely never sent anywhere.
 
 ## Conclusion
 
-At this point the reader may conclude that ErgoTool is a typical CLI utility, nothing special. 
-Indeed, if this is the case, then my goal is achieved. ErgoTool is designed to be typical command
-line utility:
+ErgoTool is designed to look and feel like a typical CLI utility:
 - which is easy to use and fast to run from command line
+- can be scriptable via shell scripts
 - has built-in usage help 
-- can be scriptable via shell script
 
-At the same time ErgoTool have a range of not-so-typical characteristics:
+At the same time ErgoTool is designed to be easily extensible:
 - implemented in high-level language Scala
 - reuses the core libraries which are used in Ergo network client
 - open source and fully documented
-- designed for unlimited extensibility
 
-This last point is subject of the next planned blog post, so stay tuned!
+This last point is especially important as many new commands can be easily added to
+ErgoTool, thanks to its architecture. If you need a specific feature or a command 
+please file an issue or maybe even a PR.
+
+The extensibility of ErgoTool is a subject of the next planned blog post, stay tuned!
 
 ## References
 
