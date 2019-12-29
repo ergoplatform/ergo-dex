@@ -10,15 +10,16 @@ import org.ergoplatform.appkit.impl.ErgoTreeContract
 import sigmastate.eval.CSigmaProp
 import sigmastate.verification.contract.AssetsAtomicExchangeCompilation
 import special.sigma.SigmaProp
+import sigmastate.eval.Extensions._
 
-case class AssetsAtomicExchangeSellerCmd(toolConf: ErgoToolConfig,
-                                         name: String,
-                                         storageFile: File,
-                                         storagePass: Array[Char],
-                                         seller: Address,
-                                         deadline: Int,
-                                         tokenPrice: Long,
-                                         token: ErgoToken) extends Cmd with RunWithErgoClient {
+case class AssetsAtomicExchangeBuyerCmd(toolConf: ErgoToolConfig,
+                                        name: String,
+                                        storageFile: File,
+                                        storagePass: Array[Char],
+                                        buyer: Address,
+                                        deadline: Int,
+                                        ergAmount: Long,
+                                        token: ErgoToken) extends Cmd with RunWithErgoClient {
 
   def loggedStep[T](msg: String, console: Console)(step: => T): T = {
     console.print(msg + "...")
@@ -32,9 +33,8 @@ case class AssetsAtomicExchangeSellerCmd(toolConf: ErgoToolConfig,
     val console = runCtx.console
     ergoClient.execute(ctx => {
       import sigmastate.verified.VerifiedTypeConverters._
-      val sellerPkProp: sigmastate.verified.SigmaProp = CSigmaProp(seller.getPublicKey).asInstanceOf[SigmaProp]
-      val verifiedContract = AssetsAtomicExchangeCompilation.sellerContractInstance(deadline,
-        tokenPrice, sellerPkProp)
+      val buyerPkProp: sigmastate.verified.SigmaProp = CSigmaProp(buyer.getPublicKey).asInstanceOf[SigmaProp]
+      val verifiedContract = AssetsAtomicExchangeCompilation.buyerContractInstance(deadline, token.getId.getBytes.toColl, token.getValue, buyerPkProp)
 
       val senderProver = loggedStep("Creating prover", console) {
         BoxOperations.createProver(ctx, storageFile.getPath, String.valueOf(storagePass))
@@ -43,14 +43,12 @@ case class AssetsAtomicExchangeSellerCmd(toolConf: ErgoToolConfig,
       val unspent = loggedStep(s"Loading unspent boxes from at address $sender", console) {
         ctx.getUnspentBoxesFor(sender)
       }
-      val outboxValue = 1
-      // TODO: add tokens to selectTop
+      val outboxValue = ergAmount
       val boxesToSpend = BoxOperations.selectTop(unspent, MinFee + outboxValue)
       val txB = ctx.newTxBuilder
       val newBox = txB.outBoxBuilder
         .value(outboxValue)
         .contract(new ErgoTreeContract(verifiedContract.ergoTree))
-        .tokens(token)
         .build()
       val tx = txB
         .boxesToSpend(boxesToSpend).outputs(newBox)
@@ -73,23 +71,24 @@ case class AssetsAtomicExchangeSellerCmd(toolConf: ErgoToolConfig,
   }
 }
 
-object AssetsAtomicExchangeSellerCmd extends CmdDescriptor(
-  name = "AssetAtomicExchangeSeller", cmdParamSyntax = "<wallet file> <sellerAddr> <deadline> <ergPrice> <tokenId> <tokenAmount>",
-  description = "put a token seller contract with given <tokenId> and <tokenAmount> for sale at given <ergPrice> price until given <deadline> with <sellerAddr> to be used for withdrawal(after the deadline) \n " +
+
+object AssetsAtomicExchangeBuyerCmd extends CmdDescriptor(
+  name = "AssetAtomicExchangeBuyer", cmdParamSyntax = "<wallet file> <buyerAddr> <deadline> <ergAmount> <tokenId> <tokenAmount>",
+  description = "put a token buyer contract with given <tokenId> and <tokenAmount> to buy at given <ergPrice> price until given <deadline> with <buyerAddr> to be used for withdrawal(after the deadline) \n " +
     "with the given <wallet file> to sign transaction (requests storage password)") {
 
   override def parseCmd(ctx: AppContext): Cmd = {
     val args = ctx.cmdArgs
     val storageFile = new File(if (args.length > 1) args(1) else error("Wallet storage file path is not specified"))
     if (!storageFile.exists()) error(s"Specified wallet file is not found: $storageFile")
-    val seller = Address.create(if (args.length > 2) args(2) else error("seller address is not specified"))
+    val buyer = Address.create(if (args.length > 2) args(2) else error("buyer address is not specified"))
     val deadline = if (args.length > 3) args(3).toInt else error("deadline is not specified")
-    val ergAmount = if (args.length > 4) args(4).toLong else error("ergPrice is not specified")
+    val ergAmount = if (args.length > 4) args(4).toLong else error("ergAmount is not specified")
     val tokenId = if(args.length > 5) args(5) else error("tokenId is not specified")
     val tokenAmount = if(args.length > 6) args(6).toLong else error("tokenAmount is not specified")
     val token = new ErgoToken(tokenId, tokenAmount)
     val pass = ctx.console.readPassword("Storage password>")
-    AssetsAtomicExchangeSellerCmd(ctx.toolConf, name, storageFile, pass, seller,
+    AssetsAtomicExchangeBuyerCmd(ctx.toolConf, name, storageFile, pass, buyer,
       deadline, ergAmount, token)
   }
 }

@@ -202,9 +202,9 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     val res = runCommand("AssetAtomicExchangeSeller",
       args = Seq(
         "storage/E2.json",
-        "9f4QF8AD1nQ3nJahQVkMj8hFSVVzVom77b52JU7EW71Zexg6N8v",
-        "1000000", // ERG box.value (min fee)
-        "500", // token price in ERG
+        "9f4QF8AD1nQ3nJahQVkMj8hFSVVzVom77b52JU7EW71Zexg6N8v", // seller address
+        "999999", // deadline
+        "50000000", // token price in nanoErgs
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1", // tokenId
         "60" // token amount
       ),
@@ -212,7 +212,33 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         s"""Storage password> ::abc;
            |""".stripMargin, data)
     println(res)
-//    res should include ("\"transactionId\": \"21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1\",")
+    res should include ("\"transactionId\": \"c6944ec53da5152b174aee6a77e692ac65bf3e74c30286c100778225a3371eb2\",")
+  }
+
+  property("AssetsAtomicExchange buyer command") {
+    val data = MockData(
+      Seq(
+        loadNodeResponse("response_Box1.json"),
+        loadNodeResponse("response_Box2.json"),
+        loadNodeResponse("response_Box3.json"),
+        "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1"),
+      Seq(
+        loadExplorerResponse("response_boxesByAddressUnspent.json")))
+    val res = runCommand("AssetAtomicExchangeBuyer",
+      args = Seq(
+        "storage/E2.json",
+        // TODO: add another address and use it for buyer
+        "9f4QF8AD1nQ3nJahQVkMj8hFSVVzVom77b52JU7EW71Zexg6N8v", // buyer address
+        "999999", // deadline
+        "50000000", // token price in nanoErgs
+        "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1", // tokenId
+        "60" // token amount
+      ),
+      expectedConsoleScenario =
+        s"""Storage password> ::abc;
+           |""".stripMargin, data)
+    println(res)
+    res should include ("\"transactionId\": \"f3843ad0497ee88e34cae239605f6e62e10eb982803e80eda9b670439f18d6f8\",")
   }
 }
 
