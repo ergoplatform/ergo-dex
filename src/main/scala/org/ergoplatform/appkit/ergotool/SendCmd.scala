@@ -76,9 +76,9 @@ case class SendCmd(toolConf: ErgoToolConfig, name: String, storageFile: File, st
   }
 }
 object SendCmd extends CmdDescriptor(
-  name = "send", cmdParamSyntax = "<wallet file> <recipientAddr> <amountToSend>",
+  name = "send", cmdParamSyntax = "<storageFile> <recipientAddr> <amountToSend>",
   description = "send the given <amountToSend> to the given <recipientAddr> using \n " +
-      "the given <wallet file> to sign transaction (requests storage password)") {
+      "the given <storageFile> to sign transaction (requests storage password)") {
 
   override def parseCmd(ctx: AppContext): Cmd = {
     val args = ctx.cmdArgs

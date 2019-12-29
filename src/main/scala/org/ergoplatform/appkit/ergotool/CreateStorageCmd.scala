@@ -42,7 +42,7 @@ case class CreateStorageCmd(
 }
 object CreateStorageCmd extends CmdDescriptor(
   name = "createStorage", cmdParamSyntax = "[<storageDir>=\"storage\"] [<storageFileName>=\"secret.json\"]",
-  description = "Creates an encrypted storage file for the mnemonic entered by user") {
+  description = "Creates an encrypted storage file for the mnemonic entered by the user") {
 
   override def parseCmd(ctx: AppContext): Cmd = {
     val args = ctx.cmdArgs

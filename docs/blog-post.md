@@ -3,14 +3,14 @@
 ## Introduction
 
 [ErgoTool](https://github.com/aslesarenko/ergo-tool) is a command line interface (CLI) for
-Ergo blockchain. You can use ErgoTool without running your own Ergo node. Keep in mind,
-however, that running a node is the most secure way to communicate with the blockchain
-network, but ErgoTool aims to provide a more foundational tools at your disposal. Surely
-you can use it with your own running node. See also discussion in the [security notes
-section](#security-notes) below.
+[Ergo blockchain](https://ergoplatform.org/). You can use ErgoTool without running your
+own Ergo node. Even though running a node is the most secure way to communicate with the
+Ergo blockchain network, ErgoTool however, aims to provide a more foundational tools at
+your disposal. Surely, you still can use it with your own running node. 
 
 In this post we will walk through simple steps to generate a mnemonic phrase, create a
-local secret storage and use it to send ERGs between addresses.
+local secret storage and use it to send ERGs between addresses, all with the help of
+ErgoTool commands.
 
 ## Getting Started
 
@@ -27,11 +27,11 @@ Usage Syntax:	ergo-tool help <commandName>
 Description:	prints usage help for a command
 Doc page:	https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/HelpCmd.html
 ```
-ErgoTool outputs the error message with the information about `help` command. This is
-typical output of ErgoTool when one of the known commands is specified, but it is used
-incorrectly. As we can learn from the message, the `help` command requires us to specify
-one additional `<commandName>` argument. The details of the command can be obtained by
-opening the doc page url.
+Let's see what we get here. ErgoTool outputs the error message with the information about
+`help` command. This is a typical output of ErgoTool when one of the known commands is
+specified, but it is used incorrectly. As we can learn from the message, the `help`
+command requires us to specify additional `<commandName>` argument. Also each command has
+a API doc page with all the details about command execution, so its url is shown here.
 
 ## Create a New Mnemonic Phrase
 
@@ -44,8 +44,7 @@ Run the following command to generate a new mnemonic phrase:
 $ ./ergo-tool.sh mnemonic          
 bird harbor wheat innocent business disease busy quick yellow trust time oil enter situate moon
 ```
-Write it down on paper and keep in safe and secret place. Next let's use this mnemonic to create
-a storage of secret keys.
+Write it down on paper and keep in a safe and secret place. 
 As an additional security measure you can create an arbitrary mnemonic password. 
 In some sense it can serve like an additional non-vocabulary word in the mnemonic. 
 Mnemonic password is optional and is used for additional security.
@@ -55,17 +54,20 @@ probably different from mnemonic place.
 **Important, both mnemonic phrase and mnemonic password are required to restore secret keys,
 if you loose any one then your keys are lost.**
 
+Next let's use the generated mnemonic to create a storage of secret keys.
+
 ## Create a New Encrypted Storage
 
-For better security mnemonic phrase and password are never required by ErgoTool to perform
-transaction signing. Instead, encrypted storage is required to sign spending
-transactions. We can create it using `createStorage` command.
+For better security neither mnemonic phrase nor password is required by ErgoTool to
+perform the transaction signing. Instead, the secret key from the encrypted storage is
+required to sign spending transaction. We can generate a secret key and store it in an
+encrypted storage using `createStorage` command.
 ```
 $ ./ergo-tool.sh help createStorage
 
 Command Name:	createStorage
 Usage Syntax:	ergo-tool createStorage [<storageDir>="storage"] [<storageFileName>="secret.json"]
-Description:	Creates an encrypted storage file for the mnemonic entered by user
+Description:	Creates an encrypted storage file for the mnemonic entered by the user
 Doc page:       https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/CreateStorageCmd.html
 
 $ ./ergo-tool.sh createStorage 
@@ -92,8 +94,9 @@ file and storage password will be able to decipher it and access secret keys.
 
 ## Extracting Data From Storage
 
-Secret storage contain information about secret keys and as result can be used to compute 
-both public key and pay-to-public-key address. The `extractStorage` is doing just that.
+Secret storage contains master secret key and as a result can be used to compute both the
+public key and the pay-to-public-key address which correspond to that secret key. The
+`extractStorage` command is doing just that.
 ```
 $ ./ergo-tool.sh help extractStorage
 
@@ -129,7 +132,7 @@ BoxId                                                             NanoERGs
 4840cb6facc20b765085db0ad24768ed0c5e7afd413e8e58e597c33a993f8119  4987000000
 ```
 
-if we specify `--print-json` option, then ErgoTool will output full box data using as json
+if we specify `--print-json` option, then ErgoTool will output all the boxes in json format
 
 ```
 $ ./ergo-tool.sh listAddressBoxes --print-json 9f4QF8AD1nQ3nJahQVkMj8hFSVVzVom77b52JU7EW71Zexg6N8v
@@ -138,23 +141,24 @@ $ ./ergo-tool.sh listAddressBoxes --print-json 9f4QF8AD1nQ3nJahQVkMj8hFSVVzVom77
 
 ## Transfer Coins
 
-Now, having secret keys stored securely in the encrypted storage file, we can use 
-ErgoTool to transfer coins from your address to some other recipient address. The command
-to do that is `send`.
+Now, with secret key stored securely in the encrypted storage file, we can use ErgoTool to
+transfer coins from our address to some other recipient address. The command to do that is
+`send`.
 
 ```
 ./ergo-tool.sh help send                                     
 
 Command Name:	send
-Usage Syntax:	ergo-tool send <wallet file> <recipientAddr> <amountToSend>
+Usage Syntax:	ergo-tool send <storageFile> <recipientAddr> <amountToSend>
 Description:	send the given <amountToSend> to the given <recipientAddr> using 
- the given <wallet file> to sign transaction (requests storage password)
+ the given <storageFile> to sign transaction (requests storage password)
 Doc page:	https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/SendCmd.html
 ```
-The storage file is necessary to access secret key and generate a signature. The storage
-password is requested to unlock and decipher the file content. The command supports the
-`--dry-run` option which forces the ErgoTool to create the signed transaction, but instead
-of sending it to the blockchain, it prints the transaction on the console.
+The storage file is necessary in order to access secret key and generate a signature. The
+storage password will be requested by ErgoTool to unlock and decipher the file content.
+The command `send` supports the `--dry-run` option which forces ErgoTool to create the
+signed transaction, but instead of sending it to the blockchain, ErgoTool prints the
+transaction on the console.
 
 ```
 $ ./ergo-tool.sh send --dry-run storage/E1.json 9hHDQb26AjnJUXxcqriqY1mnhpLuUeC81C4pggtK7tupr92Ea1K 5000000
@@ -209,9 +213,9 @@ Tx: {
 }
 ```
 
-Note the "ergoTree" scripts are deserialized and printed as abstract syntax tree. This
-printing format can be regulated by additional options so that scripts are printed as
-human readable ErgoScript.
+Note the "ergoTree" scripts are deserialized and printed as abstract syntax trees. This
+printing format can be regulated by additional options so that the scripts can be printed as
+human readable ErgoScript. (Not yet implemented, but somewhere on the roadmap.)
 
 If we exclude `--dry-run` option, the transaction will be sent and included in the
 blockchain.
@@ -230,6 +234,7 @@ accepted by the network our transfer is confirmed and we can [see it in
 Explorer](https://explorer.ergoplatform.com/en/transactions/c5710af17f5124a232a5ef731fdf94a493025334c2a7d5a79e9923210972b962).
 
 We can also list boxes of the recipient address and see the coin we created among others
+(until it is spent by the recipient)
 ```
 $ ./ergo-tool.sh listAddressBoxes 9hHDQb26AjnJUXxcqriqY1mnhpLuUeC81C4pggtK7tupr92Ea1K                      
 BoxId                                                             NanoERGs          
@@ -250,7 +255,20 @@ stored on local disk unencrypted and surely never sent anywhere.
 
 ## Conclusion
 
+At this point the reader may conclude that ErgoTool is a typical CLI utility, nothing special. 
+Indeed, if this is the case, then my goal is achieved. ErgoTool is designed to be typical command
+line utility:
+- which is easy to use and fast to run from command line
+- has built-in usage help 
+- can be scriptable via shell script
 
+At the same time ErgoTool have a range of not-so-typical characteristics:
+- implemented in high-level language Scala
+- reuses the core libraries which are used in Ergo network client
+- open source and fully documented
+- designed for unlimited extensibility
+
+This last point is subject of the next planned blog post, so stay tuned!
 
 ## References
 
