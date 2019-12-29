@@ -16,8 +16,8 @@ ErgoTool commands.
 
 First of all we need to install ErgoTool on our system from sources by following the
 [installation instructions](https://github.com/aslesarenko/ergo-tool#installation). In the
-directory where we cloned ErgoTool there is `ergo-tool.sh` script which we will use to 
-run commands. Run the following command to check ErgoTool is installed correctly.
+directory where we cloned ErgoTool there is `ergo-tool.sh` script which we are going to
+use to run commands. Run the following command to check ErgoTool is installed correctly.
 ```
 $ ./ergo-tool.sh help     
 command name is not specified (run ergo-tool without arguments to list commands)
@@ -52,9 +52,9 @@ If you decide to use mnemonic password you should also write it down and keep in
 probably different from mnemonic place. 
 
 **Important, both mnemonic phrase and mnemonic password are required to restore secret keys,
-if you loose any one then your keys are lost.**
+if you lose any of them then you will not be able to regenerate you master key again.**
 
-Next let's use the generated mnemonic to create a storage of secret keys.
+Next let's use the generated mnemonic to create a storage with a master secret key.
 
 ## Create a New Encrypted Storage
 
