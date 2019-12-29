@@ -69,6 +69,15 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     ()
   }
 
+  property("help command") {
+    ErgoTool.commands.values.foreach { c =>
+      val res = runCommand("help", Seq(c.name), expectedConsoleScenario = "")
+      res should include (s"Command Name:\t${c.name}")
+      res should include (s"Doc page:\t${c.docUrl}")
+
+    }
+  }
+
   property("address command") {
     testCommand("address", Seq("testnet", mnemonic),
       expectedConsoleScenario =

@@ -143,11 +143,12 @@ abstract class CmdDescriptor(
   def printUsage(console: Console) = {
     val msg =
       s"""
-        |Command: $name
-        |Usage: ergo-tool $name ${cmdParamSyntax}\n\t${description}
-       """.stripMargin
-    val url = if (docUrl.isEmpty) "" else s"Doc page: $docUrl\n"
-    console.println(msg + url)
+        |Command Name:\t$name
+        |Usage Syntax:\tergo-tool $name ${cmdParamSyntax}
+        |Description:\t${description}
+        |Doc page:\t$docUrl
+        |""".stripMargin
+    console.println(msg)
   }
 
 }

@@ -195,12 +195,12 @@
                         <a href="ExtractStorageCmd.html" title="Extracts secret data from encrypted storage file (e.g.">ExtractStorageCmd</a>
                       </li><li class="current-entities indented4">
                         <a class="object" href="HelpCmd$.html" title="Descriptor and parser of the help command."></a>
-                        <a class="class" href="HelpCmd.html" title="Prints usage help for the given command name."></a>
-                        <a href="HelpCmd.html" title="Prints usage help for the given command name.">HelpCmd</a>
+                        <a class="class" href="" title="Prints usage help for the given command name."></a>
+                        <a href="" title="Prints usage help for the given command name.">HelpCmd</a>
                       </li><li class="current-entities indented4">
                         <a class="object" href="ListAddressBoxesCmd$.html" title=""></a>
-                        <a class="class" href="" title="Lists unspent outputs (aka boxes or coins) belonging to the given address."></a>
-                        <a href="" title="Lists unspent outputs (aka boxes or coins) belonging to the given address.">ListAddressBoxesCmd</a>
+                        <a class="class" href="ListAddressBoxesCmd.html" title="Lists unspent outputs (aka boxes or coins) belonging to the given address."></a>
+                        <a href="ListAddressBoxesCmd.html" title="Lists unspent outputs (aka boxes or coins) belonging to the given address.">ListAddressBoxesCmd</a>
                       </li><li class="current-entities indented4">
                         <a class="object" href="MnemonicCmd$.html" title=""></a>
                         <a class="class" href="MnemonicCmd.html" title="Generates a new mnemonic phrase using english words and default cryptographic strength parameters (number of random bits, which is 160 by default)."></a>
@@ -224,15 +224,15 @@
           <div id="content">
             <body class="class type">
       <div id="definition">
-        <a href="ListAddressBoxesCmd$.html" title="See companion object"><div class="big-circle class-companion-object">c</div></a>
+        <a href="HelpCmd$.html" title="See companion object"><div class="big-circle class-companion-object">c</div></a>
         <p id="owner"><a href="../../../index.html" class="extype" name="org">org</a>.<a href="../../index.html" class="extype" name="org.ergoplatform">ergoplatform</a>.<a href="../index.html" class="extype" name="org.ergoplatform.appkit">appkit</a>.<a href="index.html" class="extype" name="org.ergoplatform.appkit.ergotool">ergotool</a></p>
-        <h1><a href="ListAddressBoxesCmd$.html" title="See companion object">ListAddressBoxesCmd</a><span class="permalink">
-      <a href="../../../../org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html" title="Permalink">
+        <h1><a href="HelpCmd$.html" title="See companion object">HelpCmd</a><span class="permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/HelpCmd.html" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span></h1>
         <h3><span class="morelinks"><div>
-            Companion <a href="ListAddressBoxesCmd$.html" title="See companion object">object ListAddressBoxesCmd</a>
+            Companion <a href="HelpCmd$.html" title="See companion object">object HelpCmd</a>
           </div></span></h3>
       </div>
 
@@ -242,17 +242,17 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">ListAddressBoxesCmd</span><span class="params">(<span name="toolConf">toolConf: <span class="extype" name="org.ergoplatform.appkit.config.ErgoToolConfig">ErgoToolConfig</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="address">address: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="limit">limit: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a> with <a href="RunWithErgoClient.html" class="extype" name="org.ergoplatform.appkit.ergotool.RunWithErgoClient">RunWithErgoClient</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">HelpCmd</span><span class="params">(<span name="toolConf">toolConf: <span class="extype" name="org.ergoplatform.appkit.config.ErgoToolConfig">ErgoToolConfig</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="askedCmd">askedCmd: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
 
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Lists unspent outputs (aka boxes or coins) belonging to the given address.
-</p></div><dl class="paramcmts block"><dt class="param">address</dt><dd class="cmt"><p>string encoding of the address</p></dd><dt class="param">limit</dt><dd class="cmt"><p>limit the size of the list (optional, default is 10)</p></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Prints usage help for the given command name.
+</p></div><dl class="paramcmts block"><dt class="param">askedCmd</dt><dd class="cmt"><p>command name which usage help should be printed</p></dd></dl><dl class="attributes block"> <dt>Exceptions thrown</dt><dd><span class="cmt"><p><a href="CmdException.html" class="extype" name="org.ergoplatform.appkit.ergotool.CmdException"><code>CmdException</code></a> if <code>askedCmd</code> is not valid command name</p></span></dd><dt>See also</dt><dd><span class="cmt"><p><a href="HelpCmd$.html" class="extype" name="org.ergoplatform.appkit.ergotool.HelpCmd">HelpCmd$</a> descriptor of the <code>help</code> command</p></span></dd></dl><div class="toggleContainer block">
           <span class="toggle">
             Linear Supertypes
           </span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <a href="RunWithErgoClient.html" class="extype" name="org.ergoplatform.appkit.ergotool.RunWithErgoClient">RunWithErgoClient</a>, <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -278,7 +278,7 @@
                   <span class="filtertype">Inherited<br />
                   </span>
                   <ol id="linearization">
-                    <li class="in" name="org.ergoplatform.appkit.ergotool.ListAddressBoxesCmd"><span>ListAddressBoxesCmd</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="org.ergoplatform.appkit.ergotool.RunWithErgoClient"><span>RunWithErgoClient</span></li><li class="in" name="org.ergoplatform.appkit.ergotool.Cmd"><span>Cmd</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                    <li class="in" name="org.ergoplatform.appkit.ergotool.HelpCmd"><span>HelpCmd</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="org.ergoplatform.appkit.ergotool.Cmd"><span>Cmd</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                   </ol>
                 </div><div class="ancestors">
               <span class="filtertype"></span>
@@ -298,10 +298,10 @@
         <div id="allMembers">
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
-              <ol><li name="org.ergoplatform.appkit.ergotool.ListAddressBoxesCmd#&lt;init&gt;" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(toolConf:org.ergoplatform.appkit.config.ErgoToolConfig,name:String,address:String,limit:Int):org.ergoplatform.appkit.ergotool.ListAddressBoxesCmd"></a><a id="&lt;init&gt;:ListAddressBoxesCmd"></a>
+              <ol><li name="org.ergoplatform.appkit.ergotool.HelpCmd#&lt;init&gt;" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="&lt;init&gt;(toolConf:org.ergoplatform.appkit.config.ErgoToolConfig,name:String,askedCmd:String):org.ergoplatform.appkit.ergotool.HelpCmd"></a><a id="&lt;init&gt;:HelpCmd"></a>
       <span class="permalink">
-      <a href="../../../../org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html#&lt;init&gt;(toolConf:org.ergoplatform.appkit.config.ErgoToolConfig,name:String,address:String,limit:Int):org.ergoplatform.appkit.ergotool.ListAddressBoxesCmd" title="Permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/HelpCmd.html#&lt;init&gt;(toolConf:org.ergoplatform.appkit.config.ErgoToolConfig,name:String,askedCmd:String):org.ergoplatform.appkit.ergotool.HelpCmd" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -310,10 +310,10 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">ListAddressBoxesCmd</span><span class="params">(<span name="toolConf">toolConf: <span class="extype" name="org.ergoplatform.appkit.config.ErgoToolConfig">ErgoToolConfig</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="address">address: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="limit">limit: <span class="extype" name="scala.Int">Int</span></span>)</span>
+        <span class="name">HelpCmd</span><span class="params">(<span name="toolConf">toolConf: <span class="extype" name="org.ergoplatform.appkit.config.ErgoToolConfig">ErgoToolConfig</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="askedCmd">askedCmd: <span class="extype" name="scala.Predef.String">String</span></span>)</span>
       </span>
       
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">address</dt><dd class="cmt"><p>string encoding of the address</p></dd><dt class="param">limit</dt><dd class="cmt"><p>limit the size of the list (optional, default is 10)</p></dd></dl></div>
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">askedCmd</dt><dd class="cmt"><p>command name which usage help should be printed</p></dd></dl><dl class="attributes block"> <dt>Exceptions thrown</dt><dd><span class="cmt"><p><a href="CmdException.html" class="extype" name="org.ergoplatform.appkit.ergotool.CmdException"><code>CmdException</code></a> if <code>askedCmd</code> is not valid command name</p></span></dd></dl></div>
     </li></ol>
             </div>
 
@@ -327,7 +327,7 @@
                 <li name="scala.AnyRef#!=" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="!=(x$1:Any):Boolean"></a><a id="!=(Any):Boolean"></a>
       <span class="permalink">
-      <a href="../../../../org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html#!=(x$1:Any):Boolean" title="Permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/HelpCmd.html#!=(x$1:Any):Boolean" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -343,7 +343,7 @@
     </li><li name="scala.AnyRef###" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="##():Int"></a>
       <span class="permalink">
-      <a href="../../../../org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html###():Int" title="Permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/HelpCmd.html###():Int" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -359,7 +359,7 @@
     </li><li name="scala.AnyRef#==" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="==(x$1:Any):Boolean"></a><a id="==(Any):Boolean"></a>
       <span class="permalink">
-      <a href="../../../../org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html#==(x$1:Any):Boolean" title="Permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/HelpCmd.html#==(x$1:Any):Boolean" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -372,26 +372,10 @@
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="org.ergoplatform.appkit.ergotool.ListAddressBoxesCmd#address" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="address:String"></a>
-      <span class="permalink">
-      <a href="../../../../org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html#address:String" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">address</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
-      </span>
-      
-      
     </li><li name="org.ergoplatform.appkit.ergotool.Cmd#apiKey" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="apiKey:String"></a>
       <span class="permalink">
-      <a href="../../../../org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html#apiKey:String" title="Permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/HelpCmd.html#apiKey:String" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -410,7 +394,7 @@ This is only necessary to communicate to the protected parts of node API.
     </li><li name="org.ergoplatform.appkit.ergotool.Cmd#apiUrl" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="apiUrl:String"></a>
       <span class="permalink">
-      <a href="../../../../org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html#apiUrl:String" title="Permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/HelpCmd.html#apiUrl:String" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -426,7 +410,7 @@ This is only necessary to communicate to the protected parts of node API.
     </li><li name="scala.Any#asInstanceOf" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <span class="permalink">
-      <a href="../../../../org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html#asInstanceOf[T0]:T0" title="Permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/HelpCmd.html#asInstanceOf[T0]:T0" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -439,10 +423,26 @@ This is only necessary to communicate to the protected parts of node API.
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="org.ergoplatform.appkit.ergotool.HelpCmd#askedCmd" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="askedCmd:String"></a>
+      <span class="permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/HelpCmd.html#askedCmd:String" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">askedCmd</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      
+      
     </li><li name="scala.AnyRef#clone" visbl="prt" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a><a id="clone():AnyRef"></a>
       <span class="permalink">
-      <a href="../../../../org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html#clone():Object" title="Permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/HelpCmd.html#clone():Object" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -466,7 +466,7 @@ This is only necessary to communicate to the protected parts of node API.
     </li><li name="scala.AnyRef#eq" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a><a id="eq(AnyRef):Boolean"></a>
       <span class="permalink">
-      <a href="../../../../org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html#eq(x$1:AnyRef):Boolean" title="Permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/HelpCmd.html#eq(x$1:AnyRef):Boolean" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -482,7 +482,7 @@ This is only necessary to communicate to the protected parts of node API.
     </li><li name="org.ergoplatform.appkit.ergotool.Cmd#error" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="error(msg:String):Nothing"></a><a id="error(String):Nothing"></a>
       <span class="permalink">
-      <a href="../../../../org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html#error(msg:String):Nothing" title="Permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/HelpCmd.html#error(msg:String):Nothing" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -498,7 +498,7 @@ This is only necessary to communicate to the protected parts of node API.
     </li><li name="scala.AnyRef#finalize" visbl="prt" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <span class="permalink">
-      <a href="../../../../org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html#finalize():Unit" title="Permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/HelpCmd.html#finalize():Unit" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -520,7 +520,7 @@ This is only necessary to communicate to the protected parts of node API.
     </li><li name="scala.AnyRef#getClass" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <span class="permalink">
-      <a href="../../../../org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html#getClass():Class[_]" title="Permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/HelpCmd.html#getClass():Class[_]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -539,7 +539,7 @@ This is only necessary to communicate to the protected parts of node API.
     </li><li name="scala.Any#isInstanceOf" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <span class="permalink">
-      <a href="../../../../org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html#isInstanceOf[T0]:Boolean" title="Permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/HelpCmd.html#isInstanceOf[T0]:Boolean" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -552,26 +552,10 @@ This is only necessary to communicate to the protected parts of node API.
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="org.ergoplatform.appkit.ergotool.ListAddressBoxesCmd#limit" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="limit:Int"></a>
-      <span class="permalink">
-      <a href="../../../../org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html#limit:Int" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">limit</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
-      </span>
-      
-      
-    </li><li name="org.ergoplatform.appkit.ergotool.ListAddressBoxesCmd#name" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="org.ergoplatform.appkit.ergotool.HelpCmd#name" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="name:String"></a>
       <span class="permalink">
-      <a href="../../../../org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html#name:String" title="Permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/HelpCmd.html#name:String" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -583,11 +567,11 @@ This is only necessary to communicate to the protected parts of node API.
         <span class="name">name</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       
-      <p class="shortcomment cmt">Returns the name of this command (Example: <code>send</code>, <code>mnemonic</code> etc.)</p><div class="fullcomment"><div class="comment cmt"><p>Returns the name of this command (Example: <code>send</code>, <code>mnemonic</code> etc.)</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="org.ergoplatform.appkit.ergotool.ListAddressBoxesCmd">ListAddressBoxesCmd</a> → <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a></dd></dl></div>
+      <p class="shortcomment cmt">Returns the name of this command (Example: <code>send</code>, <code>mnemonic</code> etc.)</p><div class="fullcomment"><div class="comment cmt"><p>Returns the name of this command (Example: <code>send</code>, <code>mnemonic</code> etc.)</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="org.ergoplatform.appkit.ergotool.HelpCmd">HelpCmd</a> → <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a></dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a><a id="ne(AnyRef):Boolean"></a>
       <span class="permalink">
-      <a href="../../../../org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html#ne(x$1:AnyRef):Boolean" title="Permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/HelpCmd.html#ne(x$1:AnyRef):Boolean" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -603,7 +587,7 @@ This is only necessary to communicate to the protected parts of node API.
     </li><li name="org.ergoplatform.appkit.ergotool.Cmd#networkType" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="networkType:org.ergoplatform.appkit.NetworkType"></a><a id="networkType:NetworkType"></a>
       <span class="permalink">
-      <a href="../../../../org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html#networkType:org.ergoplatform.appkit.NetworkType" title="Permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/HelpCmd.html#networkType:org.ergoplatform.appkit.NetworkType" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -621,7 +605,7 @@ This parameter should correspond to the real network type of the node pointed to
     </li><li name="scala.AnyRef#notify" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notify():Unit"></a>
       <span class="permalink">
-      <a href="../../../../org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html#notify():Unit" title="Permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/HelpCmd.html#notify():Unit" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -640,7 +624,7 @@ This parameter should correspond to the real network type of the node pointed to
     </li><li name="scala.AnyRef#notifyAll" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notifyAll():Unit"></a>
       <span class="permalink">
-      <a href="../../../../org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html#notifyAll():Unit" title="Permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/HelpCmd.html#notifyAll():Unit" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -656,10 +640,10 @@ This parameter should correspond to the real network type of the node pointed to
                 <span class="name">@native</span><span class="args">()</span>
               
         </dd></dl></div>
-    </li><li name="org.ergoplatform.appkit.ergotool.RunWithErgoClient#run" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="org.ergoplatform.appkit.ergotool.HelpCmd#run" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="run(ctx:org.ergoplatform.appkit.ergotool.AppContext):Unit"></a><a id="run(AppContext):Unit"></a>
       <span class="permalink">
-      <a href="../../../../org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html#run(ctx:org.ergoplatform.appkit.ergotool.AppContext):Unit" title="Permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/HelpCmd.html#run(ctx:org.ergoplatform.appkit.ergotool.AppContext):Unit" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -673,27 +657,11 @@ This parameter should correspond to the real network type of the node pointed to
       
       <p class="shortcomment cmt">Runs this command using given <a href="AppContext.html" class="extype" name="org.ergoplatform.appkit.ergotool.AppContext">AppContext</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Runs this command using given <a href="AppContext.html" class="extype" name="org.ergoplatform.appkit.ergotool.AppContext">AppContext</a>.
 </p></div><dl class="paramcmts block"><dt class="param">ctx</dt><dd class="cmt"><p>context information of this command execution collected from command line,
-configuration file etc.</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="RunWithErgoClient.html" class="extype" name="org.ergoplatform.appkit.ergotool.RunWithErgoClient">RunWithErgoClient</a> → <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a></dd><dt>Exceptions thrown</dt><dd><span class="cmt"><p><a href="CmdException.html" class="extype" name="org.ergoplatform.appkit.ergotool.CmdException"><code>CmdException</code></a> when command execution fails</p></span></dd></dl></div>
-    </li><li name="org.ergoplatform.appkit.ergotool.ListAddressBoxesCmd#runWithClient" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="runWithClient(ergoClient:org.ergoplatform.appkit.ErgoClient,runCtx:org.ergoplatform.appkit.ergotool.AppContext):Unit"></a><a id="runWithClient(ErgoClient,AppContext):Unit"></a>
-      <span class="permalink">
-      <a href="../../../../org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html#runWithClient(ergoClient:org.ergoplatform.appkit.ErgoClient,runCtx:org.ergoplatform.appkit.ergotool.AppContext):Unit" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">runWithClient</span><span class="params">(<span name="ergoClient">ergoClient: <span class="extype" name="org.ergoplatform.appkit.ErgoClient">ErgoClient</span></span>, <span name="runCtx">runCtx: <a href="AppContext.html" class="extype" name="org.ergoplatform.appkit.ergotool.AppContext">AppContext</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      
-      <p class="shortcomment cmt">Called from <a href="#run(ctx:org.ergoplatform.appkit.ergotool.AppContext):Unit" class="extmbr" name="org.ergoplatform.appkit.ergotool.ListAddressBoxesCmd#run">run</a> method with ErgoClient instance ready for Ergo blockchain communication.</p><div class="fullcomment"><div class="comment cmt"><p>Called from <a href="#run(ctx:org.ergoplatform.appkit.ergotool.AppContext):Unit" class="extmbr" name="org.ergoplatform.appkit.ergotool.ListAddressBoxesCmd#run">run</a> method with ErgoClient instance ready for Ergo blockchain communication.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="org.ergoplatform.appkit.ergotool.ListAddressBoxesCmd">ListAddressBoxesCmd</a> → <a href="RunWithErgoClient.html" class="extype" name="org.ergoplatform.appkit.ergotool.RunWithErgoClient">RunWithErgoClient</a></dd></dl></div>
+configuration file etc.</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="org.ergoplatform.appkit.ergotool.HelpCmd">HelpCmd</a> → <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a></dd><dt>Exceptions thrown</dt><dd><span class="cmt"><p><a href="CmdException.html" class="extype" name="org.ergoplatform.appkit.ergotool.CmdException"><code>CmdException</code></a> when command execution fails</p></span></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a><a id="synchronized[T0](⇒T0):T0"></a>
       <span class="permalink">
-      <a href="../../../../org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html#synchronized[T0](x$1:=&gt;T0):T0" title="Permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/HelpCmd.html#synchronized[T0](x$1:=&gt;T0):T0" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -706,10 +674,10 @@ configuration file etc.</p></dd></dl><dl class="attributes block"> <dt>Definitio
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="org.ergoplatform.appkit.ergotool.ListAddressBoxesCmd#toolConf" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="org.ergoplatform.appkit.ergotool.HelpCmd#toolConf" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toolConf:org.ergoplatform.appkit.config.ErgoToolConfig"></a><a id="toolConf:ErgoToolConfig"></a>
       <span class="permalink">
-      <a href="../../../../org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html#toolConf:org.ergoplatform.appkit.config.ErgoToolConfig" title="Permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/HelpCmd.html#toolConf:org.ergoplatform.appkit.config.ErgoToolConfig" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -721,11 +689,11 @@ configuration file etc.</p></dd></dl><dl class="attributes block"> <dt>Definitio
         <span class="name">toolConf</span><span class="result">: <span class="extype" name="org.ergoplatform.appkit.config.ErgoToolConfig">ErgoToolConfig</span></span>
       </span>
       
-      <p class="shortcomment cmt">Returns current tool configuration parameters</p><div class="fullcomment"><div class="comment cmt"><p>Returns current tool configuration parameters</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="org.ergoplatform.appkit.ergotool.ListAddressBoxesCmd">ListAddressBoxesCmd</a> → <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a></dd></dl></div>
+      <p class="shortcomment cmt">Returns current tool configuration parameters</p><div class="fullcomment"><div class="comment cmt"><p>Returns current tool configuration parameters</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="org.ergoplatform.appkit.ergotool.HelpCmd">HelpCmd</a> → <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a></dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <span class="permalink">
-      <a href="../../../../org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html#wait():Unit" title="Permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/HelpCmd.html#wait():Unit" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -747,7 +715,7 @@ configuration file etc.</p></dd></dl><dl class="attributes block"> <dt>Definitio
     </li><li name="scala.AnyRef#wait" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait(x$1:Long,x$2:Int):Unit"></a><a id="wait(Long,Int):Unit"></a>
       <span class="permalink">
-      <a href="../../../../org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html#wait(x$1:Long,x$2:Int):Unit" title="Permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/HelpCmd.html#wait(x$1:Long,x$2:Int):Unit" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -769,7 +737,7 @@ configuration file etc.</p></dd></dl><dl class="attributes block"> <dt>Definitio
     </li><li name="scala.AnyRef#wait" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait(x$1:Long):Unit"></a><a id="wait(Long):Unit"></a>
       <span class="permalink">
-      <a href="../../../../org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html#wait(x$1:Long):Unit" title="Permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/HelpCmd.html#wait(x$1:Long):Unit" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -808,8 +776,6 @@ configuration file etc.</p></dd></dl><dl class="attributes block"> <dt>Definitio
               <h3>Inherited from <span class="extype" name="scala.Product">Product</span></h3>
             </div><div class="parent" name="scala.Equals">
               <h3>Inherited from <span class="extype" name="scala.Equals">Equals</span></h3>
-            </div><div class="parent" name="org.ergoplatform.appkit.ergotool.RunWithErgoClient">
-              <h3>Inherited from <a href="RunWithErgoClient.html" class="extype" name="org.ergoplatform.appkit.ergotool.RunWithErgoClient">RunWithErgoClient</a></h3>
             </div><div class="parent" name="org.ergoplatform.appkit.ergotool.Cmd">
               <h3>Inherited from <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a></h3>
             </div><div class="parent" name="scala.AnyRef">

@@ -12,8 +12,9 @@ import scorex.util.encode.Base16
   * 2) load encrypted data from storageFile into [[SecretStorage]] instance<br/>
   * 3) unlock the instance using storagePass and retrieve secret data from storage<br/>
   * 4) depending on the parameter `prop`:<br/>
-  *   - "address" => get master key address for the given `network`<br/>
-  *   - "masterKey" => serialie [[org.ergoplatform.wallet.secrets.ExtendedSecretKey]] into bytes<br/>
+  *   - "address" => get master key address for the given `network`
+  *      (see <a href="https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki#master-key-generation">BIP-32</a>)<br/>
+  *   - "masterKey" => serialize [[org.ergoplatform.wallet.secrets.ExtendedSecretKey]] into bytes<br/>
   *     and encode as base16<br/>
   *   - "secretKey" => get bytes of the secret key and encode as base16<br/>
   *   - "publicKey" => get bytes of the public key and encode as base16<br/>

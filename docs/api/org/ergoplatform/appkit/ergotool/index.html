@@ -210,6 +210,10 @@
                         <a class="class" href="ExtractStorageCmd.html" title="Extracts secret data from encrypted storage file (e.g."></a>
                         <a href="ExtractStorageCmd.html" title="Extracts secret data from encrypted storage file (e.g.">ExtractStorageCmd</a>
                       </li><li class="current-entities indented4">
+                        <a class="object" href="HelpCmd$.html" title="Descriptor and parser of the help command."></a>
+                        <a class="class" href="HelpCmd.html" title="Prints usage help for the given command name."></a>
+                        <a href="HelpCmd.html" title="Prints usage help for the given command name.">HelpCmd</a>
+                      </li><li class="current-entities indented4">
                         <a class="object" href="ListAddressBoxesCmd$.html" title=""></a>
                         <a class="class" href="ListAddressBoxesCmd.html" title="Lists unspent outputs (aka boxes or coins) belonging to the given address."></a>
                         <a href="ListAddressBoxesCmd.html" title="Lists unspent outputs (aka boxes or coins) belonging to the given address.">ListAddressBoxesCmd</a>
@@ -508,11 +512,28 @@ which information is openly stored in the storage file in order to be able to de
 1) request storage password (<a href="ExtractStorageCmd.html#storagePass:Array[Char]" class="extmbr" name="org.ergoplatform.appkit.ergotool.ExtractStorageCmd#storagePass">storagePass</a>)<br/>
 2) load encrypted data from storageFile into <span class="extype" name="SecretStorage">SecretStorage</span> instance<br/>
 3) unlock the instance using storagePass and retrieve secret data from storage<br/>
-4) depending on the parameter <code>prop</code>:<br/></p><ul><li>&quot;address&quot; =&gt; get master key address for the given <code>network</code><br/></li><li>&quot;masterKey&quot; =&gt; serialie <span class="extype" name="org.ergoplatform.wallet.secrets.ExtendedSecretKey">org.ergoplatform.wallet.secrets.ExtendedSecretKey</span> into bytes<br/>
-    and encode as base16<br/></li><li>&quot;secretKey&quot; =&gt; get bytes of the secret key and encode as base16<br/></li><li>&quot;publicKey&quot; =&gt; get bytes of the public key and encode as base16<br/>
-5) print obtained secret string to the console output</li></ul><p>Note, a storage file doesn't contain network type information, this the same storage can be used
+4) depending on the parameter <code>prop</code>:<br/></p><ul><li>&quot;address&quot; =&gt; get master key address for the given <code>network</code>
+     (see <a href="https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki#master-key-generation">BIP-32</a>)<br/></li><li>&quot;masterKey&quot; =&gt; serialize <span class="extype" name="org.ergoplatform.wallet.secrets.ExtendedSecretKey">org.ergoplatform.wallet.secrets.ExtendedSecretKey</span> into bytes<br/>
+    and encode as base16<br/></li><li>&quot;secretKey&quot; =&gt; get bytes of the secret key and encode as base16<br/></li><li>&quot;publicKey&quot; =&gt; get bytes of the public key and encode as base16<br/></li></ul><p>5) print obtained secret string to the console output</p><p>Note, a storage file doesn't contain network type information, this the same storage can be used
 to obtain address both from mainnet and from testnet.
 </p></div><dl class="paramcmts block"><dt class="param">storageFile</dt><dd class="cmt"><p>path to encrypted storage file</p></dd><dt class="param">storagePass</dt><dd class="cmt"><p>encryption password necessary to access storage file content</p></dd><dt class="param">prop</dt><dd class="cmt"><p>name of the secret data stored in the file (e.g. <span class="extype" name="PropAddress">PropAddress</span>)</p></dd><dt class="param">network</dt><dd class="cmt"><p>network type</p></dd></dl></div>
+    </li><li name="org.ergoplatform.appkit.ergotool.HelpCmd" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="HelpCmdextendsCmdwithProductwithSerializable"></a><a id="HelpCmd:HelpCmd"></a>
+      <span class="permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/index.html#HelpCmdextendsCmdwithProductwithSerializable" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a title="Prints usage help for the given command name." href="HelpCmd.html"><span class="name">HelpCmd</span></a><span class="params">(<span name="toolConf">toolConf: <span class="extype" name="org.ergoplatform.appkit.config.ErgoToolConfig">ErgoToolConfig</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="askedCmd">askedCmd: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <a href="Cmd.html" class="extype" name="org.ergoplatform.appkit.ergotool.Cmd">Cmd</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      
+      <p class="shortcomment cmt">Prints usage help for the given command name.</p><div class="fullcomment"><div class="comment cmt"><p>Prints usage help for the given command name.
+</p></div><dl class="paramcmts block"><dt class="param">askedCmd</dt><dd class="cmt"><p>command name which usage help should be printed</p></dd></dl><dl class="attributes block"> <dt>Exceptions thrown</dt><dd><span class="cmt"><p><a href="CmdException.html" class="extype" name="org.ergoplatform.appkit.ergotool.CmdException"><code>CmdException</code></a> if <code>askedCmd</code> is not valid command name</p></span></dd><dt>See also</dt><dd><span class="cmt"><p><a href="HelpCmd$.html" class="extype" name="org.ergoplatform.appkit.ergotool.HelpCmd">HelpCmd$</a> descriptor of the <code>help</code> command</p></span></dd></dl></div>
     </li><li name="org.ergoplatform.appkit.ergotool.ListAddressBoxesCmd" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ListAddressBoxesCmdextendsCmdwithRunWithErgoClientwithProductwithSerializable"></a><a id="ListAddressBoxesCmd:ListAddressBoxesCmd"></a>
       <span class="permalink">
@@ -773,6 +794,22 @@ execution when this option is included in command line.
       </span>
       
       
+    </li><li name="org.ergoplatform.appkit.ergotool.HelpCmd" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="HelpCmd"></a><a id="HelpCmd:HelpCmd"></a>
+      <span class="permalink">
+      <a href="../../../../org/ergoplatform/appkit/ergotool/index.html#HelpCmd" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a title="Descriptor and parser of the help command." href="HelpCmd$.html"><span class="name">HelpCmd</span></a><span class="result"> extends <a href="CmdDescriptor.html" class="extype" name="org.ergoplatform.appkit.ergotool.CmdDescriptor">CmdDescriptor</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      
+      <p class="shortcomment cmt">Descriptor and parser of the <code>help</code> command.</p>
     </li><li name="org.ergoplatform.appkit.ergotool.ListAddressBoxesCmd" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ListAddressBoxesCmd"></a><a id="ListAddressBoxesCmd:ListAddressBoxesCmd"></a>
       <span class="permalink">

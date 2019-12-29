@@ -194,6 +194,10 @@
                         <a class="class" href="" title="Extracts secret data from encrypted storage file (e.g."></a>
                         <a href="" title="Extracts secret data from encrypted storage file (e.g.">ExtractStorageCmd</a>
                       </li><li class="current-entities indented4">
+                        <a class="object" href="HelpCmd$.html" title="Descriptor and parser of the help command."></a>
+                        <a class="class" href="HelpCmd.html" title="Prints usage help for the given command name."></a>
+                        <a href="HelpCmd.html" title="Prints usage help for the given command name.">HelpCmd</a>
+                      </li><li class="current-entities indented4">
                         <a class="object" href="ListAddressBoxesCmd$.html" title=""></a>
                         <a class="class" href="ListAddressBoxesCmd.html" title="Lists unspent outputs (aka boxes or coins) belonging to the given address."></a>
                         <a href="ListAddressBoxesCmd.html" title="Lists unspent outputs (aka boxes or coins) belonging to the given address.">ListAddressBoxesCmd</a>
@@ -247,9 +251,9 @@
 1) request storage password (<a href="#storagePass:Array[Char]" class="extmbr" name="org.ergoplatform.appkit.ergotool.ExtractStorageCmd#storagePass">storagePass</a>)<br/>
 2) load encrypted data from storageFile into <span class="extype" name="SecretStorage">SecretStorage</span> instance<br/>
 3) unlock the instance using storagePass and retrieve secret data from storage<br/>
-4) depending on the parameter <code>prop</code>:<br/></p><ul><li>&quot;address&quot; =&gt; get master key address for the given <code>network</code><br/></li><li>&quot;masterKey&quot; =&gt; serialie <span class="extype" name="org.ergoplatform.wallet.secrets.ExtendedSecretKey">org.ergoplatform.wallet.secrets.ExtendedSecretKey</span> into bytes<br/>
-    and encode as base16<br/></li><li>&quot;secretKey&quot; =&gt; get bytes of the secret key and encode as base16<br/></li><li>&quot;publicKey&quot; =&gt; get bytes of the public key and encode as base16<br/>
-5) print obtained secret string to the console output</li></ul><p>Note, a storage file doesn't contain network type information, this the same storage can be used
+4) depending on the parameter <code>prop</code>:<br/></p><ul><li>&quot;address&quot; =&gt; get master key address for the given <code>network</code>
+     (see <a href="https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki#master-key-generation">BIP-32</a>)<br/></li><li>&quot;masterKey&quot; =&gt; serialize <span class="extype" name="org.ergoplatform.wallet.secrets.ExtendedSecretKey">org.ergoplatform.wallet.secrets.ExtendedSecretKey</span> into bytes<br/>
+    and encode as base16<br/></li><li>&quot;secretKey&quot; =&gt; get bytes of the secret key and encode as base16<br/></li><li>&quot;publicKey&quot; =&gt; get bytes of the public key and encode as base16<br/></li></ul><p>5) print obtained secret string to the console output</p><p>Note, a storage file doesn't contain network type information, this the same storage can be used
 to obtain address both from mainnet and from testnet.
 </p></div><dl class="paramcmts block"><dt class="param">storageFile</dt><dd class="cmt"><p>path to encrypted storage file</p></dd><dt class="param">storagePass</dt><dd class="cmt"><p>encryption password necessary to access storage file content</p></dd><dt class="param">prop</dt><dd class="cmt"><p>name of the secret data stored in the file (e.g. <span class="extype" name="PropAddress">PropAddress</span>)</p></dd><dt class="param">network</dt><dd class="cmt"><p>network type</p></dd></dl><div class="toggleContainer block">
           <span class="toggle">

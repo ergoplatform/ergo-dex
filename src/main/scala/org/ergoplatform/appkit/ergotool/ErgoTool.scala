@@ -13,6 +13,7 @@ import org.ergoplatform.appkit.console.Console
 object ErgoTool {
   /** Commands supported by this application. */
   val commands: Map[String, CmdDescriptor] = Array(
+    HelpCmd,
     AddressCmd, MnemonicCmd, CheckAddressCmd,
     ListAddressBoxesCmd,
     CreateStorageCmd, ExtractStorageCmd, SendCmd
