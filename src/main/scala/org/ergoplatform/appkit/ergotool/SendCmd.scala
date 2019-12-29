@@ -62,11 +62,12 @@ case class SendCmd(toolConf: ErgoToolConfig, name: String, storageFile: File, st
       val signed = loggedStep(s"Signing the transaction", console) {
         senderProver.sign(tx)
       }
-      val txJson = signed.toJson(true)
-      console.println(s"Tx: $txJson")
-
-      if (!runCtx.isDryRun) {
-        val txId = loggedStep(s"Sendng the transaction", console) {
+      if (runCtx.isDryRun) {
+        val txJson = signed.toJson(true)
+        console.println(s"Tx: $txJson")
+      }
+      else {
+        val txId = loggedStep(s"Sending the transaction", console) {
           ctx.sendTransaction(signed)
         }
         console.println(s"Server returned tx id: $txId")

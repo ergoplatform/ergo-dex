@@ -52,3 +52,12 @@ object DryRunOption extends CmdOption(
   "Forces the command to report what will be done by the operation without performing the actual operation.",
   true)
 
+/** Flag option to force commands to print objects as formatted json instead of rows in table.
+ *
+ * The reported output of a command under this option depends on the command implementation.
+ */
+object PrintJsonOption extends CmdOption(
+  "print-json",
+  "Forces the commands to print json instead of table rows.",
+  true)
+

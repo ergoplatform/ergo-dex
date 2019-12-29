@@ -34,4 +34,7 @@ case class AppContext(
 
   /** Returns true if [[DryRunOption]] is defined in command line. */
   def isDryRun: Boolean = cmdOptions.contains(DryRunOption.name)
+
+  /** Returns true if [[PrintJsonOption]] is defined in command line. */
+  def isPrintJson: Boolean = cmdOptions.contains(PrintJsonOption.name)
 }

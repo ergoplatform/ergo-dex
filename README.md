@@ -108,6 +108,8 @@ Options:
 	configuration file path relative to the local directory (Example: `--conf ergo_tool.json`
   --dry-run
 	Forces the command to report what will be done by the operation without performing the actual operation.
+  --print-json
+	Forces the commands to print json instead of table rows.
 ```
 
 The command prints usage information with the available commands and options.
