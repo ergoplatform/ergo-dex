@@ -5,7 +5,7 @@
 [ErgoTool](https://github.com/aslesarenko/ergo-tool) is a command line interface (CLI) for
 [Ergo blockchain](https://ergoplatform.org/). You can use ErgoTool without running your
 own Ergo node. Even though running a node is the most secure way to communicate with the
-Ergo blockchain network, ErgoTool however, aims to provide a more foundational tools at
+Ergo blockchain network, ErgoTool however, aims to provide more foundational tools at
 your disposal. Surely, you still can use it with your own running node. 
 
 In this post we will walk through simple steps to generate a mnemonic phrase, create a
@@ -263,7 +263,7 @@ ErgoTool is designed to look and feel like a typical CLI utility:
 At the same time ErgoTool is designed to be easily extensible:
 - implemented in high-level language Scala
 - reuses the core libraries which are used in Ergo network client
-- open source and fully documented
+- open-sourced and fully documented
 
 This last point is especially important as many new commands can be easily added to
 ErgoTool, thanks to its architecture. If you need a specific feature or a command 
