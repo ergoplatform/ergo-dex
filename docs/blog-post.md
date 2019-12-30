@@ -30,8 +30,8 @@ Doc page:	https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/er
 Let's see what we get here. ErgoTool outputs the error message with the information about
 `help` command. This is a typical output of ErgoTool when one of the known commands is
 specified, but it is used incorrectly. As we can learn from the message, the `help`
-command requires us to specify additional `<commandName>` argument. Also each command has
-a API doc page with all the details about command execution, so its url is shown here.
+command requires us to specify additional `<commandName>` argument. Also, each command has
+an API doc page with all the details about command execution, so its url is shown here.
 
 ## Create a New Mnemonic Phrase
 
@@ -44,7 +44,7 @@ Run the following command to generate a new mnemonic phrase:
 $ ./ergo-tool.sh mnemonic          
 bird harbor wheat innocent business disease busy quick yellow trust time oil enter situate moon
 ```
-Write it down on paper and keep in a safe and secret place. 
+Write it down on a paper and keep in a safe and secret place. 
 As an additional security measure you can create an arbitrary mnemonic password. 
 In some sense it can serve like an additional non-vocabulary word in the mnemonic. 
 Mnemonic password is optional and is used for additional security.
@@ -83,7 +83,7 @@ saved encrypted in the `storage/secret.json` file. Mnemonic itself is not stored
 file and there is no way to restore it from the file, even if you know the passwords.
  
 Please take care to enter correct mnemonic password, the one you chose and saved before.
-Since mnemonic password is optional you can leave it empty by pressing enter.
+Since a mnemonic password is optional you can leave it empty by pressing enter.
 
 If you forget the storage password (aka encryption password), you will not be able to use
 that storage file anymore, however, you can always restore your secret keys from (mnemonic
@@ -250,7 +250,7 @@ b50ed8c2953fd33b52af816c4caa63ec5b6d236a262a5a192534695c3478da78  1000000
 
 ErgoTool is created with security in mind and tries its best to safeguard the usage of
 sensitive information like mnemonic phrases (which are never stored persistently), 
-passwords (which are never shown on the screen) etc. In addition secret keys are never
+passwords (which are never shown on the screen) etc. In addition, secret keys are never
 stored on local disk unencrypted and surely never sent anywhere.
 
 ## Conclusion
