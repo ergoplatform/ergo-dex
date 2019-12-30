@@ -17,7 +17,7 @@ object ErgoTool {
     AddressCmd, MnemonicCmd, CheckAddressCmd,
     ListAddressBoxesCmd,
     CreateStorageCmd, ExtractStorageCmd, SendCmd,
-    AssetsAtomicExchangeSellerCmd, AssetsAtomicExchangeBuyerCmd
+    AssetsAtomicExchangeSellerCmd, AssetsAtomicExchangeBuyerCmd, AssetsAtomicExchangeMatchCmd
     ).map(c => (c.name, c)).toMap
 
   /** Options supported by this application */
