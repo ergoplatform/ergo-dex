@@ -124,9 +124,8 @@ object AssetsAtomicExchangeMatchCmd extends CmdDescriptor(
     val args = ctx.cmdArgs
     val storageFile = new File(if (args.length > 1) args(1) else error("Wallet storage file path is not specified"))
     if (!storageFile.exists()) error(s"Specified wallet file is not found: $storageFile")
-    // TODO: add parsing Address from strings
-    val sellerHolderBoxId = new ErgoId.create(if (args.length > 2) args(2) else error("seller contract box id is not specified"))
-    val buyerHolderBoxId = new ErgoId.create(if (args.length > 3) args(3) else error("buyer contract box id is not specified"))
+    val sellerHolderBoxId = ErgoId.create(if (args.length > 2) args(2) else error("seller contract box id is not specified"))
+    val buyerHolderBoxId = ErgoId.create(if (args.length > 3) args(3) else error("buyer contract box id is not specified"))
     val sellerAddress = Address.create(if (args.length > 4) args(4) else error("seller address is not specified"))
     val buyerAddress = Address.create(if (args.length > 5) args(5) else error("buyer address is not specified"))
     val pass = ctx.console.readPassword("Storage password>")
