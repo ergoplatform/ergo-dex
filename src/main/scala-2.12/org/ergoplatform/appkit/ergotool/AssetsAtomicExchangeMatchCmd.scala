@@ -35,7 +35,6 @@ import special.sigma.SigmaProp
   * @param buyerHolderBoxId BoxId of the buyer's contract
   * @param buyerAddress address to receive tokens
   * @param sellerAddress address to receive Ergs
-  * @param token token id and amount (according to seller's contract)
   */
 case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
                                         name: String,
@@ -43,9 +42,8 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
                                         storagePass: Array[Char],
                                         sellerHolderBoxId: ErgoId,
                                         buyerHolderBoxId: ErgoId,
-                                        buyerAddress: Address,
                                         sellerAddress: Address,
-                                        token: ErgoToken) extends Cmd with RunWithErgoClient {
+                                        buyerAddress: Address) extends Cmd with RunWithErgoClient {
 
   def loggedStep[T](msg: String, console: Console)(step: => T): T = {
     console.print(msg + "...")
@@ -83,7 +81,8 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
             .item("recipientPk", buyerAddress.getPublicKey)
             .build(),
           "{ recipientPk }"))
-        .tokens(token) // TODO: use new InputBox.getTokens? Only when complete match?
+        // TODO: check token id and amount in the buyer's contract ErgoTree
+        .tokens(sellerHolderBox.getTokens.get(0))
         .registers(ErgoValue.of(buyerHolderBoxId.getBytes))
         .build()
       val sellerErgsOutBox = txB.outBoxBuilder
@@ -117,24 +116,21 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
   }
 }
 
-// TODO: add buyer and seller addresses
 object AssetsAtomicExchangeMatchCmd extends CmdDescriptor(
-  name = "AssetAtomicExchangeMatch", cmdParamSyntax = "<wallet file> <sellerBoxId> <buyerBoxId>  <ergPrice> <tokenId> <tokenAmount>",
-  description = "match an existing token seller's contract (by <sellerBoxId>) and an existing buyer's contract (by <buyerBoxId) for specified token amount (by <tokenId> and <tokenAmount>) at given <ergPrice> price until with the given <wallet file> to sign transaction (requests storage password)") {
+  name = "AssetAtomicExchangeMatch", cmdParamSyntax = "<wallet file> <sellerHolderBoxId> <buyerHolderBoxId>    <sellerAddress> <buyerAddress>",
+  description = "match an existing token seller's contract (by <sellerHolderBoxId>) and an existing buyer's contract (by <buyerHolderBoxId) and send tokens to <buyerAddress> and Ergs to <sellerAddress> with the given <wallet file> to sign transaction (requests storage password)") {
 
   override def parseCmd(ctx: AppContext): Cmd = {
     val args = ctx.cmdArgs
     val storageFile = new File(if (args.length > 1) args(1) else error("Wallet storage file path is not specified"))
     if (!storageFile.exists()) error(s"Specified wallet file is not found: $storageFile")
-    val seller = Address.create(if (args.length > 2) args(2) else error("seller address is not specified"))
-    val deadline = if (args.length > 3) args(3).toInt else error("deadline is not specified")
-    val ergAmount = if (args.length > 4) args(4).toLong else error("ergPrice is not specified")
-    val tokenId = if(args.length > 5) args(5) else error("tokenId is not specified")
-    val tokenAmount = if(args.length > 6) args(6).toLong else error("tokenAmount is not specified")
-    val token = new ErgoToken(tokenId, tokenAmount)
+    // TODO: add parsing Address from strings
+    val sellerHolderBoxId = new ErgoId.create(if (args.length > 2) args(2) else error("seller contract box id is not specified"))
+    val buyerHolderBoxId = new ErgoId.create(if (args.length > 3) args(3) else error("buyer contract box id is not specified"))
+    val sellerAddress = Address.create(if (args.length > 4) args(4) else error("seller address is not specified"))
+    val buyerAddress = Address.create(if (args.length > 5) args(5) else error("buyer address is not specified"))
     val pass = ctx.console.readPassword("Storage password>")
-    AssetsAtomicExchangeMatchCmd(ctx.toolConf, name, storageFile, pass, seller,
-      deadline, ergAmount, token)
+    AssetsAtomicExchangeMatchCmd(ctx.toolConf, name, storageFile, pass, sellerHolderBoxId, buyerHolderBoxId, sellerAddress, buyerAddress)
   }
 }
 
