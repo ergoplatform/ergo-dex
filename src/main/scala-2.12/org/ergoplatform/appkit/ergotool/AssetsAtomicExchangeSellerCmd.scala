@@ -11,6 +11,28 @@ import sigmastate.eval.CSigmaProp
 import sigmastate.verification.contract.AssetsAtomicExchangeCompilation
 import special.sigma.SigmaProp
 
+/** Creates and sends a new transaction with seller's contract for AssetsAtomicExchange
+  *
+  * Steps:<br/>
+  * 1) request storage password from the user<br/>
+  * 2) read storage file, unlock using password and get secret<br/>
+  * 3) get master public key and compute sender's address<br/>
+  * 4) load available tokens belonging to the seller's address<br/>
+  * 5) select coins to cover the transaction fee, and computes the amount of change<br/>
+  * 6) create an instance of the seller's contract passing deadline, token and seller's address<br/>
+  * 7) create an output box protected with the instance of seller's contract from the previous step<br/>
+  * 8) create and sign (using secret key) the transaction<br/>
+  * 9) if no `--dry-run` option is specified, send the transaction to the network<br/>
+  *    otherwise skip sending<br/>
+  * 10) serialize transaction to Json and print to the console<br/>
+  *
+  * @param storageFile storage with secret key of the sender
+  * @param storagePass password to access sender secret key in the storage
+  * @param seller address of the seller
+  * @param deadline height of the blockchain after which the seller can withdraw tokens from this contract
+  * @param tokenPrice Ergs amount for seller to receive for tokens
+  * @param token token id and amount
+  */
 case class AssetsAtomicExchangeSellerCmd(toolConf: ErgoToolConfig,
                                          name: String,
                                          storageFile: File,
