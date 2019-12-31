@@ -59,15 +59,15 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
       val senderProver = loggedStep("Creating prover", console) {
         BoxOperations.createProver(ctx, storageFile.getPath, String.valueOf(storagePass))
       }
-      val buyerHolderBox = loggedStep(s"Loading buyer's box (${buyerHolderBoxId.toString})", console) {
-        ctx.getBoxesById(buyerHolderBoxId.toString).head
+      val sender = senderProver.getAddress
+      val unspent = loggedStep(s"Loading unspent boxes from at address $sender", console) {
+        ctx.getUnspentBoxesFor(sender)
       }
       val sellerHolderBox = loggedStep(s"Loading seller's box (${sellerHolderBoxId.toString})", console) {
         ctx.getBoxesById(sellerHolderBoxId.toString).head
       }
-      val sender = senderProver.getAddress
-      val unspent = loggedStep(s"Loading unspent boxes from at address $sender", console) {
-        ctx.getUnspentBoxesFor(sender)
+      val buyerHolderBox = loggedStep(s"Loading buyer's box (${buyerHolderBoxId.toString})", console) {
+        ctx.getBoxesById(buyerHolderBoxId.toString).head
       }
       val boxesForTxFee = BoxOperations.selectTop(unspent, MinFee)
       boxesForTxFee.addAll(util.Arrays.asList(buyerHolderBox, sellerHolderBox))
@@ -86,6 +86,7 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
         .registers(ErgoValue.of(buyerHolderBoxId.getBytes))
         .build()
       val sellerErgsOutBox = txB.outBoxBuilder
+        // TODO: check box.value(Ergs) from buyer's contract box are in seller's contract ErgoTree;
         .value(buyerHolderBox.getValue)
         // TODO: check sellerAddress is in the seller's contract ErgoTree (to avoid typos)
         .contract(ctx.compileContract(

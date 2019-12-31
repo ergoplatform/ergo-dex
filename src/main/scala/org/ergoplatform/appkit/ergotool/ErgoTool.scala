@@ -51,7 +51,7 @@ object ErgoTool {
         case e: CmdException => throw e
         case e: UsageException => throw e
         case NonFatal(t) =>
-          throw CmdException(s"Error executing command", cmd, t)
+          throw CmdException(s"Error executing command $cmd:\n $t", cmd, t)
       }
     }
     catch {

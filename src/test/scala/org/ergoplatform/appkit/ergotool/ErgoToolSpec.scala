@@ -227,8 +227,7 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     val res = runCommand("AssetAtomicExchangeBuyer",
       args = Seq(
         "storage/E2.json",
-        // TODO: add another address and use it for buyer
-        "9f4QF8AD1nQ3nJahQVkMj8hFSVVzVom77b52JU7EW71Zexg6N8v", // buyer address
+        "9hHDQb26AjnJUXxcqriqY1mnhpLuUeC81C4pggtK7tupr92Ea1K", // buyer address
         "999999", // deadline
         "50000000", // token price in nanoErgs
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1", // tokenId
@@ -238,7 +237,33 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         s"""Storage password> ::abc;
            |""".stripMargin, data)
     println(res)
-    res should include ("\"transactionId\": \"f3843ad0497ee88e34cae239605f6e62e10eb982803e80eda9b670439f18d6f8\",")
+    res should include ("\"transactionId\": \"6e4d7e32ae0608d31d7221edbb1c5e77b6a8f106863782aee5afe8b7e08156a9\",")
+  }
+
+  property("AssetsAtomicExchange match command") {
+    val data = MockData(
+      Seq(
+        loadNodeResponse("response_Box1.json"),
+        loadNodeResponse("response_Box2.json"),
+        loadNodeResponse("response_Box3.json"),
+        loadNodeResponse("response_Box4.json"),
+        loadNodeResponse("response_Box5.json"),
+        "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1"),
+      Seq(
+        loadExplorerResponse("response_boxesByAddressUnspent.json")))
+    val res = runCommand("AssetAtomicExchangeMatch",
+      args = Seq(
+        "storage/E2.json",
+        "356037af6e85980113f3071ec7b010202448a231ce74e441c0aae7241d82a20e", // seller contract box id
+        "041c35f2fee71327ea6188c641822b409d72c4e1039e2f4f812c3b44d324accb", // buyer contract box id
+        "9f4QF8AD1nQ3nJahQVkMj8hFSVVzVom77b52JU7EW71Zexg6N8v", // seller address
+        "9hHDQb26AjnJUXxcqriqY1mnhpLuUeC81C4pggtK7tupr92Ea1K" // buyer address
+      ),
+      expectedConsoleScenario =
+        s"""Storage password> ::abc;
+           |""".stripMargin, data)
+    println(res)
+    res should include ("\"transactionId\": \"600a31c4fb994cdcb817bedfaf2c3f956ecc01a3a0414369e3b96aeee74301c8\",")
   }
 }
 
