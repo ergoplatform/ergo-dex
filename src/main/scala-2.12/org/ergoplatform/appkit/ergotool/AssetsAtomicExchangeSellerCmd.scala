@@ -18,7 +18,7 @@ import special.sigma.SigmaProp
   * 2) read storage file, unlock using password and get secret<br/>
   * 3) get master public key and compute sender's address<br/>
   * 4) load available tokens belonging to the seller's address<br/>
-  * 5) select coins to cover the transaction fee, and computes the amount of change<br/>
+  * 5) select sender's coins to cover the transaction fee, and computes the amount of change<br/>
   * 6) create an instance of the seller's contract passing deadline, token and seller's address<br/>
   * 7) create an output box protected with the instance of seller's contract from the previous step<br/>
   * 8) create and sign (using secret key) the transaction<br/>
@@ -76,7 +76,7 @@ case class AssetsAtomicExchangeSellerCmd(toolConf: ErgoToolConfig,
         .build()
       val tx = txB
         .boxesToSpend(boxesToSpend).outputs(newBox)
-        .fee(Parameters.MinFee)
+        .fee(MinFee)
         .sendChangeTo(senderProver.getP2PKAddress)
         .build()
       val signed = loggedStep(s"Signing the transaction", console) {

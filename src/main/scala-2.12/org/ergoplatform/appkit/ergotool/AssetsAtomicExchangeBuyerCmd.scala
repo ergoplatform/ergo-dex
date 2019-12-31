@@ -74,7 +74,7 @@ case class AssetsAtomicExchangeBuyerCmd(toolConf: ErgoToolConfig,
         .build()
       val tx = txB
         .boxesToSpend(boxesToSpend).outputs(newBox)
-        .fee(Parameters.MinFee)
+        .fee(MinFee)
         .sendChangeTo(senderProver.getP2PKAddress)
         .build()
       val signed = loggedStep(s"Signing the transaction", console) {

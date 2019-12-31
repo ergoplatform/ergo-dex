@@ -20,13 +20,14 @@ import special.sigma.SigmaProp
   * 3) get master public key and compute sender's address<br/>
   * 4) find the box with buyer's contract (by buyerHolderBoxId)<br/>
   * 5) find the box with seller's contract (by sellerHolderBoxId)<br/>
-  * 6) create output box for buyer's tokens<br/>
-  * 7) create output box for seller's Ergs<br/>
-  * 8) create a transaction using buyer's and seller's contract boxes (from steps 4,5) as inputs<br/>
-  * 9) sign (using secret key) the transaction<br/>
-  * 10) if no `--dry-run` option is specified, send the transaction to the network<br/>
+  * 6) select sender's coins to cover the transaction fee, and computes the amount of change<br/>
+  * 7) create output box for buyer's tokens<br/>
+  * 8) create output box for seller's Ergs<br/>
+  * 9) create a transaction using buyer's and seller's contract boxes (from steps 4,5) as inputs<br/>
+  * 10) sign (using secret key) the transaction<br/>
+  * 11) if no `--dry-run` option is specified, send the transaction to the network<br/>
   *    otherwise skip sending<br/>
-  * 11) serialize transaction to Json and print to the console<br/>
+  * 12) serialize transaction to Json and print to the console<br/>
   *
   * @param storageFile storage with secret key of the sender
   * @param storagePass password to access sender secret key in the storage
@@ -66,7 +67,13 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
       val sellerHolderBox = loggedStep(s"Loading seller's box (${sellerHolderBoxId.toString})", console) {
         ctx.getBoxesById(sellerHolderBoxId.toString).head
       }
-      // TODO: where is the miner's fee?
+      val sender = senderProver.getAddress
+      val unspent = loggedStep(s"Loading unspent boxes from at address $sender", console) {
+        ctx.getUnspentBoxesFor(sender)
+      }
+      val boxesForTxFee = BoxOperations.selectTop(unspent, MinFee)
+      boxesForTxFee.addAll(util.Arrays.asList(buyerHolderBox, sellerHolderBox))
+      val inputBoxes = boxesForTxFee
       val txB = ctx.newTxBuilder
       val buyerTokensOutBox = txB.outBoxBuilder
         .value(sellerHolderBox.getValue)
@@ -89,10 +96,9 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
           "{ recipientPk }"))
         .registers(ErgoValue.of(sellerHolderBoxId.getBytes))
         .build()
-      import Iso._
       val tx = txB
-        .boxesToSpend(util.Arrays.asList(buyerHolderBox, sellerHolderBox)).outputs(buyerTokensOutBox, sellerErgsOutBox)
-        .fee(Parameters.MinFee)
+        .boxesToSpend(inputBoxes).outputs(buyerTokensOutBox, sellerErgsOutBox)
+        .fee(MinFee)
         .sendChangeTo(senderProver.getP2PKAddress)
         .build()
       val signed = loggedStep(s"Signing the transaction", console) {
