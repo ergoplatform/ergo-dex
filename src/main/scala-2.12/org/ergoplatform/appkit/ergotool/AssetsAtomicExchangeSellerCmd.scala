@@ -1,6 +1,7 @@
 package org.ergoplatform.appkit.ergotool
 
 import java.io.File
+import java.util.Optional
 
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
@@ -66,8 +67,7 @@ case class AssetsAtomicExchangeSellerCmd(toolConf: ErgoToolConfig,
         ctx.getUnspentBoxesFor(sender)
       }
       val outboxValue = 1
-      // TODO: add tokens to selectTop
-      val boxesToSpend = BoxOperations.selectTop(unspent, MinFee + outboxValue)
+      val boxesToSpend = BoxOperations.selectTop(unspent, MinFee + outboxValue, Optional.of(token))
       val txB = ctx.newTxBuilder
       val newBox = txB.outBoxBuilder
         .value(outboxValue)

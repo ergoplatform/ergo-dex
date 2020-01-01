@@ -122,8 +122,9 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
       Seq(
         loadNodeResponse("response_Box1.json"),
         loadNodeResponse("response_Box2.json"),
-        loadNodeResponse("response_Box3.json")),
-      Seq(
+        loadNodeResponse("response_Box3.json"),
+        loadNodeResponse("response_Box4.json")),
+    Seq(
         loadExplorerResponse("response_boxesByAddressUnspent.json")))
     val res = runCommand("listAddressBoxes", Seq("9hHDQb26AjnJUXxcqriqY1mnhpLuUeC81C4pggtK7tupr92Ea1K"),
       expectedConsoleScenario = "", data)
@@ -178,6 +179,7 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         loadNodeResponse("response_Box1.json"),
         loadNodeResponse("response_Box2.json"),
         loadNodeResponse("response_Box3.json"),
+        loadNodeResponse("response_Box4.json"),
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1"),
       Seq(
         loadExplorerResponse("response_boxesByAddressUnspent.json")))
@@ -196,6 +198,7 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         loadNodeResponse("response_Box1.json"),
         loadNodeResponse("response_Box2.json"),
         loadNodeResponse("response_Box3.json"),
+        loadNodeResponse("response_Box4.json"),
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1"),
       Seq(
         loadExplorerResponse("response_boxesByAddressUnspent.json")))
@@ -212,7 +215,7 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         s"""Storage password> ::abc;
            |""".stripMargin, data)
     println(res)
-    res should include ("\"transactionId\": \"c6944ec53da5152b174aee6a77e692ac65bf3e74c30286c100778225a3371eb2\",")
+    res should include ("\"transactionId\": \"ddd33ff3b42c10c9bc7f755debf5ce002d7ecf065485e3f6dbc3ad49e3ae2d27\",")
   }
 
   property("AssetsAtomicExchange buyer command") {
@@ -221,6 +224,7 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         loadNodeResponse("response_Box1.json"),
         loadNodeResponse("response_Box2.json"),
         loadNodeResponse("response_Box3.json"),
+        loadNodeResponse("response_Box4.json"),
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1"),
       Seq(
         loadExplorerResponse("response_boxesByAddressUnspent.json")))
@@ -237,7 +241,7 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         s"""Storage password> ::abc;
            |""".stripMargin, data)
     println(res)
-    res should include ("\"transactionId\": \"6e4d7e32ae0608d31d7221edbb1c5e77b6a8f106863782aee5afe8b7e08156a9\",")
+    res should include ("\"transactionId\": \"42e565f5ad73b6c1a135020fbad175a7bc00529e4012cee0422c3ebf0456043e\",")
   }
 
   property("AssetsAtomicExchange match command") {
@@ -247,6 +251,9 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         loadNodeResponse("response_Box2.json"),
         loadNodeResponse("response_Box3.json"),
         loadNodeResponse("response_Box4.json"),
+        // TODO: make a box with proper seller's contract
+        loadNodeResponse("response_Box4.json"),
+        // TODO: make a box with proper buyer's contract
         loadNodeResponse("response_Box5.json"),
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1"),
       Seq(
@@ -263,7 +270,7 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         s"""Storage password> ::abc;
            |""".stripMargin, data)
     println(res)
-    res should include ("\"transactionId\": \"600a31c4fb994cdcb817bedfaf2c3f956ecc01a3a0414369e3b96aeee74301c8\",")
+    res should include ("\"transactionId\": \"880bfc79ad04f94bb7e8f81aaaad1cca3ef7513d64ffbc8616b90746033160c6\",")
   }
 }
 
