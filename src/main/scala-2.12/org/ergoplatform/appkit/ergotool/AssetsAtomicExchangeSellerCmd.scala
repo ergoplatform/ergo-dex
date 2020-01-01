@@ -7,7 +7,7 @@ import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.console.Console
-import org.ergoplatform.appkit.impl.ErgoTreeContract
+import org.ergoplatform.appkit.impl.{ErgoTreeContract, ScalaBridge}
 import sigmastate.eval.CSigmaProp
 import sigmastate.verification.contract.AssetsAtomicExchangeCompilation
 import special.sigma.SigmaProp
@@ -68,6 +68,7 @@ case class AssetsAtomicExchangeSellerCmd(toolConf: ErgoToolConfig,
       }
       val outboxValue = 1
       val boxesToSpend = BoxOperations.selectTop(unspent, MinFee + outboxValue, Optional.of(token))
+      println(s"contract ergo tree: ${ScalaBridge.isoStringToErgoTree.from(verifiedContract.ergoTree)}")
       val txB = ctx.newTxBuilder
       val newBox = txB.outBoxBuilder
         .value(outboxValue)

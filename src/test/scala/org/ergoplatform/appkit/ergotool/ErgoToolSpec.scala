@@ -251,8 +251,7 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         loadNodeResponse("response_Box2.json"),
         loadNodeResponse("response_Box3.json"),
         loadNodeResponse("response_Box4.json"),
-        // TODO: make a box with proper seller's contract
-        loadNodeResponse("response_Box4.json"),
+        loadNodeResponse("response_Box_AAE_seller_contract.json"),
         // TODO: make a box with proper buyer's contract
         loadNodeResponse("response_Box5.json"),
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1"),
@@ -261,7 +260,7 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     val res = runCommand("AssetAtomicExchangeMatch",
       args = Seq(
         "storage/E2.json",
-        "356037af6e85980113f3071ec7b010202448a231ce74e441c0aae7241d82a20e", // seller contract box id
+        "647d0d6ff7e1b62d7ca9a23b1401383b4c6010ae09a00189378c8487922f829f", // seller contract box id
         "041c35f2fee71327ea6188c641822b409d72c4e1039e2f4f812c3b44d324accb", // buyer contract box id
         "9f4QF8AD1nQ3nJahQVkMj8hFSVVzVom77b52JU7EW71Zexg6N8v", // seller address
         "9hHDQb26AjnJUXxcqriqY1mnhpLuUeC81C4pggtK7tupr92Ea1K" // buyer address
@@ -270,7 +269,7 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         s"""Storage password> ::abc;
            |""".stripMargin, data)
     println(res)
-    res should include ("\"transactionId\": \"880bfc79ad04f94bb7e8f81aaaad1cca3ef7513d64ffbc8616b90746033160c6\",")
+    res should include ("\"transactionId\": \"54fc1fd042f98765d5bc7ecf800053bd89bffc16a179648f0d08ff3e7579d1e0\",")
   }
 }
 

@@ -8,6 +8,7 @@ import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.console.Console
 import org.ergoplatform.appkit.impl.{ErgoTreeContract, ScalaBridge}
+import sigmastate.Values.{LongConstant, SigmaPropConstant}
 import sigmastate.eval.CSigmaProp
 import sigmastate.verification.contract.AssetsAtomicExchangeCompilation
 import special.sigma.SigmaProp
@@ -66,8 +67,14 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
       val sellerHolderBox = loggedStep(s"Loading seller's box (${sellerHolderBoxId.toString})", console) {
         ctx.getBoxesById(sellerHolderBoxId.toString).head
       }
+      if (!sellerHolderBox.getErgoTree.constants.contains(SigmaPropConstant(sellerAddress.getPublicKey))) {
+        error(s"cannot find seller's address $sellerAddress in seller contract in box $sellerHolderBoxId")
+      }
       val buyerHolderBox = loggedStep(s"Loading buyer's box (${buyerHolderBoxId.toString})", console) {
         ctx.getBoxesById(buyerHolderBoxId.toString).head
+      }
+      if (!sellerHolderBox.getErgoTree.constants.contains(LongConstant(buyerHolderBox.getValue))) {
+        error(s"cannot find token price ${buyerHolderBox.getValue}(from buyerHolderBox.value) in seller contract in box $sellerHolderBoxId")
       }
       val boxesForTxFee = BoxOperations.selectTop(unspent, MinFee)
       boxesForTxFee.addAll(util.Arrays.asList(buyerHolderBox, sellerHolderBox))
@@ -86,9 +93,7 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
         .registers(ErgoValue.of(buyerHolderBoxId.getBytes))
         .build()
       val sellerErgsOutBox = txB.outBoxBuilder
-        // TODO: check box.value(Ergs) from buyer's contract box are in seller's contract ErgoTree;
         .value(buyerHolderBox.getValue)
-        // TODO: check sellerAddress is in the seller's contract ErgoTree (to avoid typos)
         .contract(ctx.compileContract(
           ConstantsBuilder.create
             .item("recipientPk", sellerAddress.getPublicKey)
