@@ -209,13 +209,14 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         "999999", // deadline
         "50000000", // token price in nanoErgs
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1", // tokenId
-        "60" // token amount
+        "60", // token amount
+        "5000000" // DEX fee
       ),
       expectedConsoleScenario =
         s"""Storage password> ::abc;
            |""".stripMargin, data)
     println(res)
-    res should include ("\"transactionId\": \"ddd33ff3b42c10c9bc7f755debf5ce002d7ecf065485e3f6dbc3ad49e3ae2d27\",")
+    res should include ("\"transactionId\": \"1cf299fe144ac2d89b348f6e8666dd78ec2d8a030c3001f1809b771f4e566dca\",")
   }
 
   property("AssetsAtomicExchange buyer command") {
@@ -235,40 +236,38 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         "999999", // deadline
         "50000000", // token price in nanoErgs
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1", // tokenId
-        "60" // token amount
+        "60", // token amount
+        "5000000", // DEX fee
       ),
       expectedConsoleScenario =
         s"""Storage password> ::abc;
            |""".stripMargin, data)
     println(res)
-    res should include ("\"transactionId\": \"42e565f5ad73b6c1a135020fbad175a7bc00529e4012cee0422c3ebf0456043e\",")
+    res should include ("\"transactionId\": \"38f784490cdff2bb4f4088f1bb306d2ccc0fc5123dd9f7d116cc7ee69620b6a6\",")
   }
 
   property("AssetsAtomicExchange match command") {
     val data = MockData(
       Seq(
-        loadNodeResponse("response_Box1.json"),
-        loadNodeResponse("response_Box2.json"),
-        loadNodeResponse("response_Box3.json"),
-        loadNodeResponse("response_Box4.json"),
         loadNodeResponse("response_Box_AAE_seller_contract.json"),
         loadNodeResponse("response_Box_AAE_buyer_contract.json"),
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1"),
       Seq(
-        loadExplorerResponse("response_boxesByAddressUnspent.json")))
+      ))
     val res = runCommand("AssetAtomicExchangeMatch",
       args = Seq(
         "storage/E2.json",
-        "647d0d6ff7e1b62d7ca9a23b1401383b4c6010ae09a00189378c8487922f829f", // seller contract box id
-        "7142875a96f301809550250bb3b075ad1f4ecf3582085a1f710ec05e581b91d8", // buyer contract box id
+        "7de38874effe031a7522460cef870c3a8fbcfb0cc70df769ba63688fd2b2b35d", // seller contract box id
+        "4bb384d56abc2764523582cb1c514828c6a8436067127caac040903a683be0ee", // buyer contract box id
         "9f4QF8AD1nQ3nJahQVkMj8hFSVVzVom77b52JU7EW71Zexg6N8v", // seller address
-        "9hHDQb26AjnJUXxcqriqY1mnhpLuUeC81C4pggtK7tupr92Ea1K" // buyer address
+        "9hHDQb26AjnJUXxcqriqY1mnhpLuUeC81C4pggtK7tupr92Ea1K", // buyer address
+        "8000000" // minimum DEX fee
       ),
       expectedConsoleScenario =
         s"""Storage password> ::abc;
            |""".stripMargin, data)
     println(res)
-    res should include ("\"transactionId\": \"7bdf419ede4e55258f247810b13e6c4c3d38cfde0c688b0ff8aeaa4e43875371\",")
+    res should include ("\"transactionId\": \"6ed4c067bf68860995a65fee43153a1035a23e7c3fb849246b95736eadb72e34\",")
   }
 }
 

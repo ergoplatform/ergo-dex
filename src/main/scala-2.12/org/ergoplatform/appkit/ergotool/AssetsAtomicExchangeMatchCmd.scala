@@ -8,7 +8,8 @@ import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.console.Console
 import org.ergoplatform.appkit.impl.{ErgoTreeContract, ScalaBridge}
-import sigmastate.Values.{ByteArrayConstant, LongConstant, SigmaPropConstant}
+import sigmastate.SLong
+import sigmastate.Values.{ByteArrayConstant, Constant, LongConstant, SigmaPropConstant}
 import sigmastate.eval.CSigmaProp
 import sigmastate.verification.contract.AssetsAtomicExchangeCompilation
 import special.sigma.SigmaProp
@@ -36,6 +37,7 @@ import special.sigma.SigmaProp
   * @param buyerHolderBoxId BoxId of the buyer's contract
   * @param buyerAddress address to receive tokens
   * @param sellerAddress address to receive Ergs
+  * @param minDexFee minimal fee claimable by DEX in this transaction
   */
 case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
                                         name: String,
@@ -44,7 +46,8 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
                                         sellerHolderBoxId: ErgoId,
                                         buyerHolderBoxId: ErgoId,
                                         sellerAddress: Address,
-                                        buyerAddress: Address) extends Cmd with RunWithErgoClient {
+                                        buyerAddress: Address,
+                                        minDexFee: Long) extends Cmd with RunWithErgoClient {
 
   def loggedStep[T](msg: String, console: Console)(step: => T): T = {
     console.print(msg + "...")
@@ -60,10 +63,6 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
       val senderProver = loggedStep("Creating prover", console) {
         BoxOperations.createProver(ctx, storageFile.getPath, String.valueOf(storagePass))
       }
-      val sender = senderProver.getAddress
-      val unspent = loggedStep(s"Loading unspent boxes from at address $sender", console) {
-        ctx.getUnspentBoxesFor(sender)
-      }
       val sellerHolderBox = loggedStep(s"Loading seller's box (${sellerHolderBoxId.toString})", console) {
         ctx.getBoxesById(sellerHolderBoxId.toString).head
       }
@@ -76,9 +75,10 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
       if (!buyerHolderBox.getErgoTree.constants.contains(SigmaPropConstant(buyerAddress.getPublicKey))) {
         error(s"cannot find buyer's address $buyerAddress in buyer contract in box $buyerHolderBoxId")
       }
-      if (!sellerHolderBox.getErgoTree.constants.contains(LongConstant(buyerHolderBox.getValue))) {
-        error(s"cannot find token price ${buyerHolderBox.getValue}(from buyerHolderBox.value) in seller contract in box $sellerHolderBoxId")
-      }
+      // TODO buyerHolderBox.value may be greater or equal
+//      if (!sellerHolderBox.getErgoTree.constants.contains(LongConstant(buyerHolderBox.getValue))) {
+//        error(s"cannot find token price ${buyerHolderBox.getValue}(from buyerHolderBox.value) in seller contract in box $sellerHolderBoxId")
+//      }
       val token = sellerHolderBox.getTokens.get(0)
       if (!buyerHolderBox.getErgoTree.constants.contains(ByteArrayConstant(token.getId.getBytes))) {
         error(s"cannot find token id ${token.getId} in buyer contract in box $buyerHolderBoxId")
@@ -86,12 +86,17 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
      if (!buyerHolderBox.getErgoTree.constants.contains(LongConstant(token.getValue))) {
         error(s"cannot find token amount ${token.getValue} in buyer contract in box $buyerHolderBoxId")
       }
-      val boxesForTxFee = BoxOperations.selectTop(unspent, MinFee)
-      boxesForTxFee.addAll(util.Arrays.asList(buyerHolderBox, sellerHolderBox))
-      val inputBoxes = boxesForTxFee
+      val ergAmount = sellerHolderBox.getErgoTree.constants(6).asInstanceOf[Constant[SLong.type]].value
+
+      val claimableValue = buyerHolderBox.getValue - ergAmount + sellerHolderBox.getValue - 1 // 1 for buyerTokensOutBox.value
+      val dexFee = claimableValue - MinFee
+      if (dexFee <= minDexFee) {
+        error(s"found DEX fee = (claimable value - miner's fee) to be $dexFee, which is <= minDexFee ")
+      }
+      val inputBoxes = util.Arrays.asList(buyerHolderBox, sellerHolderBox)
       val txB = ctx.newTxBuilder
       val buyerTokensOutBox = txB.outBoxBuilder
-        .value(sellerHolderBox.getValue)
+        .value(1)
         .contract(ctx.compileContract(
           ConstantsBuilder.create
             .item("recipientPk", buyerAddress.getPublicKey)
@@ -101,7 +106,7 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
         .registers(ErgoValue.of(buyerHolderBoxId.getBytes))
         .build()
       val sellerErgsOutBox = txB.outBoxBuilder
-        .value(buyerHolderBox.getValue)
+        .value(ergAmount)
         .contract(ctx.compileContract(
           ConstantsBuilder.create
             .item("recipientPk", sellerAddress.getPublicKey)
@@ -112,6 +117,7 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
       val tx = txB
         .boxesToSpend(inputBoxes).outputs(buyerTokensOutBox, sellerErgsOutBox)
         .fee(MinFee)
+        // DEX's fee
         .sendChangeTo(senderProver.getP2PKAddress)
         .build()
       val signed = loggedStep(s"Signing the transaction", console) {
@@ -131,8 +137,8 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
 }
 
 object AssetsAtomicExchangeMatchCmd extends CmdDescriptor(
-  name = "AssetAtomicExchangeMatch", cmdParamSyntax = "<wallet file> <sellerHolderBoxId> <buyerHolderBoxId>    <sellerAddress> <buyerAddress>",
-  description = "match an existing token seller's contract (by <sellerHolderBoxId>) and an existing buyer's contract (by <buyerHolderBoxId) and send tokens to <buyerAddress> and Ergs to <sellerAddress> with the given <wallet file> to sign transaction (requests storage password)") {
+  name = "AssetAtomicExchangeMatch", cmdParamSyntax = "<wallet file> <sellerHolderBoxId> <buyerHolderBoxId>    <sellerAddress> <buyerAddress> <minDexFee",
+  description = "match an existing token seller's contract (by <sellerHolderBoxId>) and an existing buyer's contract (by <buyerHolderBoxId) and send tokens to <buyerAddress> and Ergs to <sellerAddress> claiming the minimum fee of <minDexFee> with the given <wallet file> to sign transaction (requests storage password)") {
 
   override def parseCmd(ctx: AppContext): Cmd = {
     val args = ctx.cmdArgs
@@ -142,8 +148,9 @@ object AssetsAtomicExchangeMatchCmd extends CmdDescriptor(
     val buyerHolderBoxId = ErgoId.create(if (args.length > 3) args(3) else error("buyer contract box id is not specified"))
     val sellerAddress = Address.create(if (args.length > 4) args(4) else error("seller address is not specified"))
     val buyerAddress = Address.create(if (args.length > 5) args(5) else error("buyer address is not specified"))
+    val minDexFee = if(args.length > 6) args(6).toLong else error("minDexFee is not specified")
     val pass = ctx.console.readPassword("Storage password>")
-    AssetsAtomicExchangeMatchCmd(ctx.toolConf, name, storageFile, pass, sellerHolderBoxId, buyerHolderBoxId, sellerAddress, buyerAddress)
+    AssetsAtomicExchangeMatchCmd(ctx.toolConf, name, storageFile, pass, sellerHolderBoxId, buyerHolderBoxId, sellerAddress, buyerAddress, minDexFee)
   }
 }
 

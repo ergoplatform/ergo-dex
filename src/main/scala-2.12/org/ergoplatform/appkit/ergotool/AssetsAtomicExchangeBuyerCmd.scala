@@ -33,6 +33,7 @@ import sigmastate.eval.Extensions._
   * @param deadline height of the blockchain after which the buyer can withdraw Ergs from this contract
   * @param ergAmount Erg amount for buyer to pay for tokens
   * @param token token id and amount
+  * @param dexFee Ergs amount put in addition to ergAmount into box.value in this contract (DEX fee)
   */
 case class AssetsAtomicExchangeBuyerCmd(toolConf: ErgoToolConfig,
                                         name: String,
@@ -41,7 +42,8 @@ case class AssetsAtomicExchangeBuyerCmd(toolConf: ErgoToolConfig,
                                         buyer: Address,
                                         deadline: Int,
                                         ergAmount: Long,
-                                        token: ErgoToken) extends Cmd with RunWithErgoClient {
+                                        token: ErgoToken,
+                                        dexFee: Long) extends Cmd with RunWithErgoClient {
 
   def loggedStep[T](msg: String, console: Console)(step: => T): T = {
     console.print(msg + "...")
@@ -66,7 +68,7 @@ case class AssetsAtomicExchangeBuyerCmd(toolConf: ErgoToolConfig,
       val unspent = loggedStep(s"Loading unspent boxes from at address $sender", console) {
         ctx.getUnspentBoxesFor(sender)
       }
-      val outboxValue = ergAmount
+      val outboxValue = ergAmount + dexFee
       val boxesToSpend = BoxOperations.selectTop(unspent, MinFee + outboxValue)
       val txB = ctx.newTxBuilder
       val newBox = txB.outBoxBuilder
@@ -96,8 +98,8 @@ case class AssetsAtomicExchangeBuyerCmd(toolConf: ErgoToolConfig,
 
 
 object AssetsAtomicExchangeBuyerCmd extends CmdDescriptor(
-  name = "AssetAtomicExchangeBuyer", cmdParamSyntax = "<wallet file> <buyerAddr> <deadline> <ergAmount> <tokenId> <tokenAmount>",
-  description = "put a token buyer contract with given <tokenId> and <tokenAmount> to buy at given <ergPrice> price until given <deadline> with <buyerAddr> to be used for withdrawal(after the deadline) \n " +
+  name = "AssetAtomicExchangeBuyer", cmdParamSyntax = "<wallet file> <buyerAddr> <deadline> <ergAmount> <tokenId> <tokenAmount>, <dexFee>",
+  description = "put a token buyer contract with given <tokenId> and <tokenAmount> to buy at given <ergPrice> price with <dexFee> as a reward for anyone who matches this contract with a seller, until given <deadline> with <buyerAddr> to be used for withdrawal(after the deadline) \n " +
     "with the given <wallet file> to sign transaction (requests storage password)") {
 
   override def parseCmd(ctx: AppContext): Cmd = {
@@ -110,9 +112,10 @@ object AssetsAtomicExchangeBuyerCmd extends CmdDescriptor(
     val tokenId = if(args.length > 5) args(5) else error("tokenId is not specified")
     val tokenAmount = if(args.length > 6) args(6).toLong else error("tokenAmount is not specified")
     val token = new ErgoToken(tokenId, tokenAmount)
+    val dexFee = if(args.length > 7) args(7).toLong else error("dexFee is not specified")
     val pass = ctx.console.readPassword("Storage password>")
     AssetsAtomicExchangeBuyerCmd(ctx.toolConf, name, storageFile, pass, buyer,
-      deadline, ergAmount, token)
+      deadline, ergAmount, token, dexFee)
   }
 }
 
