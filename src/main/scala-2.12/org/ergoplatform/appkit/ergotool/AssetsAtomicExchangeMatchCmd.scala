@@ -73,6 +73,9 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
       val buyerHolderBox = loggedStep(s"Loading buyer's box (${buyerHolderBoxId.toString})", console) {
         ctx.getBoxesById(buyerHolderBoxId.toString).head
       }
+      if (!buyerHolderBox.getErgoTree.constants.contains(SigmaPropConstant(buyerAddress.getPublicKey))) {
+        error(s"cannot find buyer's address $buyerAddress in buyer contract in box $buyerHolderBoxId")
+      }
       if (!sellerHolderBox.getErgoTree.constants.contains(LongConstant(buyerHolderBox.getValue))) {
         error(s"cannot find token price ${buyerHolderBox.getValue}(from buyerHolderBox.value) in seller contract in box $sellerHolderBoxId")
       }
@@ -82,7 +85,6 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
       val txB = ctx.newTxBuilder
       val buyerTokensOutBox = txB.outBoxBuilder
         .value(sellerHolderBox.getValue)
-        // TODO: check buyerAddress is in the buyer's contract ErgoTree (to avoid typos)
         .contract(ctx.compileContract(
           ConstantsBuilder.create
             .item("recipientPk", buyerAddress.getPublicKey)

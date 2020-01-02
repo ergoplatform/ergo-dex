@@ -6,7 +6,7 @@ import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.console.Console
-import org.ergoplatform.appkit.impl.ErgoTreeContract
+import org.ergoplatform.appkit.impl.{ErgoTreeContract, ScalaBridge}
 import sigmastate.eval.CSigmaProp
 import sigmastate.verification.contract.AssetsAtomicExchangeCompilation
 import special.sigma.SigmaProp
@@ -58,6 +58,7 @@ case class AssetsAtomicExchangeBuyerCmd(toolConf: ErgoToolConfig,
       val buyerPkProp: sigmastate.verified.SigmaProp = CSigmaProp(buyer.getPublicKey).asInstanceOf[SigmaProp]
       val verifiedContract = AssetsAtomicExchangeCompilation.buyerContractInstance(deadline, token.getId.getBytes.toColl, token.getValue, buyerPkProp)
 
+      println(s"contract ergo tree: ${ScalaBridge.isoStringToErgoTree.from(verifiedContract.ergoTree)}")
       val senderProver = loggedStep("Creating prover", console) {
         BoxOperations.createProver(ctx, storageFile.getPath, String.valueOf(storagePass))
       }
