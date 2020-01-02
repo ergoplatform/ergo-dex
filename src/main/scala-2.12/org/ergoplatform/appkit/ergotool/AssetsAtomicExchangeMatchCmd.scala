@@ -75,10 +75,6 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
       if (!buyerHolderBox.getErgoTree.constants.contains(SigmaPropConstant(buyerAddress.getPublicKey))) {
         error(s"cannot find buyer's address $buyerAddress in buyer contract in box $buyerHolderBoxId")
       }
-      // TODO buyerHolderBox.value may be greater or equal
-//      if (!sellerHolderBox.getErgoTree.constants.contains(LongConstant(buyerHolderBox.getValue))) {
-//        error(s"cannot find token price ${buyerHolderBox.getValue}(from buyerHolderBox.value) in seller contract in box $sellerHolderBoxId")
-//      }
       val token = sellerHolderBox.getTokens.get(0)
       if (!buyerHolderBox.getErgoTree.constants.contains(ByteArrayConstant(token.getId.getBytes))) {
         error(s"cannot find token id ${token.getId} in buyer contract in box $buyerHolderBoxId")
@@ -86,9 +82,12 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
      if (!buyerHolderBox.getErgoTree.constants.contains(LongConstant(token.getValue))) {
         error(s"cannot find token amount ${token.getValue} in buyer contract in box $buyerHolderBoxId")
       }
-      val ergAmount = sellerHolderBox.getErgoTree.constants(6).asInstanceOf[Constant[SLong.type]].value
+      val ergAmountSellerAsk = sellerHolderBox.getErgoTree.constants(6).asInstanceOf[Constant[SLong.type]].value
+      if (buyerHolderBox.getValue < ergAmountSellerAsk) {
+        error(s"not enough value in buyer's contract box for seller contract in box $sellerHolderBoxId")
+      }
 
-      val claimableValue = buyerHolderBox.getValue - ergAmount + sellerHolderBox.getValue - 1 // 1 for buyerTokensOutBox.value
+      val claimableValue = buyerHolderBox.getValue - ergAmountSellerAsk + sellerHolderBox.getValue - 1 // 1 for buyerTokensOutBox.value
       val dexFee = claimableValue - MinFee
       if (dexFee <= minDexFee) {
         error(s"found DEX fee = (claimable value - miner's fee) to be $dexFee, which is <= minDexFee ")
@@ -106,7 +105,7 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
         .registers(ErgoValue.of(buyerHolderBoxId.getBytes))
         .build()
       val sellerErgsOutBox = txB.outBoxBuilder
-        .value(ergAmount)
+        .value(ergAmountSellerAsk)
         .contract(ctx.compileContract(
           ConstantsBuilder.create
             .item("recipientPk", sellerAddress.getPublicKey)
