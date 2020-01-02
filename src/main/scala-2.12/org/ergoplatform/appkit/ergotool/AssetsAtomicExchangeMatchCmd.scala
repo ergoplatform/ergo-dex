@@ -8,7 +8,7 @@ import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.console.Console
 import org.ergoplatform.appkit.impl.{ErgoTreeContract, ScalaBridge}
-import sigmastate.Values.{LongConstant, SigmaPropConstant}
+import sigmastate.Values.{ByteArrayConstant, LongConstant, SigmaPropConstant}
 import sigmastate.eval.CSigmaProp
 import sigmastate.verification.contract.AssetsAtomicExchangeCompilation
 import special.sigma.SigmaProp
@@ -79,6 +79,13 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
       if (!sellerHolderBox.getErgoTree.constants.contains(LongConstant(buyerHolderBox.getValue))) {
         error(s"cannot find token price ${buyerHolderBox.getValue}(from buyerHolderBox.value) in seller contract in box $sellerHolderBoxId")
       }
+      val token = sellerHolderBox.getTokens.get(0)
+      if (!buyerHolderBox.getErgoTree.constants.contains(ByteArrayConstant(token.getId.getBytes))) {
+        error(s"cannot find token id ${token.getId} in buyer contract in box $buyerHolderBoxId")
+      }
+     if (!buyerHolderBox.getErgoTree.constants.contains(LongConstant(token.getValue))) {
+        error(s"cannot find token amount ${token.getValue} in buyer contract in box $buyerHolderBoxId")
+      }
       val boxesForTxFee = BoxOperations.selectTop(unspent, MinFee)
       boxesForTxFee.addAll(util.Arrays.asList(buyerHolderBox, sellerHolderBox))
       val inputBoxes = boxesForTxFee
@@ -90,8 +97,7 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
             .item("recipientPk", buyerAddress.getPublicKey)
             .build(),
           "{ recipientPk }"))
-        // TODO: check token id and amount in the buyer's contract ErgoTree
-        .tokens(sellerHolderBox.getTokens.get(0))
+        .tokens(token)
         .registers(ErgoValue.of(buyerHolderBoxId.getBytes))
         .build()
       val sellerErgsOutBox = txB.outBoxBuilder
