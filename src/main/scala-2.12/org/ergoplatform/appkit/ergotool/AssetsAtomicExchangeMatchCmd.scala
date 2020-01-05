@@ -74,7 +74,8 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
 
       val buyerOutBoxValue = MinFee
       val claimableValue = buyerHolderBox.getValue - ergAmountSellerAsk + sellerHolderBox.getValue - buyerOutBoxValue
-      val dexFee = claimableValue - MinFee
+      val txFee = MinFee
+      val dexFee = claimableValue - txFee
       if (dexFee <= minDexFee) {
         error(s"found DEX fee = (claimable value - miner's fee) to be $dexFee, which is <= minDexFee ")
       }
@@ -101,7 +102,7 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
         .build()
       val tx = txB
         .boxesToSpend(inputBoxes).outputs(buyerTokensOutBox, sellerErgsOutBox)
-        .fee(MinFee)
+        .fee(txFee)
         // DEX's fee
         .sendChangeTo(senderProver.getP2PKAddress)
         .build()
