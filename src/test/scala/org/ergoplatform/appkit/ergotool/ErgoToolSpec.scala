@@ -259,8 +259,6 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         "storage/E2.json",
         "7de38874effe031a7522460cef870c3a8fbcfb0cc70df769ba63688fd2b2b35d", // seller contract box id
         "4bb384d56abc2764523582cb1c514828c6a8436067127caac040903a683be0ee", // buyer contract box id
-        "9f4QF8AD1nQ3nJahQVkMj8hFSVVzVom77b52JU7EW71Zexg6N8v", // seller address
-        "9hHDQb26AjnJUXxcqriqY1mnhpLuUeC81C4pggtK7tupr92Ea1K", // buyer address
         "7000000" // minimum DEX fee
       ),
       expectedConsoleScenario =
