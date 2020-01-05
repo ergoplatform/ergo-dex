@@ -79,7 +79,8 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
         error(s"not enough value in buyer's contract box for seller contract in box $sellerHolderBoxId")
       }
 
-      val claimableValue = buyerHolderBox.getValue - ergAmountSellerAsk + sellerHolderBox.getValue - 1 // 1 for buyerTokensOutBox.value
+      val buyerOutBoxValue = MinFee
+      val claimableValue = buyerHolderBox.getValue - ergAmountSellerAsk + sellerHolderBox.getValue - buyerOutBoxValue
       val dexFee = claimableValue - MinFee
       if (dexFee <= minDexFee) {
         error(s"found DEX fee = (claimable value - miner's fee) to be $dexFee, which is <= minDexFee ")
@@ -87,7 +88,7 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
       val inputBoxes = util.Arrays.asList(buyerHolderBox, sellerHolderBox)
       val txB = ctx.newTxBuilder
       val buyerTokensOutBox = txB.outBoxBuilder
-        .value(1)
+        .value(buyerOutBoxValue)
         .contract(ctx.compileContract(
           ConstantsBuilder.create
             .item("recipientPk", buyerAddress.getPublicKey)

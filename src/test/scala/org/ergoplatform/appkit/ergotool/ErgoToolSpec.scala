@@ -261,13 +261,13 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         "4bb384d56abc2764523582cb1c514828c6a8436067127caac040903a683be0ee", // buyer contract box id
         "9f4QF8AD1nQ3nJahQVkMj8hFSVVzVom77b52JU7EW71Zexg6N8v", // seller address
         "9hHDQb26AjnJUXxcqriqY1mnhpLuUeC81C4pggtK7tupr92Ea1K", // buyer address
-        "8000000" // minimum DEX fee
+        "7000000" // minimum DEX fee
       ),
       expectedConsoleScenario =
         s"""Storage password> ::abc;
            |""".stripMargin, data)
     println(res)
-    res should include ("\"transactionId\": \"6ed4c067bf68860995a65fee43153a1035a23e7c3fb849246b95736eadb72e34\",")
+    res should include ("\"transactionId\": \"f3e37a37b561a34bf91f37c9f9fbed1eb42a4d9bb364f869d42bcde22f5d8229\",")
   }
 }
 
