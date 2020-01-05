@@ -22,6 +22,7 @@ abstract class Console {
   def readPassword(prompt: String): Array[Char]
 }
 object Console {
+  /** The console which should be used in application's main method. */
   lazy val instance: Console = new MainConsole()
 }
 

@@ -3,9 +3,8 @@ package org.ergoplatform.appkit.ergotool
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit._
 import java.io.File
-
 import org.ergoplatform.appkit.Parameters.MinFee
-import org.ergoplatform.appkit.console.Console
+import Utils._
 
 /** Creates and sends a new transaction to transfer Ergs from one address to another.
   *
@@ -26,21 +25,12 @@ import org.ergoplatform.appkit.console.Console
   * @param amountToSend amount of NanoErg to transfer to recipient
   */
 case class SendCmd(toolConf: ErgoToolConfig, name: String, storageFile: File, storagePass: Array[Char], recipient: Address, amountToSend: Long) extends Cmd with RunWithErgoClient {
-  def loggedStep[T](msg: String, console: Console)(step: => T): T = {
-    console.print(msg + "...")
-    val res = step
-    val status = if (res != null) "Ok" else "Error"
-    console.println(s" $status")
-    res
-  }
-
   override def runWithClient(ergoClient: ErgoClient, runCtx: AppContext): Unit = {
     val console = runCtx.console
     ergoClient.execute(ctx => {
       val senderProver = loggedStep("Creating prover", console) {
         BoxOperations.createProver(ctx, storageFile.getPath, String.valueOf(storagePass))
       }
-//      BoxOperations.send(ctx, sender, recipient, amountToSend)
       val sender = senderProver.getAddress
       val unspent = loggedStep(s"Loading unspent boxes from at address $sender", console) {
         ctx.getUnspentBoxesFor(sender)
