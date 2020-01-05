@@ -41,6 +41,15 @@ abstract class Cmd {
 
   /** Helper method to throw a new [[CmdException]] from this command. */
   def error(msg: String) = throw CmdException(msg, this)
+
+  /** Helper method to log the result of the step execution to a console */
+  def loggedStep[T](msg: String, console: Console)(step: => T): T = {
+    console.print(msg + "...")
+    val res = step
+    val status = if (res != null) "Ok" else "Error"
+    console.println(s" $status")
+    res
+  }
 }
 
 /** This trait can be used to implement commands which need to communicate with Ergo blockchain.

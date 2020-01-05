@@ -49,14 +49,6 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
                                         buyerAddress: Address,
                                         minDexFee: Long) extends Cmd with RunWithErgoClient {
 
-  def loggedStep[T](msg: String, console: Console)(step: => T): T = {
-    console.print(msg + "...")
-    val res = step
-    val status = if (res != null) "Ok" else "Error"
-    console.println(s" $status")
-    res
-  }
-
   override def runWithClient(ergoClient: ErgoClient, runCtx: AppContext): Unit = {
     val console = runCtx.console
     ergoClient.execute(ctx => {
