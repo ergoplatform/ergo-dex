@@ -16,7 +16,6 @@ libraryDependencies ++= Seq(
   //.classifier("tests-sources") // uncomment this for debuging to make sources available (doesn't work when appkit is published locally) ,
   "org.graalvm.sdk" % "graal-sdk" % "19.2.1",
   "com.squareup.okhttp3" % "mockwebserver" % "3.12.0",
-
   "org.scalatest" %% "scalatest" % "3.0.8" % "test",
   "org.scalacheck" %% "scalacheck" % "1.14.1" % "test"
 )
