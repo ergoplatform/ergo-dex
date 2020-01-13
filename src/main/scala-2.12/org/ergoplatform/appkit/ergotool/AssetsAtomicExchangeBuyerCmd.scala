@@ -7,6 +7,9 @@ import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.console.Console
 import org.ergoplatform.appkit.impl.{ErgoTreeContract, ScalaBridge}
+import sigmastate.{SByte, SLong}
+import sigmastate.Values.{CollectionConstant, Constant, ErgoTree}
+import sigmastate.basics.DLogProtocol.ProveDlog
 import sigmastate.eval.CSigmaProp
 import sigmastate.verification.contract.AssetsAtomicExchangeCompilation
 import special.sigma.SigmaProp
@@ -48,11 +51,8 @@ case class AssetsAtomicExchangeBuyerCmd(toolConf: ErgoToolConfig,
   override def runWithClient(ergoClient: ErgoClient, runCtx: AppContext): Unit = {
     val console = runCtx.console
     ergoClient.execute(ctx => {
-      import sigmastate.verified.VerifiedTypeConverters._
-      val buyerPkProp: sigmastate.verified.SigmaProp = CSigmaProp(buyer.getPublicKey).asInstanceOf[SigmaProp]
-      val verifiedContract = AssetsAtomicExchangeCompilation.buyerContractInstance(deadline, token.getId.getBytes.toColl, token.getValue, buyerPkProp)
-
-      println(s"contract ergo tree: ${ScalaBridge.isoStringToErgoTree.from(verifiedContract.ergoTree)}")
+      val buyerContract = AssetsAtomicExchangeBuyerContract.contractInstance(deadline, token, buyer.getPublicKey)
+      println(s"contract ergo tree: ${ScalaBridge.isoStringToErgoTree.from( buyerContract.getErgoTree)}")
       val senderProver = loggedStep("Creating prover", console) {
         BoxOperations.createProver(ctx, storageFile.getPath, String.valueOf(storagePass))
       }
@@ -65,7 +65,7 @@ case class AssetsAtomicExchangeBuyerCmd(toolConf: ErgoToolConfig,
       val txB = ctx.newTxBuilder
       val newBox = txB.outBoxBuilder
         .value(outboxValue)
-        .contract(new ErgoTreeContract(verifiedContract.ergoTree))
+        .contract(buyerContract)
         .build()
       val tx = txB
         .boxesToSpend(boxesToSpend).outputs(newBox)
@@ -111,3 +111,22 @@ object AssetsAtomicExchangeBuyerCmd extends CmdDescriptor(
   }
 }
 
+object AssetsAtomicExchangeBuyerContract {
+
+  def contractInstance(deadline: Int, token: ErgoToken, buyerPk: ProveDlog): ErgoContract = {
+    import sigmastate.verified.VerifiedTypeConverters._
+    val buyerPkProp: sigmastate.verified.SigmaProp = CSigmaProp(buyerPk).asInstanceOf[SigmaProp]
+    val verifiedContract = AssetsAtomicExchangeCompilation.buyerContractInstance(deadline,
+      token.getId.getBytes.toColl, token.getValue, buyerPkProp)
+    new ErgoTreeContract(verifiedContract.ergoTree)
+  }
+
+  def tokenFromContractTree(tree: ErgoTree): ErgoToken = {
+    val tokenId = tree.constants(7).asInstanceOf[CollectionConstant[SByte.type]].value.toArray
+    val tokenAmount = tree.constants(9).asInstanceOf[Constant[SLong.type]].value
+    new ErgoToken(tokenId, tokenAmount)
+  }
+
+  def buyerPkFromTree(tree: ErgoTree): ProveDlog =
+    tree.constants(1).value.asInstanceOf[CSigmaProp].sigmaTree.asInstanceOf[ProveDlog]
+}

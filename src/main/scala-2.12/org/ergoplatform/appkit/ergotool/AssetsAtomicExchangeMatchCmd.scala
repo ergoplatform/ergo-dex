@@ -55,19 +55,18 @@ case class AssetsAtomicExchangeMatchCmd(toolConf: ErgoToolConfig,
       val sellerHolderBox = loggedStep(s"Loading seller's box (${sellerHolderBoxId.toString})", console) {
         ctx.getBoxesById(sellerHolderBoxId.toString).head
       }
-      val sellerAddressPk: ProveDlog = sellerHolderBox.getErgoTree.constants(1).value.asInstanceOf[CSigmaProp].sigmaTree.asInstanceOf[ProveDlog]
+      val sellerAddressPk = AssetsAtomicExchangeSellerContract.sellerPkFromTree(sellerHolderBox.getErgoTree)
       val buyerHolderBox = loggedStep(s"Loading buyer's box (${buyerHolderBoxId.toString})", console) {
         ctx.getBoxesById(buyerHolderBoxId.toString).head
       }
-      val buyerAddressPk: ProveDlog = buyerHolderBox.getErgoTree.constants(1).value.asInstanceOf[CSigmaProp].sigmaTree.asInstanceOf[ProveDlog]
+      val buyerAddressPk = AssetsAtomicExchangeBuyerContract.buyerPkFromTree(buyerHolderBox.getErgoTree)
+
       val token = sellerHolderBox.getTokens.get(0)
-      if (!buyerHolderBox.getErgoTree.constants.contains(ByteArrayConstant(token.getId.getBytes))) {
-        error(s"cannot find token id ${token.getId} in buyer contract in box $buyerHolderBoxId")
+      if (AssetsAtomicExchangeBuyerContract.tokenFromContractTree(buyerHolderBox.getErgoTree) != token) {
+        error(s"cannot find token $token in buyer contract in box $buyerHolderBoxId")
       }
-     if (!buyerHolderBox.getErgoTree.constants.contains(LongConstant(token.getValue))) {
-        error(s"cannot find token amount ${token.getValue} in buyer contract in box $buyerHolderBoxId")
-      }
-      val ergAmountSellerAsk = sellerHolderBox.getErgoTree.constants(6).asInstanceOf[Constant[SLong.type]].value
+      val ergAmountSellerAsk = AssetsAtomicExchangeSellerContract
+        .tokenPriceFromTree(sellerHolderBox.getErgoTree)
       if (buyerHolderBox.getValue < ergAmountSellerAsk) {
         error(s"not enough value in buyer's contract box for seller contract in box $sellerHolderBoxId")
       }

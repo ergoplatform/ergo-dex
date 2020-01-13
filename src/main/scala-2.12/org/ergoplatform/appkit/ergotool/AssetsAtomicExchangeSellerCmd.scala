@@ -8,6 +8,9 @@ import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.console.Console
 import org.ergoplatform.appkit.impl.{ErgoTreeContract, ScalaBridge}
+import sigmastate.SLong
+import sigmastate.Values.{Constant, ErgoTree}
+import sigmastate.basics.DLogProtocol.ProveDlog
 import sigmastate.eval.CSigmaProp
 import sigmastate.verification.contract.AssetsAtomicExchangeCompilation
 import special.sigma.SigmaProp
@@ -48,11 +51,7 @@ case class AssetsAtomicExchangeSellerCmd(toolConf: ErgoToolConfig,
   override def runWithClient(ergoClient: ErgoClient, runCtx: AppContext): Unit = {
     val console = runCtx.console
     ergoClient.execute(ctx => {
-      import sigmastate.verified.VerifiedTypeConverters._
-      val sellerPkProp: sigmastate.verified.SigmaProp = CSigmaProp(seller.getPublicKey).asInstanceOf[SigmaProp]
-      val verifiedContract = AssetsAtomicExchangeCompilation.sellerContractInstance(deadline,
-        tokenPrice, sellerPkProp)
-
+      val sellerContract = AssetsAtomicExchangeSellerContract.contractInstance(deadline, tokenPrice, seller.getPublicKey)
       val senderProver = loggedStep("Creating prover", console) {
         BoxOperations.createProver(ctx, storageFile.getPath, String.valueOf(storagePass))
       }
@@ -61,11 +60,11 @@ case class AssetsAtomicExchangeSellerCmd(toolConf: ErgoToolConfig,
         ctx.getUnspentBoxesFor(sender)
       }
       val boxesToSpend = BoxOperations.selectTop(unspent, MinFee + dexFee, Optional.of(token))
-      println(s"contract ergo tree: ${ScalaBridge.isoStringToErgoTree.from(verifiedContract.ergoTree)}")
+      println(s"contract ergo tree: ${ScalaBridge.isoStringToErgoTree.from(sellerContract.getErgoTree)}")
       val txB = ctx.newTxBuilder
       val newBox = txB.outBoxBuilder
         .value(dexFee)
-        .contract(new ErgoTreeContract(verifiedContract.ergoTree))
+        .contract(sellerContract)
         .tokens(token)
         .build()
       val tx = txB
@@ -111,3 +110,20 @@ object AssetsAtomicExchangeSellerCmd extends CmdDescriptor(
   }
 }
 
+object AssetsAtomicExchangeSellerContract {
+
+  def contractInstance(deadline: Int, tokenPrice: Long, sellerPk: ProveDlog): ErgoContract = {
+    import sigmastate.verified.VerifiedTypeConverters._
+    val sellerPkProp: sigmastate.verified.SigmaProp = CSigmaProp(sellerPk).asInstanceOf[SigmaProp]
+    val verifiedContract = AssetsAtomicExchangeCompilation.sellerContractInstance(deadline,
+      tokenPrice, sellerPkProp)
+    new ErgoTreeContract(verifiedContract.ergoTree)
+  }
+
+  def tokenPriceFromTree(tree: ErgoTree): Long =
+    tree.constants(6).asInstanceOf[Constant[SLong.type]].value
+
+  def sellerPkFromTree(tree: ErgoTree): ProveDlog =
+    tree.constants(1).value.asInstanceOf[CSigmaProp].sigmaTree.asInstanceOf[ProveDlog]
+
+}
