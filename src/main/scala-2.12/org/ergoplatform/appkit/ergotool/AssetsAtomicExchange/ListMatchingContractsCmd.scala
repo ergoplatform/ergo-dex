@@ -1,21 +1,10 @@
-package org.ergoplatform.appkit.ergotool
+package org.ergoplatform.appkit.ergotool.AssetsAtomicExchange
 
-import java.io.File
-import java.util
-
+import org.ergoplatform.appkit.JavaHelpers._
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
-import org.ergoplatform.appkit.JavaHelpers._
-import org.ergoplatform.appkit.console.Console
-import org.ergoplatform.appkit.impl.{ErgoTreeContract, ScalaBridge}
-import sigmastate.{SByte, SLong}
-import sigmastate.Values.{ByteArrayConstant, CollectionConstant, Constant, ErgoTree, LongConstant, SigmaPropConstant}
-import sigmastate.basics.DLogProtocol.ProveDlog
-import sigmastate.eval.CSigmaProp
-import sigmastate.verification.contract.AssetsAtomicExchangeCompilation
-import special.sigma.SigmaProp
-import sigmastate.eval.Extensions._
+import org.ergoplatform.appkit.ergotool.{AppContext, Cmd, CmdDescriptor, RunWithErgoClient}
 
 /** Shows matching buyer and seller contracts for AssetsAtomicExchange
   *
@@ -23,15 +12,15 @@ import sigmastate.eval.Extensions._
   * 1) request storage password from the user<br/>
   * 2) read storage file, unlock using password and get secret<br/>
   * 3) get master public key and compute sender's address<br/>
-  * ...
+  * 4) finds seller and buyer boxes with matching orders and lists them sorting by DEX fee
   *
   */
-case class AssetsAtomicExchangeListCmd(toolConf: ErgoToolConfig,
-                                        name: String) extends Cmd with RunWithErgoClient {
+case class ListMatchingContractsCmd(toolConf: ErgoToolConfig,
+                                    name: String) extends Cmd with RunWithErgoClient {
 
   private lazy val sellerContractTemplate: ErgoTreeTemplate = {
     val anyAddress = Address.create("9f4QF8AD1nQ3nJahQVkMj8hFSVVzVom77b52JU7EW71Zexg6N8v")
-    val sellerContract = AssetsAtomicExchangeSellerContract.contractInstance(0,
+    val sellerContract = SellerContract.contractInstance(0,
       0L, anyAddress.getPublicKey)
     ErgoTreeTemplate.fromErgoTree(sellerContract.getErgoTree)
   }
@@ -40,7 +29,7 @@ case class AssetsAtomicExchangeListCmd(toolConf: ErgoToolConfig,
     val anyAddress = Address.create("9f4QF8AD1nQ3nJahQVkMj8hFSVVzVom77b52JU7EW71Zexg6N8v")
     val token = new ErgoToken("21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1",
       0L)
-    val buyerContract = AssetsAtomicExchangeBuyerContract.contractInstance(0, token, anyAddress.getPublicKey)
+    val buyerContract = BuyerContract.contractInstance(0, token, anyAddress.getPublicKey)
     ErgoTreeTemplate.fromErgoTree(buyerContract.getErgoTree)
   }
 
@@ -53,7 +42,7 @@ case class AssetsAtomicExchangeListCmd(toolConf: ErgoToolConfig,
       val buyerHolderBoxes = loggedStep(s"Loading buyer boxes", console) {
         ctx.getUnspentBoxesForErgoTreeTemplate(buyerContractTemplate).convertTo[IndexedSeq[InputBox]]
       }
-      val matchingContractPairs = AssetsAtomicExchangeListCmdMatching
+      val matchingContractPairs = ListMatchingContracts
         .matchingContracts(sellerHolderBoxes, buyerHolderBoxes)
       console.println("Seller                                                       Buyer                                            DEX fee")
       matchingContractPairs.foreach { p =>
@@ -63,28 +52,28 @@ case class AssetsAtomicExchangeListCmd(toolConf: ErgoToolConfig,
   }
 }
 
-object AssetsAtomicExchangeListCmd extends CmdDescriptor(
+object ListMatchingContractsCmd extends CmdDescriptor(
   name = "AssetAtomicExchangeList", cmdParamSyntax = "",
   description = "show matching token seller's and buyer's contracts") {
 
   override def parseCmd(ctx: AppContext): Cmd = {
-    AssetsAtomicExchangeListCmd(ctx.toolConf, name)
+    ListMatchingContractsCmd(ctx.toolConf, name)
   }
 
 }
 
-object AssetsAtomicExchangeListCmdMatching {
+object ListMatchingContracts {
 
   case class MatchingContract(seller: InputBox, buyer: InputBox, dexFee: Long)
 
   def matchingContracts(sellerBoxes: Seq[InputBox], buyerBoxes: Seq[InputBox]): Seq[MatchingContract] =
     sellerBoxes
       .flatMap { sb =>
-        val sellerTokenPrice = AssetsAtomicExchangeSellerContract.tokenPriceFromTree(sb.getErgoTree)
+        val sellerTokenPrice = SellerContract.tokenPriceFromTree(sb.getErgoTree)
         buyerBoxes
           .filter { bb =>
             val sellerToken = sb.getTokens.get(0)
-            val buyerToken = AssetsAtomicExchangeBuyerContract.tokenFromContractTree(bb.getErgoTree)
+            val buyerToken = BuyerContract.tokenFromContractTree(bb.getErgoTree)
             sellerToken.getId == buyerToken.getId && sellerToken.getValue >= buyerToken.getValue &&
               bb.getValue >= sellerTokenPrice
           }

@@ -1,19 +1,19 @@
-package org.ergoplatform.appkit.ergotool
+package org.ergoplatform.appkit.ergotool.AssetsAtomicExchange
 
 import java.io.File
 
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
-import org.ergoplatform.appkit.console.Console
+import org.ergoplatform.appkit.ergotool.{AppContext, Cmd, CmdDescriptor, RunWithErgoClient}
 import org.ergoplatform.appkit.impl.{ErgoTreeContract, ScalaBridge}
-import sigmastate.{SByte, SLong}
 import sigmastate.Values.{CollectionConstant, Constant, ErgoTree}
 import sigmastate.basics.DLogProtocol.ProveDlog
 import sigmastate.eval.CSigmaProp
-import sigmastate.verification.contract.AssetsAtomicExchangeCompilation
-import special.sigma.SigmaProp
 import sigmastate.eval.Extensions._
+import sigmastate.verification.contract.AssetsAtomicExchangeCompilation
+import sigmastate.{SByte, SLong}
+import special.sigma.SigmaProp
 
 /** Creates and sends a new transaction with buyer's contract for AssetsAtomicExchange
   *
@@ -38,20 +38,20 @@ import sigmastate.eval.Extensions._
   * @param token token id and amount
   * @param dexFee Ergs amount put in addition to ergAmount into box.value in this contract (DEX fee)
   */
-case class AssetsAtomicExchangeBuyerCmd(toolConf: ErgoToolConfig,
-                                        name: String,
-                                        storageFile: File,
-                                        storagePass: Array[Char],
-                                        buyer: Address,
-                                        deadline: Int,
-                                        ergAmount: Long,
-                                        token: ErgoToken,
-                                        dexFee: Long) extends Cmd with RunWithErgoClient {
+case class CreateBuyerContractCmd(toolConf: ErgoToolConfig,
+                                  name: String,
+                                  storageFile: File,
+                                  storagePass: Array[Char],
+                                  buyer: Address,
+                                  deadline: Int,
+                                  ergAmount: Long,
+                                  token: ErgoToken,
+                                  dexFee: Long) extends Cmd with RunWithErgoClient {
 
   override def runWithClient(ergoClient: ErgoClient, runCtx: AppContext): Unit = {
     val console = runCtx.console
     ergoClient.execute(ctx => {
-      val buyerContract = AssetsAtomicExchangeBuyerContract.contractInstance(deadline, token, buyer.getPublicKey)
+      val buyerContract = BuyerContract.contractInstance(deadline, token, buyer.getPublicKey)
       println(s"contract ergo tree: ${ScalaBridge.isoStringToErgoTree.from( buyerContract.getErgoTree)}")
       val senderProver = loggedStep("Creating prover", console) {
         BoxOperations.createProver(ctx, storageFile.getPath, String.valueOf(storagePass))
@@ -89,7 +89,7 @@ case class AssetsAtomicExchangeBuyerCmd(toolConf: ErgoToolConfig,
 }
 
 
-object AssetsAtomicExchangeBuyerCmd extends CmdDescriptor(
+object CreateBuyerContractCmd extends CmdDescriptor(
   name = "AssetAtomicExchangeBuyer", cmdParamSyntax = "<wallet file> <buyerAddr> <deadline> <ergAmount> <tokenId> <tokenAmount>, <dexFee>",
   description = "put a token buyer contract with given <tokenId> and <tokenAmount> to buy at given <ergPrice> price with <dexFee> as a reward for anyone who matches this contract with a seller, until given <deadline> with <buyerAddr> to be used for withdrawal(after the deadline) \n " +
     "with the given <wallet file> to sign transaction (requests storage password)") {
@@ -106,12 +106,12 @@ object AssetsAtomicExchangeBuyerCmd extends CmdDescriptor(
     val token = new ErgoToken(tokenId, tokenAmount)
     val dexFee = if(args.length > 7) args(7).toLong else error("dexFee is not specified")
     val pass = ctx.console.readPassword("Storage password>")
-    AssetsAtomicExchangeBuyerCmd(ctx.toolConf, name, storageFile, pass, buyer,
+    CreateBuyerContractCmd(ctx.toolConf, name, storageFile, pass, buyer,
       deadline, ergAmount, token, dexFee)
   }
 }
 
-object AssetsAtomicExchangeBuyerContract {
+object BuyerContract {
 
   def contractInstance(deadline: Int, token: ErgoToken, buyerPk: ProveDlog): ErgoContract = {
     import sigmastate.verified.VerifiedTypeConverters._

@@ -1,4 +1,4 @@
-package org.ergoplatform.appkit.ergotool
+package org.ergoplatform.appkit.ergotool.AssetsAtomicExchange
 
 import java.io.File
 import java.util.Optional
@@ -6,7 +6,7 @@ import java.util.Optional
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
-import org.ergoplatform.appkit.console.Console
+import org.ergoplatform.appkit.ergotool.{AppContext, Cmd, CmdDescriptor, RunWithErgoClient}
 import org.ergoplatform.appkit.impl.{ErgoTreeContract, ScalaBridge}
 import sigmastate.SLong
 import sigmastate.Values.{Constant, ErgoTree}
@@ -38,20 +38,20 @@ import special.sigma.SigmaProp
   * @param token token id and amount
   * @param dexFee Ergs amount claimable(box.value) in this contract (DEX fee)
   */
-case class AssetsAtomicExchangeSellerCmd(toolConf: ErgoToolConfig,
-                                         name: String,
-                                         storageFile: File,
-                                         storagePass: Array[Char],
-                                         seller: Address,
-                                         deadline: Int,
-                                         tokenPrice: Long,
-                                         token: ErgoToken,
-                                         dexFee: Long) extends Cmd with RunWithErgoClient {
+case class CreateSellerContractCmd(toolConf: ErgoToolConfig,
+                                   name: String,
+                                   storageFile: File,
+                                   storagePass: Array[Char],
+                                   seller: Address,
+                                   deadline: Int,
+                                   tokenPrice: Long,
+                                   token: ErgoToken,
+                                   dexFee: Long) extends Cmd with RunWithErgoClient {
 
   override def runWithClient(ergoClient: ErgoClient, runCtx: AppContext): Unit = {
     val console = runCtx.console
     ergoClient.execute(ctx => {
-      val sellerContract = AssetsAtomicExchangeSellerContract.contractInstance(deadline, tokenPrice, seller.getPublicKey)
+      val sellerContract = SellerContract.contractInstance(deadline, tokenPrice, seller.getPublicKey)
       val senderProver = loggedStep("Creating prover", console) {
         BoxOperations.createProver(ctx, storageFile.getPath, String.valueOf(storagePass))
       }
@@ -88,7 +88,7 @@ case class AssetsAtomicExchangeSellerCmd(toolConf: ErgoToolConfig,
   }
 }
 
-object AssetsAtomicExchangeSellerCmd extends CmdDescriptor(
+object CreateSellerContractCmd extends CmdDescriptor(
   name = "AssetAtomicExchangeSeller", cmdParamSyntax = "<wallet file> <sellerAddr> <deadline> <ergPrice> <tokenId> <tokenAmount> <dexFee>",
   description = "put a token seller contract with given <tokenId> and <tokenAmount> for sale at given <ergPrice> price with <dexFee> as a reward for anyone who matches this contract with buyer, until given <deadline> with <sellerAddr> to be used for withdrawal(after the deadline) \n " +
     "with the given <wallet file> to sign transaction (requests storage password)") {
@@ -105,12 +105,12 @@ object AssetsAtomicExchangeSellerCmd extends CmdDescriptor(
     val token = new ErgoToken(tokenId, tokenAmount)
     val dexFee = if(args.length > 7) args(7).toLong else error("dexFee is not specified")
     val pass = ctx.console.readPassword("Storage password>")
-    AssetsAtomicExchangeSellerCmd(ctx.toolConf, name, storageFile, pass, seller,
+    CreateSellerContractCmd(ctx.toolConf, name, storageFile, pass, seller,
       deadline, ergAmount, token, dexFee)
   }
 }
 
-object AssetsAtomicExchangeSellerContract {
+object SellerContract {
 
   def contractInstance(deadline: Int, tokenPrice: Long, sellerPk: ProveDlog): ErgoContract = {
     import sigmastate.verified.VerifiedTypeConverters._
