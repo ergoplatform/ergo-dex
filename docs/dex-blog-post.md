@@ -19,17 +19,21 @@ payed as part of the swap transaction.
 In this post we describe a simple yet fully functional implementation of DEX protocol
 withing ErgoTool - a command line interface (CLI) utility for Ergo. 
     
-## Issuing A New Asset
+## Issue A New Token
 
-The first operation in the lifecycle of a new asset is its issue.
-Ergo natively support issue, storage and transfer of assets. New assets can be issued
+The first operation in the lifecycle of a new token is its issue.
+Ergo natively support issue, storage and transfer of tokens. New tokens can be issued
 according to the [Assets
-Standard](https://github.com/ergoplatform/eips/blob/master/eip-0004.md). The following 
-command allows to issue a new assert on the Ergo blockchain
+Standard](https://github.com/ergoplatform/eips/blob/master/eip-0004.md). 
 
+The following ErgoTool command allows to issue a new assert on the Ergo blockchain.
+// TODO implement command and write example
 ```
 $ ergo-tool help 
 ``` 
+// TODO show an example of command usage with command results
+
+## Sell Tokens
  
   
 ## References
