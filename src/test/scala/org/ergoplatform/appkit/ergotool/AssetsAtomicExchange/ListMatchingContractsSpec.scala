@@ -16,6 +16,7 @@ class ListMatchingContractsSpec extends PropSpec
   with Matchers
   with ScalaCheckDrivenPropertyChecks {
 
+  // TODO: extract
   case class MockInputBox(getId: ErgoId,
                           getValue: JLong,
                           getTokens: JList[ErgoToken],
@@ -36,11 +37,10 @@ class ListMatchingContractsSpec extends PropSpec
 
   }
 
+  // TODO: extract
   def ergoIdGen: Gen[ErgoId] = for {
     bytes <- Gen.listOfN(32, Arbitrary.arbByte.arbitrary)
   } yield new ErgoId(bytes.toArray)
-
-  private def sellerBox: InputBox = ???
 
   property("empty list") {
     matchingContracts(Seq.empty, Seq.empty) shouldBe empty

@@ -32,11 +32,13 @@ import special.sigma.SigmaProp
   *
   * @param storageFile storage with secret key of the sender
   * @param storagePass password to access sender secret key in the storage
-  * @param buyer address of the buyer
-  * @param deadline height of the blockchain after which the buyer can withdraw Ergs from this contract
-  * @param ergAmount Erg amount for buyer to pay for tokens
-  * @param token token id and amount
-  * @param dexFee Ergs amount put in addition to ergAmount into box.value in this contract (DEX fee)
+  * @param buyer       address of the buyer (the one who signs this transaction)
+  * @param deadline    height of the blockchain after which the buyer can withdraw Ergs from this contract
+  * @param ergAmount   NanoErg amount for buyer to pay for tokens
+  * @param token       token id and amount
+  * @param dexFee      an amount of NanoErgs to put in addition to ergAmount into the new box protected
+  *                    by the buyer contract. When the buyer setup up a bid price he/she also decide on
+  *                    the DEX fee amount to pay
   */
 case class CreateBuyerContractCmd(toolConf: ErgoToolConfig,
                                   name: String,
