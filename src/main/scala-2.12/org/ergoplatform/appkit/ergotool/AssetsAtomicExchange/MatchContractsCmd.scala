@@ -55,11 +55,11 @@ case class MatchContractsCmd(toolConf: ErgoToolConfig,
       val buyerAddressPk = BuyerContract.buyerPkFromTree(buyerHolderBox.getErgoTree)
 
       val token = sellerHolderBox.getTokens.get(0)
-      if (BuyerContract.tokenFromContractTree(buyerHolderBox.getErgoTree) != token) {
+      if (!BuyerContract.tokenFromContractTree(buyerHolderBox.getErgoTree).contains(token)) {
         error(s"cannot find token $token in buyer contract in box $buyerHolderBoxId")
       }
-      val ergAmountSellerAsk = SellerContract
-        .tokenPriceFromTree(sellerHolderBox.getErgoTree)
+      val ergAmountSellerAsk = SellerContract.tokenPriceFromTree(sellerHolderBox.getErgoTree)
+        .getOrElse(error(s"cannot find token price in seller's contract box $sellerHolderBoxId"))
       if (buyerHolderBox.getValue < ergAmountSellerAsk) {
         error(s"not enough value in buyer's contract box for seller contract in box $sellerHolderBoxId")
       }

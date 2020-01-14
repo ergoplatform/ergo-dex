@@ -8,7 +8,7 @@ import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.ergotool.{AppContext, Cmd, CmdDescriptor, RunWithErgoClient}
 import org.ergoplatform.appkit.impl.{ErgoTreeContract, ScalaBridge}
-import sigmastate.SLong
+import sigmastate.{SLong, Values}
 import sigmastate.Values.{Constant, ErgoTree}
 import sigmastate.basics.DLogProtocol.ProveDlog
 import sigmastate.eval.CSigmaProp
@@ -120,8 +120,10 @@ object SellerContract {
     new ErgoTreeContract(verifiedContract.ergoTree)
   }
 
-  def tokenPriceFromTree(tree: ErgoTree): Long =
-    tree.constants(6).asInstanceOf[Constant[SLong.type]].value
+  def tokenPriceFromTree(tree: ErgoTree): Option[Long] =
+    tree.constants.lift(6).flatMap {
+      case Values.ConstantNode(value, SLong) => Some(value.asInstanceOf[Long])
+    }
 
   def sellerPkFromTree(tree: ErgoTree): ProveDlog =
     tree.constants(1).value.asInstanceOf[CSigmaProp].sigmaTree.asInstanceOf[ProveDlog]

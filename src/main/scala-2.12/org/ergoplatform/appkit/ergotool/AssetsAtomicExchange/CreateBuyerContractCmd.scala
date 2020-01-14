@@ -12,7 +12,7 @@ import sigmastate.basics.DLogProtocol.ProveDlog
 import sigmastate.eval.CSigmaProp
 import sigmastate.eval.Extensions._
 import sigmastate.verification.contract.AssetsAtomicExchangeCompilation
-import sigmastate.{SByte, SLong}
+import sigmastate.{SByte, SLong, Values}
 import special.sigma.SigmaProp
 
 /** Creates and sends a new transaction with buyer's contract for AssetsAtomicExchange
@@ -121,11 +121,14 @@ object BuyerContract {
     new ErgoTreeContract(verifiedContract.ergoTree)
   }
 
-  def tokenFromContractTree(tree: ErgoTree): ErgoToken = {
-    val tokenId = tree.constants(7).asInstanceOf[CollectionConstant[SByte.type]].value.toArray
-    val tokenAmount = tree.constants(9).asInstanceOf[Constant[SLong.type]].value
-    new ErgoToken(tokenId, tokenAmount)
-  }
+  def tokenFromContractTree(tree: ErgoTree): Option[ErgoToken] = for {
+    tokenId <- tree.constants.lift(7).flatMap {
+      case CollectionConstant(coll, SByte) => Some(coll.toArray.asInstanceOf[Array[Byte]])
+    }
+    tokenAmount <- tree.constants.lift(9).flatMap {
+      case Values.ConstantNode(value, SLong) => Some(value.asInstanceOf[Long])
+    }
+  } yield new ErgoToken(tokenId, tokenAmount)
 
   def buyerPkFromTree(tree: ErgoTree): ProveDlog =
     tree.constants(1).value.asInstanceOf[CSigmaProp].sigmaTree.asInstanceOf[ProveDlog]

@@ -68,20 +68,26 @@ object ListMatchingContracts {
 
   def matchingContracts(sellerBoxes: Seq[InputBox], buyerBoxes: Seq[InputBox]): Seq[MatchingContract] =
     sellerBoxes
-      .flatMap { sb =>
-        val sellerTokenPrice = SellerContract.tokenPriceFromTree(sb.getErgoTree)
-        buyerBoxes
-          .filter { bb =>
-            val sellerToken = sb.getTokens.get(0)
-            val buyerToken = BuyerContract.tokenFromContractTree(bb.getErgoTree)
-            sellerToken.getId == buyerToken.getId && sellerToken.getValue >= buyerToken.getValue &&
-              bb.getValue >= sellerTokenPrice
-          }
-          .map { bb =>
-            val dexFee = bb.getValue - sellerTokenPrice + sb.getValue - MinFee
-            MatchingContract(sb, bb, dexFee)
-          }
+      .flatMap { sellerBox =>
+        for {
+          sellerTokenPrice <- SellerContract.tokenPriceFromTree(sellerBox.getErgoTree)
+          sellerToken <- sellerBox.getTokens.convertTo[IndexedSeq[ErgoToken]].headOption
+          matchingContracts = buyerBoxes
+            .flatMap { buyerBox =>
+              BuyerContract.tokenFromContractTree(buyerBox.getErgoTree).map((_, buyerBox))
+            }
+            .filter { case (buyerToken, buyerBox) =>
+              sellerToken.getId == buyerToken.getId && sellerToken.getValue >= buyerToken.getValue &&
+                buyerBox.getValue >= sellerTokenPrice
+            }
+            .map(_._2)
+            .map { buyerBox =>
+              val dexFee = buyerBox.getValue - sellerTokenPrice + sellerBox.getValue - MinFee
+              MatchingContract(sellerBox, buyerBox, dexFee)
+            }
+        } yield matchingContracts
       }
+      .flatten
       .sortBy(_.dexFee)
 
 }
