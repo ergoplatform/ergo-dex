@@ -26,14 +26,28 @@ Ergo natively support issue, storage and transfer of tokens. New tokens can be i
 according to the [Assets
 Standard](https://github.com/ergoplatform/eips/blob/master/eip-0004.md). 
 
-The following ErgoTool command allows to issue a new assert on the Ergo blockchain.
-// TODO implement command and write example
+The following ErgoTool command allows to issue a new token on the Ergo blockchain.
+// TODO implement issueToken command and show usage help  
 ```
-$ ergo-tool help 
+$ ergo-tool help issueToken
+...
 ``` 
+
+A token is issued by creating a new box with the `ergAmount` of ERGs and 
+(`tokenId`, `tokenAmount`) pair in the `R2` register. Additional registers should also be
+specified as required by
+[EIP-4](https://github.com/ergoplatform/eips/blob/master/eip-0004.md) standard.
+The `issueToken` command uses a wallet storage given by `storageFile` to transfer given `ergAmount` of ERGs 
+to the new box with tokens. The new box will belong the same wallet given by storageFile.
+
 // TODO show an example of command usage with command results
+```
+$ ergo-tool issueToken ...
+...
+``` 
 
 ## Sell Tokens
+
  
   
 ## References
