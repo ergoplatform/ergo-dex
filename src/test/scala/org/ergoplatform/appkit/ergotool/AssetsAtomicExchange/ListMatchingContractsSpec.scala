@@ -120,4 +120,34 @@ class ListMatchingContractsSpec extends PropSpec
 
     matchingContracts(Seq(sellerBox), Seq(buyerBox)) shouldBe empty
   }
+
+  property("one match") {
+    val sellerContract = SellerContract.contractInstance(0,20L,
+      testnetAddressGen.sample.get)
+    val token = new ErgoToken(ergoIdGen.sample.get, 1L)
+    val sellerBox = MockInputBox(ergoIdGen.sample.get, 1L, sellerContract.getErgoTree,
+      Seq(token))
+
+    val buyerContract = BuyerContract.contractInstance(0, token, testnetAddressGen.sample.get)
+    val buyerBox = MockInputBox(ergoIdGen.sample.get, 20L + MinFee, buyerContract.getErgoTree)
+
+    val matches = matchingContracts(Seq(sellerBox), Seq(buyerBox))
+    matches.length shouldBe 1
+    matches.forall(_.dexFee >= 0) shouldBe true
+  }
+
+  property("many matches") {
+    val sellerContract = SellerContract.contractInstance(0,20L,
+      testnetAddressGen.sample.get)
+    val token = new ErgoToken(ergoIdGen.sample.get, 1L)
+    val sellerBox = MockInputBox(ergoIdGen.sample.get, 1L, sellerContract.getErgoTree,
+      Seq(token))
+
+    val buyerContract = BuyerContract.contractInstance(0, token, testnetAddressGen.sample.get)
+    val buyerBox = MockInputBox(ergoIdGen.sample.get, 20L + MinFee, buyerContract.getErgoTree)
+
+    val matches = matchingContracts(Array.fill(5)(sellerBox), Array.fill(5)(buyerBox))
+    matches.length shouldBe 25 // (5 * 5, cartesian product)
+    matches.forall(_.dexFee >= 0) shouldBe true
+  }
 }

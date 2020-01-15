@@ -71,15 +71,16 @@ object ListMatchingContracts {
       .flatMap { sellerBox =>
         for {
           sellerTokenPrice <- SellerContract.tokenPriceFromTree(sellerBox.getErgoTree)
-          sellerToken <- sellerBox.getTokens.convertTo[IndexedSeq[ErgoToken]].headOption
+          sellerToken <- sellerBox .getTokens
+            .convertTo[IndexedSeq[ErgoToken]]
+            .headOption
           matchingContracts = buyerBoxes
-            .flatMap { buyerBox =>
-              BuyerContract.tokenFromContractTree(buyerBox.getErgoTree).map((_, buyerBox))
+            .filter { buyerBox =>
+              BuyerContract.tokenFromContractTree(buyerBox.getErgoTree)
+                .exists{ buyerToken =>
+                  sellerToken.getId == buyerToken.getId &&
+                    sellerToken.getValue >= buyerToken.getValue }
             }
-            .filter { case (buyerToken, buyerBox) => // TODO: remove unused buyerBox?
-              sellerToken.getId == buyerToken.getId && sellerToken.getValue >= buyerToken.getValue
-            }
-            .map(_._2)
             .map { buyerBox =>
               val dexTxFee = MinFee
               val dexFee = buyerBox.getValue - sellerTokenPrice + sellerBox.getValue - dexTxFee
