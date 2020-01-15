@@ -1,0 +1,15 @@
+{
+  "boxId": "356037af6e85980113f3071ec7b010202448a231ce74e441c0aae7241d82a20e",
+  "value": 1,
+  "ergoTree": "0008cd036ba5cfbc03ea2471fdf02737f64dbcd58c34461a7ec1e586dcd713dacbf89a12",
+  "creationHeight": 113335,
+  "assets": [
+    {
+      "tokenId": "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1",
+      "amount": 60
+    }
+  ],
+  "additionalRegisters": {},
+  "transactionId": "5e1d74b6c9c459c499620a2059b484f64eb7465e7310faac863f5728c5958805",
+  "index": 0
+}
