@@ -21,7 +21,7 @@ case class ListMatchingContractsCmd(toolConf: ErgoToolConfig,
   private lazy val sellerContractTemplate: ErgoTreeTemplate = {
     val anyAddress = Address.create("9f4QF8AD1nQ3nJahQVkMj8hFSVVzVom77b52JU7EW71Zexg6N8v")
     val sellerContract = SellerContract.contractInstance(0,
-      0L, anyAddress.getPublicKey)
+      0L, anyAddress)
     ErgoTreeTemplate.fromErgoTree(sellerContract.getErgoTree)
   }
 
@@ -29,7 +29,7 @@ case class ListMatchingContractsCmd(toolConf: ErgoToolConfig,
     val anyAddress = Address.create("9f4QF8AD1nQ3nJahQVkMj8hFSVVzVom77b52JU7EW71Zexg6N8v")
     val token = new ErgoToken("21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1",
       0L)
-    val buyerContract = BuyerContract.contractInstance(0, token, anyAddress.getPublicKey)
+    val buyerContract = BuyerContract.contractInstance(0, token, anyAddress)
     ErgoTreeTemplate.fromErgoTree(buyerContract.getErgoTree)
   }
 
@@ -76,15 +76,16 @@ object ListMatchingContracts {
             .flatMap { buyerBox =>
               BuyerContract.tokenFromContractTree(buyerBox.getErgoTree).map((_, buyerBox))
             }
-            .filter { case (buyerToken, buyerBox) =>
-              sellerToken.getId == buyerToken.getId && sellerToken.getValue >= buyerToken.getValue &&
-                buyerBox.getValue >= sellerTokenPrice
+            .filter { case (buyerToken, buyerBox) => // TODO: remove unused buyerBox?
+              sellerToken.getId == buyerToken.getId && sellerToken.getValue >= buyerToken.getValue
             }
             .map(_._2)
             .map { buyerBox =>
-              val dexFee = buyerBox.getValue - sellerTokenPrice + sellerBox.getValue - MinFee
+              val dexTxFee = MinFee
+              val dexFee = buyerBox.getValue - sellerTokenPrice + sellerBox.getValue - dexTxFee
               MatchingContract(sellerBox, buyerBox, dexFee)
             }
+            .filter(_.dexFee >= 0)
         } yield matchingContracts
       }
       .flatten

@@ -9,9 +9,9 @@ import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.ergotool.{AppContext, Cmd, CmdDescriptor, RunWithErgoClient}
 import org.ergoplatform.appkit.impl.{ErgoTreeContract, ScalaBridge}
 import sigmastate.{SLong, Values}
-import sigmastate.Values.{Constant, ErgoTree}
-import sigmastate.basics.DLogProtocol.ProveDlog
-import sigmastate.eval.CSigmaProp
+import sigmastate.Values.{Constant, ErgoTree, SigmaBoolean, SigmaPropConstant}
+import sigmastate.basics.DLogProtocol.{ProveDlog, ProveDlogProp}
+import sigmastate.eval.WrapperOf
 import sigmastate.verification.contract.AssetsAtomicExchangeCompilation
 import special.sigma.SigmaProp
 
@@ -51,7 +51,7 @@ case class CreateSellerContractCmd(toolConf: ErgoToolConfig,
   override def runWithClient(ergoClient: ErgoClient, runCtx: AppContext): Unit = {
     val console = runCtx.console
     ergoClient.execute(ctx => {
-      val sellerContract = SellerContract.contractInstance(deadline, tokenPrice, seller.getPublicKey)
+      val sellerContract = SellerContract.contractInstance(deadline, tokenPrice, seller)
       val senderProver = loggedStep("Creating prover", console) {
         BoxOperations.createProver(ctx, storageFile.getPath, storagePass)
       }
@@ -112,9 +112,9 @@ object CreateSellerContractCmd extends CmdDescriptor(
 
 object SellerContract {
 
-  def contractInstance(deadline: Int, tokenPrice: Long, sellerPk: ProveDlog): ErgoContract = {
+  def contractInstance(deadline: Int, tokenPrice: Long, sellerPk: Address): ErgoContract = {
     import sigmastate.verified.VerifiedTypeConverters._
-    val sellerPkProp: sigmastate.verified.SigmaProp = CSigmaProp(sellerPk).asInstanceOf[SigmaProp]
+    val sellerPkProp = sigmastate.eval.SigmaDsl.SigmaProp(sellerPk.getPublicKey)
     val verifiedContract = AssetsAtomicExchangeCompilation.sellerContractInstance(deadline,
       tokenPrice, sellerPkProp)
     new ErgoTreeContract(verifiedContract.ergoTree)
@@ -125,7 +125,10 @@ object SellerContract {
       case Values.ConstantNode(value, SLong) => Some(value.asInstanceOf[Long])
     }
 
-  def sellerPkFromTree(tree: ErgoTree): ProveDlog =
-    tree.constants(1).value.asInstanceOf[CSigmaProp].sigmaTree.asInstanceOf[ProveDlog]
+  def sellerPkFromTree(tree: ErgoTree): Option[ProveDlog] = for {
+    pk <- tree.constants.lift(1).flatMap {
+      case SigmaPropConstant(ProveDlogProp(v)) => Some(v)
+    }
+  } yield pk
 
 }

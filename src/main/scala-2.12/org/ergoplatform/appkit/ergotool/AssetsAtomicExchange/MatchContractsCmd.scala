@@ -49,10 +49,12 @@ case class MatchContractsCmd(toolConf: ErgoToolConfig,
         ctx.getBoxesById(sellerHolderBoxId.toString).head
       }
       val sellerAddressPk = SellerContract.sellerPkFromTree(sellerHolderBox.getErgoTree)
+        .getOrElse(error(s"cannot find seller's public key in seller contract in box $sellerHolderBoxId"))
       val buyerHolderBox = loggedStep(s"Loading buyer's box (${buyerHolderBoxId.toString})", console) {
         ctx.getBoxesById(buyerHolderBoxId.toString).head
       }
       val buyerAddressPk = BuyerContract.buyerPkFromTree(buyerHolderBox.getErgoTree)
+        .getOrElse(error(s"cannot find buyer's public key in buyer contract in box $buyerHolderBoxId"))
 
       val token = sellerHolderBox.getTokens.get(0)
       if (!BuyerContract.tokenFromContractTree(buyerHolderBox.getErgoTree).contains(token)) {

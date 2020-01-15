@@ -2,14 +2,15 @@ package org.ergoplatform.appkit.ergotool.AssetsAtomicExchange
 
 import java.io.File
 
+import org.ergoplatform.P2PKAddress
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.ergotool.{AppContext, Cmd, CmdDescriptor, RunWithErgoClient}
 import org.ergoplatform.appkit.impl.{ErgoTreeContract, ScalaBridge}
-import sigmastate.Values.{CollectionConstant, Constant, ErgoTree}
-import sigmastate.basics.DLogProtocol.ProveDlog
-import sigmastate.eval.CSigmaProp
+import sigmastate.Values.{CollectionConstant, Constant, ErgoTree, SigmaBoolean, SigmaPropConstant}
+import sigmastate.basics.DLogProtocol.{ProveDlog, ProveDlogProp}
+import sigmastate.eval.WrapperOf
 import sigmastate.eval.Extensions._
 import sigmastate.verification.contract.AssetsAtomicExchangeCompilation
 import sigmastate.{SByte, SLong, Values}
@@ -53,7 +54,7 @@ case class CreateBuyerContractCmd(toolConf: ErgoToolConfig,
   override def runWithClient(ergoClient: ErgoClient, runCtx: AppContext): Unit = {
     val console = runCtx.console
     ergoClient.execute(ctx => {
-      val buyerContract = BuyerContract.contractInstance(deadline, token, buyer.getPublicKey)
+      val buyerContract = BuyerContract.contractInstance(deadline, token, buyer)
       println(s"contract ergo tree: ${ScalaBridge.isoStringToErgoTree.from( buyerContract.getErgoTree)}")
       val senderProver = loggedStep("Creating prover", console) {
         BoxOperations.createProver(ctx, storageFile.getPath, storagePass)
@@ -115,9 +116,9 @@ object CreateBuyerContractCmd extends CmdDescriptor(
 
 object BuyerContract {
 
-  def contractInstance(deadline: Int, token: ErgoToken, buyerPk: ProveDlog): ErgoContract = {
+  def contractInstance(deadline: Int, token: ErgoToken, buyerPk: Address): ErgoContract = {
     import sigmastate.verified.VerifiedTypeConverters._
-    val buyerPkProp: sigmastate.verified.SigmaProp = CSigmaProp(buyerPk).asInstanceOf[SigmaProp]
+    val buyerPkProp = sigmastate.eval.SigmaDsl.SigmaProp(buyerPk.getPublicKey)
     val verifiedContract = AssetsAtomicExchangeCompilation.buyerContractInstance(deadline,
       token.getId.getBytes.toColl, token.getValue, buyerPkProp)
     new ErgoTreeContract(verifiedContract.ergoTree)
@@ -132,6 +133,9 @@ object BuyerContract {
     }
   } yield new ErgoToken(tokenId, tokenAmount)
 
-  def buyerPkFromTree(tree: ErgoTree): ProveDlog =
-    tree.constants(1).value.asInstanceOf[CSigmaProp].sigmaTree.asInstanceOf[ProveDlog]
+  def buyerPkFromTree(tree: ErgoTree): Option[ProveDlog] = for {
+    pk <- tree.constants.lift(1).flatMap {
+      case SigmaPropConstant(ProveDlogProp(v)) => Some(v)
+    }
+  } yield pk
 }

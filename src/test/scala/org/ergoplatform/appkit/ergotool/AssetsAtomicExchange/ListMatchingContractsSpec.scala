@@ -6,11 +6,17 @@ import java.util.{List => JList}
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import ListMatchingContracts._
-import org.ergoplatform.appkit.{Address, ErgoId, ErgoToken, InputBox}
+import org.ergoplatform.{ErgoAddressEncoder, P2PKAddress}
+import org.ergoplatform.appkit.{Address, ErgoId, ErgoToken, InputBox, NetworkType}
 import sigmastate.Values.{ErgoTree, TrueLeaf}
 import org.ergoplatform.appkit.JavaHelpers._
 import org.ergoplatform.appkit.Iso._
 import org.scalacheck.{Arbitrary, Gen}
+import org.scalatest.tagobjects.Network
+import sigmastate.basics.DLogProtocol.ProveDlog
+import sigmastate.interpreter.CryptoConstants
+import sigmastate.interpreter.CryptoConstants.EcPointType
+import org.ergoplatform.appkit.Parameters.MinFee
 
 class ListMatchingContractsSpec extends PropSpec
   with Matchers
@@ -37,23 +43,81 @@ class ListMatchingContractsSpec extends PropSpec
 
   }
 
-  // TODO: extract
+  // TODO: extract (to appkit?)
   def ergoIdGen: Gen[ErgoId] = for {
     bytes <- Gen.listOfN(32, Arbitrary.arbByte.arbitrary)
   } yield new ErgoId(bytes.toArray)
 
-  property("empty list") {
+  val groupElementGen: Gen[EcPointType] = for {
+    _ <- Gen.const(1)
+  } yield CryptoConstants.dlogGroup.createRandomElement()
+  val proveDlogGen: Gen[ProveDlog] = for {v <- groupElementGen} yield ProveDlog(v)
+
+  def addressGen(networkPrefix: Byte): Gen[Address] = for {
+    pd <- proveDlogGen
+  } yield new Address(P2PKAddress(pd)(new ErgoAddressEncoder(networkPrefix)))
+
+  val testnetAddressGen: Gen[Address] = addressGen(NetworkType.TESTNET.networkPrefix)
+
+  property("empty list (no input)") {
+    matchingContracts(Seq.empty, Seq.empty) shouldBe empty
+  }
+
+  property("empty list (no valid contracts in inputs)") {
     matchingContracts(Seq.empty, Seq.empty) shouldBe empty
     matchingContracts(Seq(MockInputBox(0L)), Seq.empty) shouldBe empty
     matchingContracts(Seq.empty, Seq(MockInputBox(0L))) shouldBe empty
     matchingContracts(Seq(MockInputBox(0L)), Seq(MockInputBox(0L))) shouldBe empty
+  }
 
-    val anyAddress = Address.create("9f4QF8AD1nQ3nJahQVkMj8hFSVVzVom77b52JU7EW71Zexg6N8v")
-    val sellerContract = SellerContract.contractInstance(0,0L, anyAddress.getPublicKey)
-    val token = new ErgoToken("21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1", 0L)
+  property("empty list (only a seller contract is given)") {
+    // seller contract with a token
+    val anyAddress = testnetAddressGen.sample.get
+    val sellerContract = SellerContract.contractInstance(0,0L, anyAddress)
+    val token = new ErgoToken(ergoIdGen.sample.get, 1L)
     val sellerBox = MockInputBox(ergoIdGen.sample.get, 1L, sellerContract.getErgoTree, Seq(token))
 
     matchingContracts(Seq(sellerBox), Seq(MockInputBox(0L))) shouldBe empty
   }
 
+  property("empty list (no matching token)") {
+    val sellerContract = SellerContract.contractInstance(0,0L,
+      testnetAddressGen.sample.get)
+    val sellerBox = MockInputBox(ergoIdGen.sample.get, 1L, sellerContract.getErgoTree,
+      Seq(new ErgoToken(ergoIdGen.sample.get, 1L)))
+
+    val buyerContract = BuyerContract.contractInstance(0,
+      new ErgoToken(ergoIdGen.sample.get, 1L), testnetAddressGen.sample.get)
+    val buyerBox = MockInputBox(ergoIdGen.sample.get, 1L, buyerContract.getErgoTree)
+
+    matchingContracts(Seq(sellerBox), Seq(buyerBox)) shouldBe empty
+  }
+
+  property("empty list (no matching token count)") {
+    val tokenPrice = 10L
+    val sellerContract = SellerContract.contractInstance(0, tokenPrice,
+      testnetAddressGen.sample.get)
+    val tokenId = ergoIdGen.sample.get
+    val sellerBox = MockInputBox(ergoIdGen.sample.get, 1L, sellerContract.getErgoTree,
+      Seq(new ErgoToken(tokenId, 1L)))
+
+    val buyerContract = BuyerContract.contractInstance(0, new ErgoToken(tokenId, 2L),
+      testnetAddressGen.sample.get)
+    val buyerBox = MockInputBox(ergoIdGen.sample.get, tokenPrice + MinFee, buyerContract.getErgoTree)
+
+    matchingContracts(Seq(sellerBox), Seq(buyerBox)) shouldBe empty
+  }
+
+  property("empty list (DEX fee < 0)") {
+    val sellerContract = SellerContract.contractInstance(0,20L,
+      testnetAddressGen.sample.get)
+    val token = new ErgoToken(ergoIdGen.sample.get, 1L)
+    val sellerBox = MockInputBox(ergoIdGen.sample.get, 1L, sellerContract.getErgoTree,
+      Seq(token))
+
+    val buyerContract = BuyerContract.contractInstance(0, token, testnetAddressGen.sample.get)
+    val buyerBox = MockInputBox(ergoIdGen.sample.get, 10L + MinFee, buyerContract.getErgoTree)
+
+    matchingContracts(Seq(sellerBox), Seq(buyerBox)) shouldBe empty
+  }
 }
