@@ -2,6 +2,8 @@ package org.ergoplatform.appkit.console
 
 import java.io.{BufferedReader, PrintStream}
 
+import org.ergoplatform.appkit.SecretString
+
 /** Abstract interface for Console interactions (print and read operations).
  * Console read operations consume from input stream, and print operations
  * send data to output stream.
@@ -18,8 +20,8 @@ abstract class Console {
    */
   def readLine(): String
   def readLine(prompt: String): String
-  def readPassword(): Array[Char]
-  def readPassword(prompt: String): Array[Char]
+  def readPassword(): SecretString
+  def readPassword(prompt: String): SecretString
 }
 object Console {
   /** The console which should be used in application's main method. */
@@ -38,9 +40,9 @@ class MainConsole() extends Console {
 
   override def readLine(prompt: String): String = sysConsole.readLine("%s", prompt)
 
-  override def readPassword(): Array[Char] = sysConsole.readPassword()
+  override def readPassword(): SecretString = SecretString.create(sysConsole.readPassword())
 
-  override def readPassword(prompt: String): Array[Char] = sysConsole.readPassword("%s", prompt)
+  override def readPassword(prompt: String): SecretString = SecretString.create(sysConsole.readPassword("%s", prompt))
 }
 
 /** Console implementation to be used in tests */
@@ -56,12 +58,12 @@ class TestConsole(in: BufferedReader, out: PrintStream) extends Console {
   }
 
   // TODO security: these methods should be reimplemented without using String (See java.io.Console)
-  override def readPassword(): Array[Char] = {
+  override def readPassword(): SecretString = {
     val line = readLine()
-    line.toCharArray
+    SecretString.create(line)
   }
 
-  override def readPassword(msg: String): Array[Char] = {
+  override def readPassword(msg: String): SecretString = {
     print(msg).readPassword()
   }
 }

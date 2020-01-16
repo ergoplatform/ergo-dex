@@ -117,18 +117,18 @@ abstract class CmdDescriptor(
     *        the password to be erased as fast as possible and avoid leaking to GC.
     * @throws UsageException
     */
-  def readNewPassword(nAttemps: Int, console: Console)(block: => (Array[Char], Array[Char])): Array[Char] = {
+  def readNewPassword(nAttemps: Int, console: Console)(block: => (SecretString, SecretString)): SecretString = {
     var i = 0
     do {
       val (p1, p2) = block
       i += 1
-      if (Arrays.equals(p1, p2)) {
-        Arrays.fill(p2, ' ') // cleanup duplicate copy
+      if (p1.equals(p2)) {
+        p2.erase() // cleanup duplicate copy
         return p1
       }
       else {
-        Arrays.fill(p1, ' ') // cleanup sensitive data
-        Arrays.fill(p2, ' ')
+        p1.erase() // cleanup sensitive data
+        p2.erase()
         if (i < nAttemps) {
           console.println(s"Passwords are different, try again [${i + 1}/$nAttemps]")
           // and loop
@@ -139,7 +139,7 @@ abstract class CmdDescriptor(
     error("should never go here due to exhaustive `if` above")
   }
 
-  def readNewPassword(prompt: String, secondPrompt: String)(implicit ctx: AppContext): Array[Char] = {
+  def readNewPassword(prompt: String, secondPrompt: String)(implicit ctx: AppContext): SecretString = {
     val console = ctx.console
     readNewPassword(3, console) {
       val p1 = console.readPassword(prompt)

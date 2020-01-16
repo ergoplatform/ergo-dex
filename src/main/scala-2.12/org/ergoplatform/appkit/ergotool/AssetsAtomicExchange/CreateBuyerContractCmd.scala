@@ -43,7 +43,7 @@ import special.sigma.SigmaProp
 case class CreateBuyerContractCmd(toolConf: ErgoToolConfig,
                                   name: String,
                                   storageFile: File,
-                                  storagePass: Array[Char],
+                                  storagePass: SecretString,
                                   buyer: Address,
                                   deadline: Int,
                                   ergAmount: Long,
@@ -56,7 +56,7 @@ case class CreateBuyerContractCmd(toolConf: ErgoToolConfig,
       val buyerContract = BuyerContract.contractInstance(deadline, token, buyer.getPublicKey)
       println(s"contract ergo tree: ${ScalaBridge.isoStringToErgoTree.from( buyerContract.getErgoTree)}")
       val senderProver = loggedStep("Creating prover", console) {
-        BoxOperations.createProver(ctx, storageFile.getPath, String.valueOf(storagePass))
+        BoxOperations.createProver(ctx, storageFile.getPath, storagePass)
       }
       val sender = senderProver.getAddress
       val unspent = loggedStep(s"Loading unspent boxes from at address $sender", console) {

@@ -34,7 +34,7 @@ import org.ergoplatform.appkit.ergotool.{AppContext, Cmd, CmdDescriptor, RunWith
 case class MatchContractsCmd(toolConf: ErgoToolConfig,
                              name: String,
                              storageFile: File,
-                             storagePass: Array[Char],
+                             storagePass: SecretString,
                              sellerHolderBoxId: ErgoId,
                              buyerHolderBoxId: ErgoId,
                              minDexFee: Long) extends Cmd with RunWithErgoClient {
@@ -43,7 +43,7 @@ case class MatchContractsCmd(toolConf: ErgoToolConfig,
     val console = runCtx.console
     ergoClient.execute(ctx => {
       val senderProver = loggedStep("Creating prover", console) {
-        BoxOperations.createProver(ctx, storageFile.getPath, String.valueOf(storagePass))
+        BoxOperations.createProver(ctx, storageFile.getPath, storagePass)
       }
       val sellerHolderBox = loggedStep(s"Loading seller's box (${sellerHolderBoxId.toString})", console) {
         ctx.getBoxesById(sellerHolderBoxId.toString).head

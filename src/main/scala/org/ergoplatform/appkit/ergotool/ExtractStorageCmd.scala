@@ -1,7 +1,7 @@
 package org.ergoplatform.appkit.ergotool
 
 import org.ergoplatform.appkit.config.ErgoToolConfig
-import org.ergoplatform.appkit.{NetworkType, SecretStorage}
+import org.ergoplatform.appkit.{NetworkType, SecretStorage, SecretString}
 import org.ergoplatform.wallet.secrets.ExtendedSecretKeySerializer
 import scorex.util.encode.Base16
 
@@ -31,12 +31,12 @@ import scorex.util.encode.Base16
   */
 case class ExtractStorageCmd(
     toolConf: ErgoToolConfig, name: String,
-    storageFile: String, storagePass: Array[Char], prop: String, network: NetworkType) extends Cmd {
+    storageFile: String, storagePass: SecretString, prop: String, network: NetworkType) extends Cmd {
   import ExtractStorageCmd._
   override def run(ctx: AppContext): Unit = {
     val console = ctx.console
     val storage = SecretStorage.loadFrom(storageFile)
-    storage.unlock(String.valueOf(storagePass))
+    storage.unlock(storagePass)
     val secret = storage.getSecret
     prop match {
       case PropAddress =>
