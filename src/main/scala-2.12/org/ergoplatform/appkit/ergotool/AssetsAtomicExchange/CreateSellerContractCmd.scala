@@ -114,13 +114,14 @@ object SellerContract {
 
   def contractInstance(deadline: Int, tokenPrice: Long, sellerPk: ProveDlog): ErgoContract = {
     import sigmastate.verified.VerifiedTypeConverters._
-    val sellerPkProp: sigmastate.verified.SigmaProp = CSigmaProp(sellerPk).asInstanceOf[SigmaProp]
+    val sellerPkProp: sigmastate.verified.SigmaProp = sigmastate.eval.SigmaDsl.SigmaProp(sellerPk)
     val verifiedContract = AssetsAtomicExchangeCompilation.sellerContractInstance(deadline,
       tokenPrice, sellerPkProp)
     new ErgoTreeContract(verifiedContract.ergoTree)
   }
 
   def tokenPriceFromTree(tree: ErgoTree): Option[Long] =
+    // TODO get rid on magic constant (consider refactoring using ErgoContract.getConstantByName())
     tree.constants.lift(6).flatMap {
       case Values.ConstantNode(value, SLong) => Some(value.asInstanceOf[Long])
     }
