@@ -1,7 +1,7 @@
 package org.ergoplatform.appkit.ergotool
 
 import org.ergoplatform.appkit.console.{ConsoleTesting, Console}
-import org.ergoplatform.appkit.examples.util.FileMockedErgoClient
+import org.ergoplatform.appkit.FileMockedErgoClient
 import org.scalatest.{PropSpec, Matchers}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import scalan.util.FileUtil

@@ -34,7 +34,7 @@ case class CreateStorageCmd
   mnemonic: Mnemonic, storagePass: SecretString,
   storageDir: String, storageFileName: String) extends Cmd {
   override def run(ctx: AppContext): Unit = {
-    val storage = SecretStorage.createFromMnemonicIn(storageDir, mnemonic, storagePass.toStringUnsecure)
+    val storage = SecretStorage.createFromMnemonicIn(storageDir, mnemonic, storagePass)
     storagePass.erase()
     val filePath = Files.move(storage.getFile.toPath, Paths.get(storageDir, storageFileName), StandardCopyOption.ATOMIC_MOVE)
     ctx.console.println(s"Storage File: $filePath")
@@ -53,13 +53,13 @@ object CreateStorageCmd extends CmdDescriptor(
     val storagePath = Paths.get(storageDir, storageFileName)
     if (Files.exists(storagePath)) usageError(s"File $storagePath already exists")
 
-    val phrase = console.readLine("Enter mnemonic phrase> ")
+    val phrase = SecretString.create(console.readLine("Enter mnemonic phrase> "))
     val mnemonicPass = readNewPassword(3, console) {
       val p1 = console.readPassword("Mnemonic password> ")
       val p2 = console.readPassword("Repeat mnemonic password> ")
       (p1, p2)
     }
-    val mnemonic = Mnemonic.create(phrase.toCharArray, mnemonicPass.getData)
+    val mnemonic = Mnemonic.create(phrase, mnemonicPass)
     val storagePass = readNewPassword(3, console) {
       val p1 = console.readPassword("Storage password> ")
       val p2 = console.readPassword("Repeat storage password> ")
