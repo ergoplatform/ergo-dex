@@ -41,7 +41,7 @@ import special.sigma.SigmaProp
 case class CreateSellerContractCmd(toolConf: ErgoToolConfig,
                                    name: String,
                                    storageFile: File,
-                                   storagePass: Array[Char],
+                                   storagePass: SecretString,
                                    seller: Address,
                                    deadline: Int,
                                    tokenPrice: Long,
@@ -53,7 +53,7 @@ case class CreateSellerContractCmd(toolConf: ErgoToolConfig,
     ergoClient.execute(ctx => {
       val sellerContract = SellerContract.contractInstance(deadline, tokenPrice, seller.getPublicKey)
       val senderProver = loggedStep("Creating prover", console) {
-        BoxOperations.createProver(ctx, storageFile.getPath, String.valueOf(storagePass))
+        BoxOperations.createProver(ctx, storageFile.getPath, storagePass)
       }
       val sender = senderProver.getAddress
       val unspent = loggedStep(s"Loading unspent boxes from at address $sender", console) {
