@@ -1,63 +1,15 @@
 package org.ergoplatform.appkit.ergotool.AssetsAtomicExchange
 
-import java.lang.{Long => JLong}
-import java.util.{List => JList}
-
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import ListMatchingContracts._
-import org.ergoplatform.{ErgoAddressEncoder, P2PKAddress}
-import org.ergoplatform.appkit.{Address, ErgoId, ErgoToken, InputBox, NetworkType}
-import sigmastate.Values.{ErgoTree, TrueLeaf}
-import org.ergoplatform.appkit.JavaHelpers._
-import org.ergoplatform.appkit.Iso._
-import org.scalacheck.{Arbitrary, Gen}
-import org.scalatest.tagobjects.Network
-import sigmastate.basics.DLogProtocol.ProveDlog
-import sigmastate.interpreter.CryptoConstants
-import sigmastate.interpreter.CryptoConstants.EcPointType
+import org.ergoplatform.appkit.{Address, ErgoId, ErgoToken, InputBox, MockInputBox, NetworkType, ObjectGenerators}
 import org.ergoplatform.appkit.Parameters.MinFee
 
 class ListMatchingContractsSpec extends PropSpec
   with Matchers
-  with ScalaCheckDrivenPropertyChecks {
-
-  // TODO: extract
-  case class MockInputBox(getId: ErgoId,
-                          getValue: JLong,
-                          getTokens: JList[ErgoToken],
-                          getErgoTree: ErgoTree) extends InputBox {
-    override def toJson(prettyPrint: Boolean): String = ???
-  }
-
-  object MockInputBox {
-
-    def apply(getId: ErgoId, getValue: Long,
-              getErgoTree: ErgoTree, getTokens: Seq[ErgoToken] = Seq.empty): MockInputBox = {
-      val tokens = JListToIndexedSeq(identityIso[ErgoToken]).from(getTokens.toIndexedSeq)
-      new MockInputBox(getId, getValue, tokens, getErgoTree)
-    }
-
-    def apply(getValue: Long): MockInputBox =
-      MockInputBox(ergoIdGen.sample.get, getValue, ErgoTree.fromProposition(TrueLeaf))
-
-  }
-
-  // TODO: extract (to appkit?)
-  def ergoIdGen: Gen[ErgoId] = for {
-    bytes <- Gen.listOfN(32, Arbitrary.arbByte.arbitrary)
-  } yield new ErgoId(bytes.toArray)
-
-  val groupElementGen: Gen[EcPointType] = for {
-    _ <- Gen.const(1)
-  } yield CryptoConstants.dlogGroup.createRandomElement()
-  val proveDlogGen: Gen[ProveDlog] = for {v <- groupElementGen} yield ProveDlog(v)
-
-  def addressGen(networkPrefix: Byte): Gen[Address] = for {
-    pd <- proveDlogGen
-  } yield new Address(P2PKAddress(pd)(new ErgoAddressEncoder(networkPrefix)))
-
-  val testnetAddressGen: Gen[Address] = addressGen(NetworkType.TESTNET.networkPrefix)
+  with ScalaCheckDrivenPropertyChecks
+  with ObjectGenerators {
 
   property("empty list (no input)") {
     matchingContracts(Seq.empty, Seq.empty) shouldBe empty
@@ -106,6 +58,23 @@ class ListMatchingContractsSpec extends PropSpec
     val buyerBox = MockInputBox(ergoIdGen.sample.get, tokenPrice + MinFee, buyerContract.getErgoTree)
 
     matchingContracts(Seq(sellerBox), Seq(buyerBox)) shouldBe empty
+  }
+
+  property("empty list(wrong contracts)") {
+    val sellerContract = SellerContract.contractInstance(0,20L,
+      testnetAddressGen.sample.get)
+    val token = new ErgoToken(ergoIdGen.sample.get, 1L)
+    val sellerBox = MockInputBox(ergoIdGen.sample.get, 1L, sellerContract.getErgoTree,
+      Seq(token))
+
+    val buyerContract = BuyerContract.contractInstance(0, token, testnetAddressGen.sample.get)
+    val buyerBox = MockInputBox(ergoIdGen.sample.get, 20L + MinFee, buyerContract.getErgoTree)
+
+    // swapped parameter places
+    matchingContracts(Seq(buyerBox), Seq(sellerBox)) shouldBe empty
+    // same contract for both parameters
+    matchingContracts(Seq(buyerBox), Seq(buyerBox)) shouldBe empty
+    matchingContracts(Seq(sellerBox), Seq(sellerBox)) shouldBe empty
   }
 
   property("empty list (DEX fee < 0)") {

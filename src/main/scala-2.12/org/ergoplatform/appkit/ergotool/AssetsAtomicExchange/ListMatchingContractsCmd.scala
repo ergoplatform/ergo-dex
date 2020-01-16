@@ -44,7 +44,7 @@ case class ListMatchingContractsCmd(toolConf: ErgoToolConfig,
       }
       val matchingContractPairs = ListMatchingContracts
         .matchingContracts(sellerHolderBoxes, buyerHolderBoxes)
-      console.println("Seller                                                       Buyer                                            DEX fee")
+      console.println("Seller                                                            Buyer                                                             DEX fee(nanoERG)")
       matchingContractPairs.foreach { p =>
         console.println(s"${p.seller.getId}, ${p.buyer.getId}, ${p.dexFee}")
       }

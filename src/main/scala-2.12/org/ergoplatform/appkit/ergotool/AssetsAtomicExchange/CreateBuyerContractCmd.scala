@@ -35,9 +35,9 @@ import special.sigma.SigmaProp
   * @param storagePass password to access sender secret key in the storage
   * @param buyer       address of the buyer (the one who signs this transaction)
   * @param deadline    height of the blockchain after which the buyer can withdraw Ergs from this contract
-  * @param ergAmount   NanoErg amount for buyer to pay for tokens
+  * @param ergAmount   nanoERG amount for buyer to pay for tokens
   * @param token       token id and amount
-  * @param dexFee      an amount of NanoErgs to put in addition to ergAmount into the new box protected
+  * @param dexFee      an amount of nanoERGs to put in addition to ergAmount into the new box protected
   *                    by the buyer contract. When the buyer setup up a bid price he/she also decide on
   *                    the DEX fee amount to pay
   */
@@ -125,17 +125,14 @@ object BuyerContract {
   }
 
   def tokenFromContractTree(tree: ErgoTree): Option[ErgoToken] = for {
-    tokenId <- tree.constants.lift(7).flatMap {
-      case CollectionConstant(coll, SByte) => Some(coll.toArray.asInstanceOf[Array[Byte]])
+    tokenId <- tree.constants.lift(7).collect {
+      case CollectionConstant(coll, SByte) => coll.toArray.asInstanceOf[Array[Byte]]
     }
-    tokenAmount <- tree.constants.lift(9).flatMap {
-      case Values.ConstantNode(value, SLong) => Some(value.asInstanceOf[Long])
+    tokenAmount <- tree.constants.lift(9).collect {
+      case Values.ConstantNode(value, SLong) => value.asInstanceOf[Long]
     }
   } yield new ErgoToken(tokenId, tokenAmount)
 
-  def buyerPkFromTree(tree: ErgoTree): Option[ProveDlog] = for {
-    pk <- tree.constants.lift(1).flatMap {
-      case SigmaPropConstant(ProveDlogProp(v)) => Some(v)
-    }
-  } yield pk
+  def buyerPkFromTree(tree: ErgoTree): Option[ProveDlog] =
+    tree.constants.lift(1).collect { case SigmaPropConstant(ProveDlogProp(v)) => v }
 }

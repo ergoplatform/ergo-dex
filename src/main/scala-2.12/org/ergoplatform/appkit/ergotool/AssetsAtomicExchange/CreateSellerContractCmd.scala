@@ -121,13 +121,13 @@ object SellerContract {
   }
 
   def tokenPriceFromTree(tree: ErgoTree): Option[Long] =
-    tree.constants.lift(6).flatMap {
-      case Values.ConstantNode(value, SLong) => Some(value.asInstanceOf[Long])
+    tree.constants.lift(6).collect {
+      case Values.ConstantNode(value, SLong) => value.asInstanceOf[Long]
     }
 
   def sellerPkFromTree(tree: ErgoTree): Option[ProveDlog] = for {
-    pk <- tree.constants.lift(1).flatMap {
-      case SigmaPropConstant(ProveDlogProp(v)) => Some(v)
+    pk <- tree.constants.lift(1).collect {
+      case SigmaPropConstant(ProveDlogProp(v)) => v
     }
   } yield pk
 

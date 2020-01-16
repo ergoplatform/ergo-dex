@@ -22,7 +22,7 @@ import Utils._
   * @param storageFile storage with secret key of the sender
   * @param storagePass password to access sender secret key in the storage
   * @param recipient    address of the recepient of the transfer
-  * @param amountToSend amount of NanoErg to transfer to recipient
+  * @param amountToSend amount of nanoERG to transfer to recipient
   */
 case class SendCmd( toolConf: ErgoToolConfig, name: String, storageFile: File, storagePass: SecretString,
   recipient: Address, amountToSend: Long) extends Cmd with RunWithErgoClient {

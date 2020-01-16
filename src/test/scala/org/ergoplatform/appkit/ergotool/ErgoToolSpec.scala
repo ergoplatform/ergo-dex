@@ -207,7 +207,7 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         "storage/E2.json",
         "9f4QF8AD1nQ3nJahQVkMj8hFSVVzVom77b52JU7EW71Zexg6N8v", // seller address
         "999999", // deadline
-        "50000000", // token price in nanoErgs
+        "50000000", // token price in nanoERGs
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1", // tokenId
         "60", // token amount
         "5000000" // DEX fee
@@ -234,7 +234,7 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         "storage/E2.json",
         "9hHDQb26AjnJUXxcqriqY1mnhpLuUeC81C4pggtK7tupr92Ea1K", // buyer address
         "999999", // deadline
-        "50000000", // token price in nanoErgs
+        "50000000", // token price in nanoERGs
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1", // tokenId
         "60", // token amount
         "5000000", // DEX fee
@@ -267,5 +267,33 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     println(res)
     res should include ("\"transactionId\": \"f3e37a37b561a34bf91f37c9f9fbed1eb42a4d9bb364f869d42bcde22f5d8229\",")
   }
+
+  property("AssetsAtomicExchange list command") {
+    val data = MockData(
+      Seq(
+        loadNodeResponse("response_Box_AAE_seller_contract.json"),
+        loadNodeResponse("response_Box1.json"),
+        loadNodeResponse("response_Box2.json"),
+        loadNodeResponse("response_Box3.json"),
+        loadNodeResponse("response_Box_AAE_buyer_contract.json"),
+        loadNodeResponse("response_Box1.json"),
+        loadNodeResponse("response_Box2.json"),
+        loadNodeResponse("response_Box3.json"),
+        ),
+      Seq(
+        loadExplorerResponse("response_boxesByAddressUnspent.json"),
+        loadExplorerResponse("response_boxesByAddressUnspent.json")
+      )
+    )
+
+    val res = runCommand("AssetAtomicExchangeList",
+      args = Seq(
+      ),
+      expectedConsoleScenario = "",
+      data)
+    println(res)
+    res should include ("4bb384d56abc2764523582cb1c514828c6a8436067127caac040903a683be0ee, 9000000")
+  }
+
 }
 
