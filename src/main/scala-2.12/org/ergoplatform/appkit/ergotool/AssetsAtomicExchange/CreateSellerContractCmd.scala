@@ -125,10 +125,7 @@ object SellerContract {
       case Values.ConstantNode(value, SLong) => value.asInstanceOf[Long]
     }
 
-  def sellerPkFromTree(tree: ErgoTree): Option[ProveDlog] = for {
-    pk <- tree.constants.lift(1).collect {
-      case SigmaPropConstant(ProveDlogProp(v)) => v
-    }
-  } yield pk
+  def sellerPkFromTree(tree: ErgoTree): Option[ProveDlog] =
+    tree.constants.lift(1).collect { case SigmaPropConstant(ProveDlogProp(v)) => v }
 
 }
