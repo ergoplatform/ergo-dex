@@ -120,6 +120,7 @@ object SellerContract {
   }
 
   def tokenPriceFromTree(tree: ErgoTree): Option[Long] =
+    // TODO get rid on magic constant (consider refactoring using ErgoContract.getConstantByName())
     tree.constants.lift(6).collect {
       case Values.ConstantNode(value, SLong) => value.asInstanceOf[Long]
     }
