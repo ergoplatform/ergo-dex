@@ -1,4 +1,4 @@
-package org.ergoplatform.appkit.ergotool.AssetsAtomicExchange
+package org.ergoplatform.appkit.ergotool.dex
 
 import org.ergoplatform.appkit.ObjectGenerators
 import org.ergoplatform.{Height, Outputs}

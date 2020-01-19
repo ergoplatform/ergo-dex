@@ -1,4 +1,4 @@
-package org.ergoplatform.appkit.ergotool.AssetsAtomicExchange
+package org.ergoplatform.appkit.ergotool.dex
 
 import java.io.File
 

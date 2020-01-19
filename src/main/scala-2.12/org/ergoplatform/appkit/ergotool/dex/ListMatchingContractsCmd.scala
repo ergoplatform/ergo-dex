@@ -1,4 +1,4 @@
-package org.ergoplatform.appkit.ergotool.AssetsAtomicExchange
+package org.ergoplatform.appkit.ergotool.dex
 
 import org.ergoplatform.appkit.JavaHelpers._
 import org.ergoplatform.appkit.Parameters.MinFee

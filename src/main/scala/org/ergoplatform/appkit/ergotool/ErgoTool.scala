@@ -5,7 +5,7 @@ import org.ergoplatform.appkit.{ErgoClient, RestApiErgoClient}
 import scala.util.control.NonFatal
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.console.Console
-import org.ergoplatform.appkit.ergotool.AssetsAtomicExchange.{CreateSellerContractCmd, CreateBuyerContractCmd, ListMatchingContractsCmd, MatchContractsCmd}
+import org.ergoplatform.appkit.ergotool.dex.{CreateSellerContractCmd, CreateBuyerContractCmd, ListMatchingContractsCmd, MatchContractsCmd}
 
 /** ErgoTool implementation, contains main entry point of the console application.
   *
