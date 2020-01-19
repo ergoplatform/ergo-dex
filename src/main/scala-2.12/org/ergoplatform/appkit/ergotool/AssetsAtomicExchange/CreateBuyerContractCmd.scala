@@ -35,9 +35,9 @@ import special.sigma.SigmaProp
   * @param storagePass password to access sender secret key in the storage
   * @param buyer       address of the buyer (the one who signs this transaction)
   * @param deadline    height of the blockchain after which the buyer can withdraw Ergs from this contract
-  * @param ergAmount   nanoERG amount for buyer to pay for tokens
+  * @param ergAmount   NanoERG amount for buyer to pay for tokens
   * @param token       token id and amount
-  * @param dexFee      an amount of nanoERGs to put in addition to ergAmount into the new box protected
+  * @param dexFee      an amount of NanoERGs to put in addition to ergAmount into the new box protected
   *                    by the buyer contract. When the buyer setup up a bid price he/she also decide on
   *                    the DEX fee amount to pay
   */

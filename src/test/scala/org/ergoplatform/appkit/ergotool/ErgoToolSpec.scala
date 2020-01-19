@@ -207,7 +207,7 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         "storage/E2.json",
         "9f4QF8AD1nQ3nJahQVkMj8hFSVVzVom77b52JU7EW71Zexg6N8v", // seller address
         "999999", // deadline
-        "50000000", // token price in nanoERGs
+        "50000000", // token price in NanoERGs
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1", // tokenId
         "60", // token amount
         "5000000" // DEX fee
@@ -234,7 +234,7 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         "storage/E2.json",
         "9hHDQb26AjnJUXxcqriqY1mnhpLuUeC81C4pggtK7tupr92Ea1K", // buyer address
         "999999", // deadline
-        "50000000", // token price in nanoERGs
+        "50000000", // token price in NanoERGs
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1", // tokenId
         "60", // token amount
         "5000000", // DEX fee
