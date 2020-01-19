@@ -5,6 +5,7 @@ import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import ListMatchingContracts._
 import org.ergoplatform.appkit.{Address, ErgoId, ErgoToken, InputBox, MockInputBox, NetworkType, ObjectGenerators}
 import org.ergoplatform.appkit.Parameters.MinFee
+import org.scalacheck.Gen
 
 class ListMatchingContractsSpec extends PropSpec
   with Matchers
@@ -77,46 +78,52 @@ class ListMatchingContractsSpec extends PropSpec
     matchingContracts(Seq(sellerBox), Seq(sellerBox)) shouldBe empty
   }
 
-  property("empty list (DEX fee < 0)") {
-    val sellerContract = SellerContract.contractInstance(0,20L,
+  private def matchContractsPair(dexFee: Long, tokenPrice: Long): (InputBox, InputBox) = {
+    val dexFeePartSeller = dexFee / 2
+    val dexFeePartBuyer = dexFee - dexFeePartSeller // to handle odd defFee
+    val matchingTxFeePartSeller = MinFee / 2
+    val matchingTxFeePartBuyer = MinFee - matchingTxFeePartSeller
+    val sellerBoxValue = matchingTxFeePartSeller + dexFeePartSeller
+    val buyerBoxValue = matchingTxFeePartBuyer + dexFeePartBuyer + tokenPrice
+
+    val sellerContract = SellerContract.contractInstance(0, tokenPrice,
       testnetAddressGen.sample.get)
     val token = new ErgoToken(ergoIdGen.sample.get, 1L)
-    val sellerBox = MockInputBox(ergoIdGen.sample.get, 1L, sellerContract.getErgoTree,
-      Seq(token))
+    val sellerBox = MockInputBox(ergoIdGen.sample.get, sellerBoxValue, sellerContract.getErgoTree, Seq(token))
 
     val buyerContract = BuyerContract.contractInstance(0, token, testnetAddressGen.sample.get)
-    val buyerBox = MockInputBox(ergoIdGen.sample.get, 10L + MinFee, buyerContract.getErgoTree)
+    val buyerBox = MockInputBox(ergoIdGen.sample.get, buyerBoxValue, buyerContract.getErgoTree)
+    (sellerBox, buyerBox)
+  }
 
-    matchingContracts(Seq(sellerBox), Seq(buyerBox)) shouldBe empty
+  property("empty list (DEX fee < MinFee)") {
+    val dexFeeGen = Gen.chooseNum(Long.MinValue, MinFee - 1, 0L)
+    val tokenPriceGen = Gen.chooseNum(1L, Long.MaxValue)
+    forAll(dexFeeGen, tokenPriceGen) { (dexFee, tokenPrice) =>
+      val(sellerBox, buyerBox) = matchContractsPair(dexFee, tokenPrice)
+      matchingContracts(Seq(sellerBox), Seq(buyerBox)) shouldBe empty
+    }
   }
 
   property("one match") {
-    val sellerContract = SellerContract.contractInstance(0,20L,
-      testnetAddressGen.sample.get)
-    val token = new ErgoToken(ergoIdGen.sample.get, 1L)
-    val sellerBox = MockInputBox(ergoIdGen.sample.get, 1L, sellerContract.getErgoTree,
-      Seq(token))
-
-    val buyerContract = BuyerContract.contractInstance(0, token, testnetAddressGen.sample.get)
-    val buyerBox = MockInputBox(ergoIdGen.sample.get, 20L + MinFee, buyerContract.getErgoTree)
-
-    val matches = matchingContracts(Seq(sellerBox), Seq(buyerBox))
-    matches.length shouldBe 1
-    matches.forall(_.dexFee >= 0) shouldBe true
+    val dexFeeGen = Gen.chooseNum(MinFee, Long.MaxValue)
+    val tokenPriceGen = Gen.chooseNum(1L, Long.MaxValue)
+    forAll(dexFeeGen, tokenPriceGen) { (dexFee, tokenPrice) =>
+      val(sellerBox, buyerBox) = matchContractsPair(dexFee, tokenPrice)
+      val matches = matchingContracts(Seq(sellerBox), Seq(buyerBox))
+      matches.length shouldBe 1
+      matches.forall(_.dexFee == dexFee) shouldBe true
+    }
   }
 
   property("many matches") {
-    val sellerContract = SellerContract.contractInstance(0,20L,
-      testnetAddressGen.sample.get)
-    val token = new ErgoToken(ergoIdGen.sample.get, 1L)
-    val sellerBox = MockInputBox(ergoIdGen.sample.get, 1L, sellerContract.getErgoTree,
-      Seq(token))
-
-    val buyerContract = BuyerContract.contractInstance(0, token, testnetAddressGen.sample.get)
-    val buyerBox = MockInputBox(ergoIdGen.sample.get, 20L + MinFee, buyerContract.getErgoTree)
-
-    val matches = matchingContracts(Array.fill(5)(sellerBox), Array.fill(5)(buyerBox))
-    matches.length shouldBe 25 // (5 * 5, cartesian product)
-    matches.forall(_.dexFee >= 0) shouldBe true
+    val dexFeeGen = Gen.chooseNum(MinFee, Long.MaxValue)
+    val tokenPriceGen = Gen.chooseNum(1L, Long.MaxValue)
+    forAll(dexFeeGen, tokenPriceGen) { (dexFee, tokenPrice) =>
+      val(sellerBox, buyerBox) = matchContractsPair(dexFee, tokenPrice)
+      val matches = matchingContracts(Array.fill(5)(sellerBox), Array.fill(5)(buyerBox))
+      matches.length shouldBe 25 // (5 * 5, cartesian product)
+      matches.forall(_.dexFee == dexFee) shouldBe true
+    }
   }
 }

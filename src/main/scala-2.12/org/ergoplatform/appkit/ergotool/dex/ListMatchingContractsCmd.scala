@@ -86,7 +86,7 @@ object ListMatchingContracts {
               val dexFee = buyerBox.getValue - sellerTokenPrice + sellerBox.getValue - dexTxFee
               MatchingContract(sellerBox, buyerBox, dexFee)
             }
-            .filter(_.dexFee >= 0)
+            .filter(_.dexFee >= MinFee)
         } yield matchingContracts
       }
       .flatten
