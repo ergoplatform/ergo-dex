@@ -47,9 +47,9 @@ class SellerContractSpec extends PropSpec
 
   property("tokenPriceFromTree(wrong type of all constants)") {
     val tree = ErgoTree.fromProposition(EQ(Height, SizeOf(Outputs)))
-    SellerContract.tokenPriceFromTree(
-      ErgoTree(tree.header, Array.fill(10)(BooleanConstant(true)), tree.root.right.get)
-    ) shouldEqual None
+    val booleanConstants = Array.fill(10)(BooleanConstant(true))
+    val treeWithBooleanConstants = ErgoTree(tree.header, booleanConstants, tree.root.right.get)
+    SellerContract.tokenPriceFromTree(treeWithBooleanConstants) shouldEqual None
   }
 
 }

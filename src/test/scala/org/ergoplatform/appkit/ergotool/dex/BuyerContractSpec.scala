@@ -47,15 +47,15 @@ class BuyerContractSpec extends PropSpec
 
   property("tokenFromContractTree(wrong type of all constants)") {
     val tree = ErgoTree.fromProposition(EQ(Height, SizeOf(Outputs)))
-    BuyerContract.tokenFromContractTree(
-      ErgoTree(tree.header, Array.fill(10)(BooleanConstant(true)), tree.root.right.get)
-    ) shouldEqual None
+    val booleanConstants = Array.fill(10)(BooleanConstant(true))
+    val treeWithBooleanConstants = ErgoTree(tree.header, booleanConstants, tree.root.right.get)
+    BuyerContract.tokenFromContractTree(treeWithBooleanConstants) shouldEqual None
   }
 
   property("tokenFromContractTree(only token id constant has correct type)") {
     val tree = ErgoTree.fromProposition(EQ(Height, SizeOf(Outputs)))
-    BuyerContract.tokenFromContractTree(
-      ErgoTree(tree.header, Array.fill(10)(ByteArrayConstant(Array.fill(10)(1.toByte))), tree.root.right.get)
-    ) shouldEqual None
+    val byteArrayConstants = Array.fill(10)(ByteArrayConstant(Array.fill(10)(1.toByte)))
+    val treeWithByteArrayConstants = ErgoTree(tree.header, byteArrayConstants, tree.root.right.get)
+    BuyerContract.tokenFromContractTree(treeWithByteArrayConstants) shouldEqual None
   }
 }
