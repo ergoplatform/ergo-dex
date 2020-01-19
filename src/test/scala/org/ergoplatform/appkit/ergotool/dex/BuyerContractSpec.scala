@@ -29,7 +29,7 @@ class BuyerContractSpec extends PropSpec
 
   property("buyerPkFromTree(wrong type of constants)") {
     val tree = ErgoTree.fromProposition(TrueLeaf)
-    tree.constants(0).isInstanceOf[BooleanConstant]
+    tree.constants(0) shouldEqual TrueLeaf
     BuyerContract.buyerPkFromTree(tree) shouldEqual None
   }
 
