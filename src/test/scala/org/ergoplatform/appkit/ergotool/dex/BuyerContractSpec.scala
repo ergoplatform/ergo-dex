@@ -1,11 +1,11 @@
 package org.ergoplatform.appkit.ergotool.dex
 
-import org.ergoplatform.appkit.{ErgoToken, ObjectGenerators}
+import org.ergoplatform.appkit.ObjectGenerators
 import org.ergoplatform.{Height, Outputs}
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import sigmastate.EQ
-import sigmastate.Values.{BooleanConstant, ByteArrayConstant, ErgoTree, IntConstant, TrueLeaf}
+import sigmastate.Values.{BooleanConstant, ByteArrayConstant, ErgoTree, TrueLeaf}
 import sigmastate.utxo.SizeOf
 
 class BuyerContractSpec extends PropSpec
@@ -13,18 +13,11 @@ class BuyerContractSpec extends PropSpec
   with ScalaCheckDrivenPropertyChecks
   with ObjectGenerators {
 
-  property("contractInstance") {
-    val anyAddress = testnetAddressGen.sample.get
-    val token = new ErgoToken(ergoIdGen.sample.get, 1L)
-    val buyerContract = BuyerContract.contractInstance(0, token, anyAddress)
-    buyerContract.getErgoTree.constants should (not be empty)
-  }
-
   property("buyerPkFromTree") {
-    val anyAddress = testnetAddressGen.sample.get
-    val token = new ErgoToken(ergoIdGen.sample.get, 1L)
-    val buyerContract = BuyerContract.contractInstance(0, token, anyAddress)
-    BuyerContract.buyerPkFromTree(buyerContract.getErgoTree) shouldEqual Some(anyAddress.getPublicKey)
+    forAll(testnetAddressGen, tokenGen) { (address, token) =>
+      val buyerContract = BuyerContract.contractInstance(0, token, address)
+      BuyerContract.buyerPkFromTree(buyerContract.getErgoTree) shouldEqual Some(address.getPublicKey)
+    }
   }
 
   property("buyerPkFromTree(wrong type of constants)") {
@@ -40,10 +33,10 @@ class BuyerContractSpec extends PropSpec
   }
 
   property("tokenFromContractTree") {
-    val anyAddress = testnetAddressGen.sample.get
-    val token = new ErgoToken(ergoIdGen.sample.get, 1L)
-    val buyerContract = BuyerContract.contractInstance(0, token, anyAddress)
-    BuyerContract.tokenFromContractTree(buyerContract.getErgoTree) shouldEqual Some(token)
+    forAll(testnetAddressGen, tokenGen) { (address, token) =>
+      val buyerContract = BuyerContract.contractInstance(0, token, address)
+      BuyerContract.tokenFromContractTree(buyerContract.getErgoTree) shouldEqual Some(token)
+    }
   }
 
   property("tokenFromContractTree(no constants)") {

@@ -23,4 +23,11 @@ trait ObjectGenerators {
 
   val testnetAddressGen: Gen[Address] = addressGen(NetworkType.TESTNET.networkPrefix)
 
+  val unsignedLongGen: Gen[Long] = Gen.chooseNum(0, Long.MaxValue)
+
+  val tokenGen: Gen[ErgoToken] = for {
+    id <- ergoIdGen
+    value <- unsignedLongGen
+  } yield new ErgoToken(id, value)
+
 }

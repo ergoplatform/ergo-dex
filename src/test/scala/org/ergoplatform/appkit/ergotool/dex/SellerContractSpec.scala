@@ -13,16 +13,11 @@ class SellerContractSpec extends PropSpec
   with ScalaCheckDrivenPropertyChecks
   with ObjectGenerators {
 
-  property("contractInstance") {
-    val anyAddress = testnetAddressGen.sample.get
-    val sellerContract = SellerContract.contractInstance(0,1L, anyAddress)
-    sellerContract.getErgoTree.constants should (not be empty)
-  }
-
   property("sellerPkFromTree") {
-    val anyAddress = testnetAddressGen.sample.get
-    val sellerContract = SellerContract.contractInstance(0, 1L, anyAddress)
-    SellerContract.sellerPkFromTree(sellerContract.getErgoTree) shouldEqual Some(anyAddress.getPublicKey)
+    forAll(testnetAddressGen, unsignedLongGen) { (address, tokenPrice) =>
+      val sellerContract = SellerContract.contractInstance(0, tokenPrice, address)
+      SellerContract.sellerPkFromTree(sellerContract.getErgoTree) shouldEqual Some(address.getPublicKey)
+    }
   }
 
   property("sellerPkFromTree(wrong type of constants)") {
@@ -38,10 +33,10 @@ class SellerContractSpec extends PropSpec
   }
 
   property("tokenPriceFromTree") {
-    val anyAddress = testnetAddressGen.sample.get
-    val tokenPrice = 9238472L
-    val sellerContract = SellerContract.contractInstance(0, tokenPrice, anyAddress)
-    SellerContract.tokenPriceFromTree(sellerContract.getErgoTree) shouldEqual Some(tokenPrice)
+    forAll(testnetAddressGen, unsignedLongGen) { (address, tokenPrice) =>
+      val sellerContract = SellerContract.contractInstance(0, tokenPrice, address)
+      SellerContract.tokenPriceFromTree(sellerContract.getErgoTree) shouldEqual Some(tokenPrice)
+    }
   }
 
   property("tokenPriceFromTree(no constants)") {
