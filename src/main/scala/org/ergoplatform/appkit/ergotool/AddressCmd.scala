@@ -1,7 +1,7 @@
 package org.ergoplatform.appkit.ergotool
 
 import org.ergoplatform.appkit.config.ErgoToolConfig
-import org.ergoplatform.appkit.{NetworkType, Address}
+import org.ergoplatform.appkit.{Address, NetworkType, SecretString}
 
 /** Given [[mnemonic]], [[mnemonicPass]] and [[network]] the command computes
   * the address of the given network type.
@@ -20,12 +20,12 @@ import org.ergoplatform.appkit.{NetworkType, Address}
   * @param mnemonicPass password which is used to additionally protect mnemonic
   * @see [[AddressCmd$]] descriptor of the `address` command
   */
-case class AddressCmd(
-    toolConf: ErgoToolConfig,
-    name: String, network: NetworkType, mnemonic: String, mnemonicPass: Array[Char])
+case class AddressCmd
+( toolConf: ErgoToolConfig,
+  name: String, network: NetworkType, mnemonic: SecretString, mnemonicPass: SecretString)
   extends Cmd {
   override def run(ctx: AppContext): Unit = {
-    val address = Address.fromMnemonic(network, mnemonic, String.valueOf(mnemonicPass))
+    val address = Address.fromMnemonic(network, mnemonic, mnemonicPass)
     ctx.console.print(address.toString)
   }
 }
@@ -39,7 +39,7 @@ object AddressCmd extends CmdDescriptor(
     val args = ctx.cmdArgs
     val network = if (args.length > 1) args(1) else usageError("network is not specified (mainnet or testnet)")
     val networkType = parseNetwork(network)
-    val mnemonic = if (args.length > 2) args(2) else usageError("mnemonic is not specified")
+    val mnemonic = if (args.length > 2) SecretString.create(args(2)) else usageError("mnemonic is not specified")
     val mnemonicPass = readNewPassword("Mnemonic password> ", "Repeat mnemonic password> ")(ctx)
     AddressCmd(ctx.toolConf, name, networkType, mnemonic, mnemonicPass)
   }

@@ -1,8 +1,8 @@
 package org.ergoplatform.appkit.ergotool
 
 import org.ergoplatform.appkit.config.ErgoToolConfig
-import org.ergoplatform.appkit.{Mnemonic, SecretStorage}
-import java.nio.file.{Files, StandardCopyOption, Paths}
+import org.ergoplatform.appkit.{Mnemonic, SecretStorage, SecretString}
+import java.nio.file.{Files, Paths, StandardCopyOption}
 import java.util
 
 /** Create a new json file with encrypted content storing a secret key.
@@ -29,13 +29,13 @@ import java.util
   *                    "storage")
   * @param storageFileName name of the storage file (default is "secret.json")
   */
-case class CreateStorageCmd(
-    toolConf: ErgoToolConfig, name: String,
-    mnemonic: Mnemonic, storagePass: Array[Char],
-    storageDir: String, storageFileName: String) extends Cmd {
+case class CreateStorageCmd
+( toolConf: ErgoToolConfig, name: String,
+  mnemonic: Mnemonic, storagePass: SecretString,
+  storageDir: String, storageFileName: String) extends Cmd {
   override def run(ctx: AppContext): Unit = {
-    val storage = SecretStorage.createFromMnemonicIn(storageDir, mnemonic, String.valueOf(storagePass))
-    util.Arrays.fill(storagePass, 0.asInstanceOf[Char])
+    val storage = SecretStorage.createFromMnemonicIn(storageDir, mnemonic, storagePass)
+    storagePass.erase()
     val filePath = Files.move(storage.getFile.toPath, Paths.get(storageDir, storageFileName), StandardCopyOption.ATOMIC_MOVE)
     ctx.console.println(s"Storage File: $filePath")
   }
@@ -53,13 +53,13 @@ object CreateStorageCmd extends CmdDescriptor(
     val storagePath = Paths.get(storageDir, storageFileName)
     if (Files.exists(storagePath)) usageError(s"File $storagePath already exists")
 
-    val phrase = console.readLine("Enter mnemonic phrase> ")
+    val phrase = SecretString.create(console.readLine("Enter mnemonic phrase> "))
     val mnemonicPass = readNewPassword(3, console) {
       val p1 = console.readPassword("Mnemonic password> ")
       val p2 = console.readPassword("Repeat mnemonic password> ")
       (p1, p2)
     }
-    val mnemonic = Mnemonic.create(phrase, String.valueOf(mnemonicPass))
+    val mnemonic = Mnemonic.create(phrase, mnemonicPass)
     val storagePass = readNewPassword(3, console) {
       val p1 = console.readPassword("Storage password> ")
       val p2 = console.readPassword("Repeat storage password> ")

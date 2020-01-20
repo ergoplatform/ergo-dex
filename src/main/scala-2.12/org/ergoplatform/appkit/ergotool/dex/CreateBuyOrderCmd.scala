@@ -1,4 +1,4 @@
-package org.ergoplatform.appkit.ergotool.AssetsAtomicExchange
+package org.ergoplatform.appkit.ergotool.dex
 
 import java.io.File
 
@@ -7,15 +7,14 @@ import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.ergotool.{AppContext, Cmd, CmdDescriptor, RunWithErgoClient}
 import org.ergoplatform.appkit.impl.{ErgoTreeContract, ScalaBridge}
-import sigmastate.Values.{CollectionConstant, Constant, ErgoTree}
-import sigmastate.basics.DLogProtocol.ProveDlog
-import sigmastate.eval.CSigmaProp
+import sigmastate.Values.{ByteArrayConstant, CollectionConstant, ErgoTree, SigmaPropConstant}
+import sigmastate.basics.DLogProtocol.{ProveDlog, ProveDlogProp}
+import sigmastate.eval.WrapperOf
 import sigmastate.eval.Extensions._
 import sigmastate.verification.contract.AssetsAtomicExchangeCompilation
 import sigmastate.{SByte, SLong, Values}
-import special.sigma.SigmaProp
 
-/** Creates and sends a new transaction with buyer's contract for AssetsAtomicExchange
+/** Creates and sends a new transaction with buyer's order for AssetsAtomicExchange
   *
   * Steps:<br/>
   * 1) request storage password from the user<br/>
@@ -23,8 +22,8 @@ import special.sigma.SigmaProp
   * 3) get master public key and compute sender's address<br/>
   * 4) load available coins belonging to the sender's address<br/>
   * 5) select coins to cover ergAmount, compute transaction fee and amount of change<br/>
-  * 6) create an instance of the buyer's contract passing deadline, token and buyer address<br/>
-  * 7) create an output box protected with the instance of buyer's contract from the previous step<br/>
+  * 6) create an instance of the buyer's order passing deadline, token and buyer address<br/>
+  * 7) create an output box protected with the instance of buyer's order from the previous step<br/>
   * 8) create and sign (using secret key) the transaction<br/>
   * 9) if no `--dry-run` option is specified, send the transaction to the network<br/>
   *    otherwise skip sending<br/>
@@ -33,30 +32,30 @@ import special.sigma.SigmaProp
   * @param storageFile storage with secret key of the sender
   * @param storagePass password to access sender secret key in the storage
   * @param buyer       address of the buyer (the one who signs this transaction)
-  * @param deadline    height of the blockchain after which the buyer can withdraw Ergs from this contract
-  * @param ergAmount   NanoErg amount for buyer to pay for tokens
+  * @param deadline    height of the blockchain after which the buyer can withdraw Ergs from this order
+  * @param ergAmount   NanoERG amount for buyer to pay for tokens
   * @param token       token id and amount
-  * @param dexFee      an amount of NanoErgs to put in addition to ergAmount into the new box protected
-  *                    by the buyer contract. When the buyer setup up a bid price he/she also decide on
+  * @param dexFee      an amount of NanoERGs to put in addition to ergAmount into the new box protected
+  *                    by the buyer order. When the buyer setup up a bid price he/she also decide on
   *                    the DEX fee amount to pay
   */
-case class CreateBuyerContractCmd(toolConf: ErgoToolConfig,
-                                  name: String,
-                                  storageFile: File,
-                                  storagePass: Array[Char],
-                                  buyer: Address,
-                                  deadline: Int,
-                                  ergAmount: Long,
-                                  token: ErgoToken,
-                                  dexFee: Long) extends Cmd with RunWithErgoClient {
+case class CreateBuyOrderCmd(toolConf: ErgoToolConfig,
+                             name: String,
+                             storageFile: File,
+                             storagePass: SecretString,
+                             buyer: Address,
+                             deadline: Int,
+                             ergAmount: Long,
+                             token: ErgoToken,
+                             dexFee: Long) extends Cmd with RunWithErgoClient {
 
   override def runWithClient(ergoClient: ErgoClient, runCtx: AppContext): Unit = {
     val console = runCtx.console
     ergoClient.execute(ctx => {
-      val buyerContract = BuyerContract.contractInstance(deadline, token, buyer.getPublicKey)
+      val buyerContract = BuyerContract.contractInstance(deadline, token, buyer)
       println(s"contract ergo tree: ${ScalaBridge.isoStringToErgoTree.from( buyerContract.getErgoTree)}")
       val senderProver = loggedStep("Creating prover", console) {
-        BoxOperations.createProver(ctx, storageFile.getPath, String.valueOf(storagePass))
+        BoxOperations.createProver(ctx, storageFile.getPath, storagePass)
       }
       val sender = senderProver.getAddress
       val unspent = loggedStep(s"Loading unspent boxes from at address $sender", console) {
@@ -91,9 +90,9 @@ case class CreateBuyerContractCmd(toolConf: ErgoToolConfig,
 }
 
 
-object CreateBuyerContractCmd extends CmdDescriptor(
-  name = "AssetAtomicExchangeBuyer", cmdParamSyntax = "<wallet file> <buyerAddr> <deadline> <ergAmount> <tokenId> <tokenAmount>, <dexFee>",
-  description = "put a token buyer contract with given <tokenId> and <tokenAmount> to buy at given <ergPrice> price with <dexFee> as a reward for anyone who matches this contract with a seller, until given <deadline> with <buyerAddr> to be used for withdrawal(after the deadline) \n " +
+object CreateBuyOrderCmd extends CmdDescriptor(
+  name = "dex:BuyOrder", cmdParamSyntax = "<wallet file> <buyerAddr> <deadline> <ergAmount> <tokenId> <tokenAmount>, <dexFee>",
+  description = "put a token buyer order with given <tokenId> and <tokenAmount> to buy at given <ergPrice> price with <dexFee> as a reward for anyone who matches this order with a seller, until given <deadline> with <buyerAddr> to be used for withdrawal(after the deadline) \n " +
     "with the given <wallet file> to sign transaction (requests storage password)") {
 
   override def parseCmd(ctx: AppContext): Cmd = {
@@ -108,30 +107,30 @@ object CreateBuyerContractCmd extends CmdDescriptor(
     val token = new ErgoToken(tokenId, tokenAmount)
     val dexFee = if(args.length > 7) args(7).toLong else error("dexFee is not specified")
     val pass = ctx.console.readPassword("Storage password>")
-    CreateBuyerContractCmd(ctx.toolConf, name, storageFile, pass, buyer,
+    CreateBuyOrderCmd(ctx.toolConf, name, storageFile, pass, buyer,
       deadline, ergAmount, token, dexFee)
   }
 }
 
 object BuyerContract {
 
-  def contractInstance(deadline: Int, token: ErgoToken, buyerPk: ProveDlog): ErgoContract = {
+  def contractInstance(deadline: Int, token: ErgoToken, buyerPk: Address): ErgoContract = {
     import sigmastate.verified.VerifiedTypeConverters._
-    val buyerPkProp: sigmastate.verified.SigmaProp = CSigmaProp(buyerPk).asInstanceOf[SigmaProp]
+    val buyerPkProp = sigmastate.eval.SigmaDsl.SigmaProp(buyerPk.getPublicKey)
     val verifiedContract = AssetsAtomicExchangeCompilation.buyerContractInstance(deadline,
       token.getId.getBytes.toColl, token.getValue, buyerPkProp)
     new ErgoTreeContract(verifiedContract.ergoTree)
   }
 
   def tokenFromContractTree(tree: ErgoTree): Option[ErgoToken] = for {
-    tokenId <- tree.constants.lift(7).flatMap {
-      case CollectionConstant(coll, SByte) => Some(coll.toArray.asInstanceOf[Array[Byte]])
+    tokenId <- tree.constants.lift(7).collect {
+      case ByteArrayConstant(coll) => coll.toArray
     }
-    tokenAmount <- tree.constants.lift(9).flatMap {
-      case Values.ConstantNode(value, SLong) => Some(value.asInstanceOf[Long])
+    tokenAmount <- tree.constants.lift(9).collect {
+      case Values.ConstantNode(value, SLong) => value.asInstanceOf[Long]
     }
   } yield new ErgoToken(tokenId, tokenAmount)
 
-  def buyerPkFromTree(tree: ErgoTree): ProveDlog =
-    tree.constants(1).value.asInstanceOf[CSigmaProp].sigmaTree.asInstanceOf[ProveDlog]
+  def buyerPkFromTree(tree: ErgoTree): Option[ProveDlog] =
+    tree.constants.lift(1).collect { case SigmaPropConstant(ProveDlogProp(v)) => v }
 }

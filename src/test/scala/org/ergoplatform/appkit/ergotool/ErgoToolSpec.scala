@@ -1,7 +1,7 @@
 package org.ergoplatform.appkit.ergotool
 
 import org.ergoplatform.appkit.console.{ConsoleTesting, Console}
-import org.ergoplatform.appkit.examples.util.FileMockedErgoClient
+import org.ergoplatform.appkit.FileMockedErgoClient
 import org.scalatest.{PropSpec, Matchers}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import scalan.util.FileUtil
@@ -192,7 +192,7 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     res should include ("Server returned tx id: 21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1")
   }
 
-  property("AssetsAtomicExchange seller command") {
+  property("dex:SellOrder command") {
     val data = MockData(
       Seq(
         loadNodeResponse("response_Box1.json"),
@@ -202,12 +202,12 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1"),
       Seq(
         loadExplorerResponse("response_boxesByAddressUnspent.json")))
-    val res = runCommand("AssetAtomicExchangeSeller",
+    val res = runCommand("dex:SellOrder",
       args = Seq(
         "storage/E2.json",
         "9f4QF8AD1nQ3nJahQVkMj8hFSVVzVom77b52JU7EW71Zexg6N8v", // seller address
         "999999", // deadline
-        "50000000", // token price in nanoErgs
+        "50000000", // token price in NanoERGs
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1", // tokenId
         "60", // token amount
         "5000000" // DEX fee
@@ -219,7 +219,7 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     res should include ("\"transactionId\": \"1cf299fe144ac2d89b348f6e8666dd78ec2d8a030c3001f1809b771f4e566dca\",")
   }
 
-  property("AssetsAtomicExchange buyer command") {
+  property("dex:BuyOrder command") {
     val data = MockData(
       Seq(
         loadNodeResponse("response_Box1.json"),
@@ -229,12 +229,12 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1"),
       Seq(
         loadExplorerResponse("response_boxesByAddressUnspent.json")))
-    val res = runCommand("AssetAtomicExchangeBuyer",
+    val res = runCommand("dex:BuyOrder",
       args = Seq(
         "storage/E2.json",
         "9hHDQb26AjnJUXxcqriqY1mnhpLuUeC81C4pggtK7tupr92Ea1K", // buyer address
         "999999", // deadline
-        "50000000", // token price in nanoErgs
+        "50000000", // token price in NanoERGs
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1", // tokenId
         "60", // token amount
         "5000000", // DEX fee
@@ -246,7 +246,7 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     res should include ("\"transactionId\": \"38f784490cdff2bb4f4088f1bb306d2ccc0fc5123dd9f7d116cc7ee69620b6a6\",")
   }
 
-  property("AssetsAtomicExchange match command") {
+  property("dex:MatchOrders command") {
     val data = MockData(
       Seq(
         loadNodeResponse("response_Box_AAE_seller_contract.json"),
@@ -254,7 +254,7 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1"),
       Seq(
       ))
-    val res = runCommand("AssetAtomicExchangeMatch",
+    val res = runCommand("dex:MatchOrders",
       args = Seq(
         "storage/E2.json",
         "7de38874effe031a7522460cef870c3a8fbcfb0cc70df769ba63688fd2b2b35d", // seller contract box id
@@ -267,5 +267,33 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     println(res)
     res should include ("\"transactionId\": \"f3e37a37b561a34bf91f37c9f9fbed1eb42a4d9bb364f869d42bcde22f5d8229\",")
   }
+
+  property("dex:ListMatchingOrders command") {
+    val data = MockData(
+      Seq(
+        loadNodeResponse("response_Box_AAE_seller_contract.json"),
+        loadNodeResponse("response_Box1.json"),
+        loadNodeResponse("response_Box2.json"),
+        loadNodeResponse("response_Box3.json"),
+        loadNodeResponse("response_Box_AAE_buyer_contract.json"),
+        loadNodeResponse("response_Box1.json"),
+        loadNodeResponse("response_Box2.json"),
+        loadNodeResponse("response_Box3.json"),
+        ),
+      Seq(
+        loadExplorerResponse("response_boxesByAddressUnspent.json"),
+        loadExplorerResponse("response_boxesByAddressUnspent.json")
+      )
+    )
+
+    val res = runCommand("dex:ListMatchingOrders",
+      args = Seq(
+      ),
+      expectedConsoleScenario = "",
+      data)
+    println(res)
+    res should include ("4bb384d56abc2764523582cb1c514828c6a8436067127caac040903a683be0ee, 9000000")
+  }
+
 }
 

@@ -22,14 +22,15 @@ import Utils._
   * @param storageFile storage with secret key of the sender
   * @param storagePass password to access sender secret key in the storage
   * @param recipient    address of the recepient of the transfer
-  * @param amountToSend amount of NanoErg to transfer to recipient
+  * @param amountToSend amount of NanoERG to transfer to recipient
   */
-case class SendCmd(toolConf: ErgoToolConfig, name: String, storageFile: File, storagePass: Array[Char], recipient: Address, amountToSend: Long) extends Cmd with RunWithErgoClient {
+case class SendCmd( toolConf: ErgoToolConfig, name: String, storageFile: File, storagePass: SecretString,
+  recipient: Address, amountToSend: Long) extends Cmd with RunWithErgoClient {
   override def runWithClient(ergoClient: ErgoClient, runCtx: AppContext): Unit = {
     val console = runCtx.console
     ergoClient.execute(ctx => {
       val senderProver = loggedStep("Creating prover", console) {
-        BoxOperations.createProver(ctx, storageFile.getPath, String.valueOf(storagePass))
+        BoxOperations.createProver(ctx, storageFile.getPath, storagePass)
       }
       val sender = senderProver.getAddress
       val unspent = loggedStep(s"Loading unspent boxes from at address $sender", console) {
@@ -68,7 +69,7 @@ case class SendCmd(toolConf: ErgoToolConfig, name: String, storageFile: File, st
 object SendCmd extends CmdDescriptor(
   name = "send", cmdParamSyntax = "<storageFile> <recipientAddr> <amountToSend>",
   description = "send the given <amountToSend> to the given <recipientAddr> using \n " +
-      "the given <storageFile> to sign transaction (requests storage password)") {
+    "the given <storageFile> to sign transaction (requests storage password)") {
 
   override def parseCmd(ctx: AppContext): Cmd = {
     val args = ctx.cmdArgs
