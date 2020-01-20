@@ -20,8 +20,7 @@ case class ListMatchingOrdersCmd(toolConf: ErgoToolConfig,
 
   private lazy val sellerContractTemplate: ErgoTreeTemplate = {
     val anyAddress = Address.create("9f4QF8AD1nQ3nJahQVkMj8hFSVVzVom77b52JU7EW71Zexg6N8v")
-    val sellerContract = SellerContract.contractInstance(0,
-      0L, anyAddress)
+    val sellerContract = SellerContract.contractInstance(0L, anyAddress)
     ErgoTreeTemplate.fromErgoTree(sellerContract.getErgoTree)
   }
 
@@ -29,7 +28,7 @@ case class ListMatchingOrdersCmd(toolConf: ErgoToolConfig,
     val anyAddress = Address.create("9f4QF8AD1nQ3nJahQVkMj8hFSVVzVom77b52JU7EW71Zexg6N8v")
     val token = new ErgoToken("21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1",
       0L)
-    val buyerContract = BuyerContract.contractInstance(0, token, anyAddress)
+    val buyerContract = BuyerContract.contractInstance(token, anyAddress)
     ErgoTreeTemplate.fromErgoTree(buyerContract.getErgoTree)
   }
 
@@ -71,7 +70,7 @@ object ListMatchingOrders {
       .flatMap { sellerBox =>
         for {
           sellerTokenPrice <- SellerContract.tokenPriceFromTree(sellerBox.getErgoTree)
-          sellerToken <- sellerBox .getTokens
+          sellerToken <- sellerBox.getTokens
             .convertTo[IndexedSeq[ErgoToken]]
             .headOption
           matchingOrders = buyerBoxes
@@ -93,4 +92,3 @@ object ListMatchingOrders {
       .sortBy(_.dexFee)
 
 }
-

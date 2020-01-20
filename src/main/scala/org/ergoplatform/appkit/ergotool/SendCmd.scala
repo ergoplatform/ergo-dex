@@ -30,7 +30,7 @@ case class SendCmd( toolConf: ErgoToolConfig, name: String, storageFile: File, s
     val console = runCtx.console
     ergoClient.execute(ctx => {
       val senderProver = loggedStep("Creating prover", console) {
-        BoxOperations.createProver(ctx, storageFile.getPath, storagePass).build
+        BoxOperations.createProver(ctx, storageFile.getPath, storagePass).build()
       }
       val sender = senderProver.getAddress
       val unspent = loggedStep(s"Loading unspent boxes from at address $sender", console) {

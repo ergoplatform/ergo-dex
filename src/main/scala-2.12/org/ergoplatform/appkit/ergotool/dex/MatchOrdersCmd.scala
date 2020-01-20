@@ -43,7 +43,7 @@ case class MatchOrdersCmd(toolConf: ErgoToolConfig,
     val console = runCtx.console
     ergoClient.execute(ctx => {
       val senderProver = loggedStep("Creating prover", console) {
-        BoxOperations.createProver(ctx, storageFile.getPath, storagePass).build
+        BoxOperations.createProver(ctx, storageFile.getPath, storagePass).build()
       }
       val sellerHolderBox = loggedStep(s"Loading seller's box (${sellerHolderBoxId.toString})", console) {
         ctx.getBoxesById(sellerHolderBoxId.toString).head

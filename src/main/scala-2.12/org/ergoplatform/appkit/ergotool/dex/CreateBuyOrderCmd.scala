@@ -22,7 +22,7 @@ import sigmastate.{SByte, SLong, Values}
   * 3) get master public key and compute sender's address<br/>
   * 4) load available coins belonging to the sender's address<br/>
   * 5) select coins to cover ergAmount, compute transaction fee and amount of change<br/>
-  * 6) create an instance of the buyer's order passing deadline, token and buyer address<br/>
+  * 6) create an instance of the buyer's order passing token and buyer address<br/>
   * 7) create an output box protected with the instance of buyer's order from the previous step<br/>
   * 8) create and sign (using secret key) the transaction<br/>
   * 9) if no `--dry-run` option is specified, send the transaction to the network<br/>
@@ -32,7 +32,6 @@ import sigmastate.{SByte, SLong, Values}
   * @param storageFile storage with secret key of the sender
   * @param storagePass password to access sender secret key in the storage
   * @param buyer       address of the buyer (the one who signs this transaction)
-  * @param deadline    height of the blockchain after which the buyer can withdraw Ergs from this order
   * @param ergAmount   NanoERG amount for buyer to pay for tokens
   * @param token       token id and amount
   * @param dexFee      an amount of NanoERGs to put in addition to ergAmount into the new box protected
@@ -44,7 +43,6 @@ case class CreateBuyOrderCmd(toolConf: ErgoToolConfig,
                              storageFile: File,
                              storagePass: SecretString,
                              buyer: Address,
-                             deadline: Int,
                              ergAmount: Long,
                              token: ErgoToken,
                              dexFee: Long) extends Cmd with RunWithErgoClient {
@@ -52,10 +50,10 @@ case class CreateBuyOrderCmd(toolConf: ErgoToolConfig,
   override def runWithClient(ergoClient: ErgoClient, runCtx: AppContext): Unit = {
     val console = runCtx.console
     ergoClient.execute(ctx => {
-      val buyerContract = BuyerContract.contractInstance(deadline, token, buyer)
+      val buyerContract = BuyerContract.contractInstance(token, buyer)
       println(s"contract ergo tree: ${ScalaBridge.isoStringToErgoTree.from( buyerContract.getErgoTree)}")
       val senderProver = loggedStep("Creating prover", console) {
-        BoxOperations.createProver(ctx, storageFile.getPath, storagePass).build
+        BoxOperations.createProver(ctx, storageFile.getPath, storagePass).build()
       }
       val sender = senderProver.getAddress
       val unspent = loggedStep(s"Loading unspent boxes from at address $sender", console) {
@@ -91,8 +89,8 @@ case class CreateBuyOrderCmd(toolConf: ErgoToolConfig,
 
 
 object CreateBuyOrderCmd extends CmdDescriptor(
-  name = "dex:BuyOrder", cmdParamSyntax = "<wallet file> <buyerAddr> <deadline> <ergAmount> <tokenId> <tokenAmount>, <dexFee>",
-  description = "put a token buyer order with given <tokenId> and <tokenAmount> to buy at given <ergPrice> price with <dexFee> as a reward for anyone who matches this order with a seller, until given <deadline> with <buyerAddr> to be used for withdrawal(after the deadline) \n " +
+  name = "dex:BuyOrder", cmdParamSyntax = "<wallet file> <buyerAddr> <ergAmount> <tokenId> <tokenAmount>, <dexFee>",
+  description = "put a token buyer order with given <tokenId> and <tokenAmount> to buy at given <ergPrice> price with <dexFee> as a reward for anyone who matches this order with a seller, with <buyerAddr> to be used for withdrawal \n " +
     "with the given <wallet file> to sign transaction (requests storage password)") {
 
   override def parseCmd(ctx: AppContext): Cmd = {
@@ -100,37 +98,36 @@ object CreateBuyOrderCmd extends CmdDescriptor(
     val storageFile = new File(if (args.length > 1) args(1) else error("Wallet storage file path is not specified"))
     if (!storageFile.exists()) error(s"Specified wallet file is not found: $storageFile")
     val buyer = Address.create(if (args.length > 2) args(2) else error("buyer address is not specified"))
-    val deadline = if (args.length > 3) args(3).toInt else error("deadline is not specified")
-    val ergAmount = if (args.length > 4) args(4).toLong else error("ergAmount is not specified")
-    val tokenId = if(args.length > 5) args(5) else error("tokenId is not specified")
-    val tokenAmount = if(args.length > 6) args(6).toLong else error("tokenAmount is not specified")
+    val ergAmount = if (args.length > 3) args(3).toLong else error("ergAmount is not specified")
+    val tokenId = if(args.length > 4) args(4) else error("tokenId is not specified")
+    val tokenAmount = if(args.length > 5) args(5).toLong else error("tokenAmount is not specified")
     val token = new ErgoToken(tokenId, tokenAmount)
-    val dexFee = if(args.length > 7) args(7).toLong else error("dexFee is not specified")
+    val dexFee = if(args.length > 6) args(6).toLong else error("dexFee is not specified")
     val pass = ctx.console.readPassword("Storage password>")
-    CreateBuyOrderCmd(ctx.toolConf, name, storageFile, pass, buyer,
-      deadline, ergAmount, token, dexFee)
+    CreateBuyOrderCmd(ctx.toolConf, name, storageFile, pass, buyer, ergAmount, token, dexFee)
   }
 }
 
 object BuyerContract {
 
-  def contractInstance(deadline: Int, token: ErgoToken, buyerPk: Address): ErgoContract = {
+  def contractInstance(token: ErgoToken, buyerPk: Address): ErgoContract = {
     import sigmastate.verified.VerifiedTypeConverters._
     val buyerPkProp = sigmastate.eval.SigmaDsl.SigmaProp(buyerPk.getPublicKey)
-    val verifiedContract = AssetsAtomicExchangeCompilation.buyerContractInstance(deadline,
-      token.getId.getBytes.toColl, token.getValue, buyerPkProp)
+    val tokenId = token.getId.getBytes.toColl
+    val verifiedContract = AssetsAtomicExchangeCompilation.buyerContractInstance(tokenId,
+      token.getValue, buyerPkProp)
     new ErgoTreeContract(verifiedContract.ergoTree)
   }
 
   def tokenFromContractTree(tree: ErgoTree): Option[ErgoToken] = for {
-    tokenId <- tree.constants.lift(7).collect {
+    tokenId <- tree.constants.lift(6).collect {
       case ByteArrayConstant(coll) => coll.toArray
     }
-    tokenAmount <- tree.constants.lift(9).collect {
+    tokenAmount <- tree.constants.lift(8).collect {
       case Values.ConstantNode(value, SLong) => value.asInstanceOf[Long]
     }
   } yield new ErgoToken(tokenId, tokenAmount)
 
   def buyerPkFromTree(tree: ErgoTree): Option[ProveDlog] =
-    tree.constants.lift(1).collect { case SigmaPropConstant(ProveDlogProp(v)) => v }
+    tree.constants.headOption.collect { case SigmaPropConstant(ProveDlogProp(v)) => v }
 }
