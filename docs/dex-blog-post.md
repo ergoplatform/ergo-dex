@@ -63,24 +63,29 @@ $ ergo-tool issueToken ...
 If the have tokens in a box we can sell them. Well, at least we can create an Ask order
 and submit it in the order book. In out DEX implementation we create orders and store
 them directly on the Ergo blockchain. The created order in our case is a box (seller box)
-protected with the special _seller contract_ holding the necessary amount of ERGs. 
+protected with the special _seller contract_ holding the necessary amount of ERGs (`ergAmount`). 
 
 ```
 // Seller Contract
 // pkB: SigmaProp - public key of the seller
 {
-  // TODO insert seller contract here
+  pkB || {
+    val knownBoxId = OUTPUTS(1).R4[Coll[Byte]].get == SELF.id
+    OUTPUTS(1).value >= ergAmount &&
+      knownBoxId &&
+      OUTPUTS(1).propositionBytes == pkB.propBytes
+  }
 }
 ```
 
 The seller contract guarantees that the seller box can be spent: 
-1) by seller itself, which is the way for seller to [cancel the order](#canceling-the-orders)
+1) by seller itself, which is the way for a seller to [cancel the order](#canceling-the-orders)
 2) by a _swap transaction_ created by Matcher in which _seller box_ is spent together (i.e.
 atomically) with the matched _buyer box_ (see [buy tokens](#buy-tokens)).
 
 The following command can be used to create new _ask order_ to sell tokens.
 ```
-$ ergo-tool help sellOrder
+$ ergo-tool help dex:SellOrder
 // TODO show usage help
 ```
 
