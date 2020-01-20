@@ -7,7 +7,7 @@ import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.ergotool.{AppContext, Cmd, CmdDescriptor, RunWithErgoClient}
 import org.ergoplatform.appkit.impl.{ErgoTreeContract, ScalaBridge}
-import sigmastate.Values.{CollectionConstant, ErgoTree, SigmaPropConstant}
+import sigmastate.Values.{ByteArrayConstant, CollectionConstant, ErgoTree, SigmaPropConstant}
 import sigmastate.basics.DLogProtocol.{ProveDlog, ProveDlogProp}
 import sigmastate.eval.WrapperOf
 import sigmastate.eval.Extensions._
@@ -124,7 +124,7 @@ object BuyerContract {
 
   def tokenFromContractTree(tree: ErgoTree): Option[ErgoToken] = for {
     tokenId <- tree.constants.lift(7).collect {
-      case CollectionConstant(coll, SByte) => coll.toArray.asInstanceOf[Array[Byte]]
+      case ByteArrayConstant(coll) => coll.toArray
     }
     tokenAmount <- tree.constants.lift(9).collect {
       case Values.ConstantNode(value, SLong) => value.asInstanceOf[Long]
