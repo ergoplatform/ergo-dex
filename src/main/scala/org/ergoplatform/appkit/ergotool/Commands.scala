@@ -67,7 +67,7 @@ trait RunWithErgoClient extends Cmd {
   def runWithClient(ergoClient: ErgoClient, ctx: AppContext): Unit
 }
 
-case class CmdParameter(name: String, tpe: ErgoType[_])
+case class CmdParameter(name: String, tpe: ParameterType, description: String, defaultValue: Option[String] = None)
 
 /** Base class for all Cmd descriptors (usually companion objects)
  */
@@ -79,6 +79,9 @@ abstract class CmdDescriptor(
      /** Human readable description of the command. Used in Usage Help output. */
      val description: String
      ) {
+
+  /** Returns the descriptors of parameters of the command. */
+  def parameters: Seq[CmdParameter] = Nil
 
   val BaseDocUrl = "https://aslesarenko.github.io/ergo-tool/api"
 

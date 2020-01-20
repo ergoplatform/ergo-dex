@@ -52,7 +52,7 @@ case class CreateSellOrderCmd(toolConf: ErgoToolConfig,
     ergoClient.execute(ctx => {
       val sellerContract = SellerContract.contractInstance(deadline, tokenPrice, seller)
       val senderProver = loggedStep("Creating prover", console) {
-        BoxOperations.createProver(ctx, storageFile.getPath, storagePass)
+        BoxOperations.createProver(ctx, storageFile.getPath, storagePass).build
       }
       val sender = senderProver.getAddress
       val unspent = loggedStep(s"Loading unspent boxes from at address $sender", console) {

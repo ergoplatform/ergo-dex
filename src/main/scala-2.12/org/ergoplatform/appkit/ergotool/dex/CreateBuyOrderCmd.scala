@@ -55,7 +55,7 @@ case class CreateBuyOrderCmd(toolConf: ErgoToolConfig,
       val buyerContract = BuyerContract.contractInstance(deadline, token, buyer)
       println(s"contract ergo tree: ${ScalaBridge.isoStringToErgoTree.from( buyerContract.getErgoTree)}")
       val senderProver = loggedStep("Creating prover", console) {
-        BoxOperations.createProver(ctx, storageFile.getPath, storagePass)
+        BoxOperations.createProver(ctx, storageFile.getPath, storagePass).build
       }
       val sender = senderProver.getAddress
       val unspent = loggedStep(s"Loading unspent boxes from at address $sender", console) {

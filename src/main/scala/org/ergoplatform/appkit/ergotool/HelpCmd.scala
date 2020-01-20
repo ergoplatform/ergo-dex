@@ -22,6 +22,10 @@ object HelpCmd extends CmdDescriptor(
   name = "help", cmdParamSyntax = "<commandName>",
   description = "prints usage help for a command") {
 
+  override val parameters: Seq[CmdParameter] = Array(
+    CmdParameter("commandName", ParameterType.COMMAND_NAME_TYPE, "An application prefix or a full name of the command.")
+  )
+
   override def parseCmd(ctx: AppContext): Cmd = {
     val args = ctx.cmdArgs
     val askedCmd =
