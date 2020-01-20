@@ -21,8 +21,8 @@ In this [Appkit](https://ergoplatform.org/en/blog/2019_12_03_top5/) and
 to fill this gap and give updates on both new network and tooling development.
 
 Ergo have expressive smart contracts and transaction model which allows an
-implementation of fully trustless DEX protocol. The signed buy and sell orders can be
-put into blockchain independently by the buyers and sellers. The off-chain matching
+implementation of fully trustless DEX protocol, in which signed buy and sell orders can be
+put into blockchain independently by buyers and sellers. The off-chain matching
 service can observe Ergo blockchain, find matching orders and submit the swap
 transaction without knowing any secrets. The matching can be incentivized by _DEX reward_
 payed as part of a _swap transaction_. Anyone who first discover the match of the two
