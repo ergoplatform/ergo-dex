@@ -71,7 +71,7 @@ object ListMatchingOrders {
       .flatMap { sellerBox =>
         for {
           sellerTokenPrice <- SellerContract.tokenPriceFromTree(sellerBox.getErgoTree)
-          sellerToken <- sellerBox .getTokens
+          sellerToken <- sellerBox.getTokens
             .convertTo[IndexedSeq[ErgoToken]]
             .headOption
           matchingOrders = buyerBoxes
@@ -93,4 +93,3 @@ object ListMatchingOrders {
       .sortBy(_.dexFee)
 
 }
-
