@@ -15,7 +15,7 @@ class SellerContractSpec extends PropSpec
 
   property("sellerPkFromTree") {
     forAll(testnetAddressGen, unsignedLongGen) { (address, tokenPrice) =>
-      val sellerContract = SellerContract.contractInstance(0, tokenPrice, address)
+      val sellerContract = SellerContract.contractInstance(tokenPrice, address)
       SellerContract.sellerPkFromTree(sellerContract.getErgoTree) shouldEqual Some(address.getPublicKey)
     }
   }
@@ -34,7 +34,7 @@ class SellerContractSpec extends PropSpec
 
   property("tokenPriceFromTree") {
     forAll(testnetAddressGen, unsignedLongGen) { (address, tokenPrice) =>
-      val sellerContract = SellerContract.contractInstance(0, tokenPrice, address)
+      val sellerContract = SellerContract.contractInstance(tokenPrice, address)
       SellerContract.tokenPriceFromTree(sellerContract.getErgoTree) shouldEqual Some(tokenPrice)
     }
   }

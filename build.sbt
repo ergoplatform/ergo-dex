@@ -9,7 +9,7 @@ lazy val sonatypeSnapshots = "Sonatype Snapshots" at "https://oss.sonatype.org/c
 resolvers ++= Seq(Resolver.mavenLocal, sonatypeReleases, sonatypeSnapshots, Resolver.mavenCentral)
 
 version := "3.1.1"
-val appkit = "org.ergoplatform" %% "ergo-appkit" % "fix-transactions-response-type-array-e06f9588-SNAPSHOT"
+val appkit = "org.ergoplatform" %% "ergo-appkit" % "update-sigma-remove-dex-deadline-58aceae4-SNAPSHOT"
 
 libraryDependencies ++= Seq(
   appkit, (appkit % Test).classifier("tests"),
