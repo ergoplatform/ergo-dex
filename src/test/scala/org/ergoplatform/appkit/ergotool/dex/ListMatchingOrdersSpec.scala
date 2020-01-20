@@ -2,25 +2,25 @@ package org.ergoplatform.appkit.ergotool.dex
 
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
-import ListMatchingContracts._
+import ListMatchingOrders._
 import org.ergoplatform.appkit.{Address, ErgoId, ErgoToken, InputBox, MockInputBox, NetworkType, ObjectGenerators}
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.scalacheck.Gen
 
-class ListMatchingContractsSpec extends PropSpec
+class ListMatchingOrdersSpec extends PropSpec
   with Matchers
   with ScalaCheckDrivenPropertyChecks
   with ObjectGenerators {
 
   property("empty list (no input)") {
-    matchingContracts(Seq.empty, Seq.empty) shouldBe empty
+    matchingOrders(Seq.empty, Seq.empty) shouldBe empty
   }
 
   property("empty list (no valid contracts in inputs)") {
-    matchingContracts(Seq.empty, Seq.empty) shouldBe empty
-    matchingContracts(Seq(MockInputBox(0L)), Seq.empty) shouldBe empty
-    matchingContracts(Seq.empty, Seq(MockInputBox(0L))) shouldBe empty
-    matchingContracts(Seq(MockInputBox(0L)), Seq(MockInputBox(0L))) shouldBe empty
+    matchingOrders(Seq.empty, Seq.empty) shouldBe empty
+    matchingOrders(Seq(MockInputBox(0L)), Seq.empty) shouldBe empty
+    matchingOrders(Seq.empty, Seq(MockInputBox(0L))) shouldBe empty
+    matchingOrders(Seq(MockInputBox(0L)), Seq(MockInputBox(0L))) shouldBe empty
   }
 
   property("empty list (only a seller contract is given)") {
@@ -30,7 +30,7 @@ class ListMatchingContractsSpec extends PropSpec
     val token = new ErgoToken(ergoIdGen.sample.get, 1L)
     val sellerBox = MockInputBox(ergoIdGen.sample.get, 1L, sellerContract.getErgoTree, Seq(token))
 
-    matchingContracts(Seq(sellerBox), Seq(MockInputBox(0L))) shouldBe empty
+    matchingOrders(Seq(sellerBox), Seq(MockInputBox(0L))) shouldBe empty
   }
 
   property("empty list (no matching token)") {
@@ -43,7 +43,7 @@ class ListMatchingContractsSpec extends PropSpec
       new ErgoToken(ergoIdGen.sample.get, 1L), testnetAddressGen.sample.get)
     val buyerBox = MockInputBox(ergoIdGen.sample.get, 1L, buyerContract.getErgoTree)
 
-    matchingContracts(Seq(sellerBox), Seq(buyerBox)) shouldBe empty
+    matchingOrders(Seq(sellerBox), Seq(buyerBox)) shouldBe empty
   }
 
   property("empty list (no matching token count)") {
@@ -58,7 +58,7 @@ class ListMatchingContractsSpec extends PropSpec
       testnetAddressGen.sample.get)
     val buyerBox = MockInputBox(ergoIdGen.sample.get, tokenPrice + MinFee, buyerContract.getErgoTree)
 
-    matchingContracts(Seq(sellerBox), Seq(buyerBox)) shouldBe empty
+    matchingOrders(Seq(sellerBox), Seq(buyerBox)) shouldBe empty
   }
 
   property("empty list(wrong contracts)") {
@@ -72,10 +72,10 @@ class ListMatchingContractsSpec extends PropSpec
     val buyerBox = MockInputBox(ergoIdGen.sample.get, 20L + MinFee, buyerContract.getErgoTree)
 
     // swapped parameter places
-    matchingContracts(Seq(buyerBox), Seq(sellerBox)) shouldBe empty
+    matchingOrders(Seq(buyerBox), Seq(sellerBox)) shouldBe empty
     // same contract for both parameters
-    matchingContracts(Seq(buyerBox), Seq(buyerBox)) shouldBe empty
-    matchingContracts(Seq(sellerBox), Seq(sellerBox)) shouldBe empty
+    matchingOrders(Seq(buyerBox), Seq(buyerBox)) shouldBe empty
+    matchingOrders(Seq(sellerBox), Seq(sellerBox)) shouldBe empty
   }
 
   private def matchContractsPair(dexFee: Long, tokenPrice: Long): (InputBox, InputBox) = {
@@ -101,7 +101,7 @@ class ListMatchingContractsSpec extends PropSpec
     val tokenPriceGen = Gen.chooseNum(1L, Long.MaxValue)
     forAll(dexFeeGen, tokenPriceGen) { (dexFee, tokenPrice) =>
       val(sellerBox, buyerBox) = matchContractsPair(dexFee, tokenPrice)
-      matchingContracts(Seq(sellerBox), Seq(buyerBox)) shouldBe empty
+      matchingOrders(Seq(sellerBox), Seq(buyerBox)) shouldBe empty
     }
   }
 
@@ -110,7 +110,7 @@ class ListMatchingContractsSpec extends PropSpec
     val tokenPriceGen = Gen.chooseNum(1L, Long.MaxValue)
     forAll(dexFeeGen, tokenPriceGen) { (dexFee, tokenPrice) =>
       val(sellerBox, buyerBox) = matchContractsPair(dexFee, tokenPrice)
-      val matches = matchingContracts(Seq(sellerBox), Seq(buyerBox))
+      val matches = matchingOrders(Seq(sellerBox), Seq(buyerBox))
       matches.length shouldBe 1
       matches.forall(_.dexFee == dexFee) shouldBe true
     }
@@ -121,7 +121,7 @@ class ListMatchingContractsSpec extends PropSpec
     val tokenPriceGen = Gen.chooseNum(1L, Long.MaxValue)
     forAll(dexFeeGen, tokenPriceGen) { (dexFee, tokenPrice) =>
       val(sellerBox, buyerBox) = matchContractsPair(dexFee, tokenPrice)
-      val matches = matchingContracts(Array.fill(5)(sellerBox), Array.fill(5)(buyerBox))
+      val matches = matchingOrders(Array.fill(5)(sellerBox), Array.fill(5)(buyerBox))
       matches.length shouldBe 25 // (5 * 5, cartesian product)
       matches.forall(_.dexFee == dexFee) shouldBe true
     }

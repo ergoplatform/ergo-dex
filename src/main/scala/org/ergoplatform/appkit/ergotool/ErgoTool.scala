@@ -5,7 +5,7 @@ import org.ergoplatform.appkit.{ErgoClient, RestApiErgoClient}
 import scala.util.control.NonFatal
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.console.Console
-import org.ergoplatform.appkit.ergotool.dex.{CreateSellerContractCmd, CreateBuyerContractCmd, ListMatchingContractsCmd, MatchContractsCmd}
+import org.ergoplatform.appkit.ergotool.dex.{CreateSellOrderCmd, CreateBuyOrderCmd, ListMatchingOrdersCmd, MatchOrdersCmd}
 
 /** ErgoTool implementation, contains main entry point of the console application.
   *
@@ -18,7 +18,7 @@ object ErgoTool {
     AddressCmd, MnemonicCmd, CheckAddressCmd,
     ListAddressBoxesCmd,
     CreateStorageCmd, ExtractStorageCmd, SendCmd,
-    CreateSellerContractCmd, CreateBuyerContractCmd, MatchContractsCmd, ListMatchingContractsCmd
+    CreateSellOrderCmd, CreateBuyOrderCmd, MatchOrdersCmd, ListMatchingOrdersCmd
     ).map(c => (c.name, c)).toMap
 
   /** Options supported by this application */
