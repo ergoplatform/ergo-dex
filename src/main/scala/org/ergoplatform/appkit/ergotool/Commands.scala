@@ -5,6 +5,7 @@ import java.util.Arrays
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.console.Console
+import org.ergoplatform.appkit.ergotool.HelpCmd.usageError
 
 /** Base class for all commands which can be executed by ErgoTool.
   * Inherit this class to implement a new command.
@@ -67,7 +68,30 @@ trait RunWithErgoClient extends Cmd {
   def runWithClient(ergoClient: ErgoClient, ctx: AppContext): Unit
 }
 
-case class CmdParameter(name: String, tpe: ParameterType, description: String, defaultValue: Option[String] = None)
+sealed trait PType {
+  def typeCode: Byte
+}
+case object NanoErgPType extends PType {
+  val typeCode: Byte = 1
+}
+
+case object FileNamePType extends PType {
+  val typeCode: Byte = 2
+}
+
+case object AddressPType extends PType {
+  val typeCode: Byte = 3
+}
+
+case object NetworkPType extends PType {
+  val typeCode: Byte = 4
+}
+
+case object CommandNamePType extends PType {
+  val typeCode: Byte = 5
+}
+
+case class CmdParameter(name: String, tpe: PType, description: String, defaultValue: Option[String] = None)
 
 /** Base class for all Cmd descriptors (usually companion objects)
  */
@@ -111,6 +135,20 @@ abstract class CmdDescriptor(
     case "mainnet" => NetworkType.MAINNET
     case _ => usageError(s"Invalid network type $network")
   }
+
+  def parseArgs(args: Seq[String]): Seq[Any] = {
+    parameters.zipWithIndex.map { case (p, i) =>
+      if (i >= args.length)
+        usageError(s"parameter '${p.name}' is not specified (run 'ergo-tool help ${this.name}' for usage help)")
+      val arg = args(i)
+      p.tpe match {
+        case CommandNamePType => arg
+        case _ =>
+          usageError(s"Unsupported parameter type: ${p.tpe}")
+      }
+    }
+  }
+
 
   /** Secure double entry of the new password giving the user many attempts.
     *

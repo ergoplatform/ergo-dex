@@ -43,7 +43,7 @@ object ErgoTool {
       val (cmdOptions, cmdArgs) = CmdLineParser.parseOptions(args)
       if (cmdArgs.isEmpty) usageError(s"Please specify command name and parameters.", None)
       val toolConf = loadConfig(cmdOptions)
-      val ctx = AppContext(args, console, cmdOptions, cmdArgs, toolConf, clientFactory)
+      val ctx = AppContext(args, console, cmdOptions, cmdArgs(0), cmdArgs.drop(1), toolConf, clientFactory)
       val cmd = parseCmd(ctx)
       try {
         cmd.run(ctx)
@@ -79,12 +79,13 @@ object ErgoTool {
     * of the command configured with the parsed parameters.
     */
   def parseCmd(ctx: AppContext): Cmd = {
-    val cmdName = ctx.cmdArgs(0)
-    commands.get(cmdName) match {
+    commands.get(ctx.cmdName) match {
       case Some(c) =>
-        c.parseCmd(ctx)
+        val args = ctx.cmdArgs
+        val params = c.parseArgs(args)
+        c.parseCmd(ctx.withCmdParameters(params))
       case _ =>
-        usageError(s"Unknown command: $cmdName", None)
+        usageError(s"Unknown command: ${ctx.cmdName}", None)
     }
   }
 

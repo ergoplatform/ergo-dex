@@ -12,12 +12,16 @@ case class AppContext(
      console: Console,
      /** Options parsed from command line */
      cmdOptions: Map[String, String],
-     /** Command args parsed from command line */
+     /** Command name to execute (passed in command line). */
+     cmdName: String,
+     /** Command args taken from the command line (excluding command name) */
      cmdArgs: Seq[String],
      /** Tool configuration read from the file (either default or specified by --conf option */
      toolConf: ErgoToolConfig,
      /** Factory method which is used to create ErgoClient instance if and when it is needed */
-     clientFactory: AppContext => ErgoClient
+     clientFactory: AppContext => ErgoClient,
+     /** Parsed and instantiated command parameters (instances of the corresponding type) */
+     cmdParameters: Seq[Any] = Nil
  ) {
   /** Url of the Ergo node API end point
     */
@@ -37,4 +41,7 @@ case class AppContext(
 
   /** Returns true if [[PrintJsonOption]] is defined in command line. */
   def isPrintJson: Boolean = cmdOptions.contains(PrintJsonOption.name)
+
+  /** Attach parameters to this context. */
+  def withCmdParameters(params: Seq[Any]): AppContext = this.copy(cmdParameters = params)
 }
