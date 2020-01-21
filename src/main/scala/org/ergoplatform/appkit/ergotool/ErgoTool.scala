@@ -82,8 +82,8 @@ object ErgoTool {
     commands.get(ctx.cmdName) match {
       case Some(c) =>
         val args = ctx.cmdArgs
-        val params = c.parseArgs(args)
-        c.parseCmd(ctx.withCmdParameters(params))
+        val params = c.parseArgs(ctx, args)
+        c.createCmd(ctx.withCmdParameters(params))
       case _ =>
         usageError(s"Unknown command: ${ctx.cmdName}", None)
     }

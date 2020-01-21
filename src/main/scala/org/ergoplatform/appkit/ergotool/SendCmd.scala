@@ -71,7 +71,7 @@ object SendCmd extends CmdDescriptor(
   description = "send the given <amountToSend> to the given <recipientAddr> using \n " +
     "the given <storageFile> to sign transaction (requests storage password)") {
 
-  override def parseCmd(ctx: AppContext): Cmd = {
+  override def createCmd(ctx: AppContext): Cmd = {
     val args = ctx.cmdArgs
     val storageFile = new File(if (args.length > 1) args(1) else error("Wallet storage file path is not specified"))
     if (!storageFile.exists()) error(s"Specified wallet file is not found: $storageFile")

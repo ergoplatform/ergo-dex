@@ -91,7 +91,23 @@ case object CommandNamePType extends PType {
   val typeCode: Byte = 5
 }
 
-case class CmdParameter(name: String, tpe: PType, description: String, defaultValue: Option[String] = None)
+case object SecretStringPType extends PType {
+  val typeCode: Byte = 6
+}
+
+/** Command parameter descriptor.
+  * @param name         parameter name
+  * @param tpe          type of the object which should be created from command line parameter string
+  * @param description  description of the command parameter
+  * @param defaultValue the string value which will be used when parameter is missing in the command line
+  * @param interactivInput Some(producer) when parameter is entered interactively, i.e. it is not parsed from the command line
+  */
+case class CmdParameter(
+  name: String,
+  tpe: PType,
+  description: String,
+  defaultValue: Option[String] = None,
+  interactivInput: Option[AppContext => Any] = None)
 
 /** Base class for all Cmd descriptors (usually companion objects)
  */
@@ -118,7 +134,7 @@ abstract class CmdDescriptor(
   /** Creates a new command instance based on the given [[AppContext]]
     * @throws UsageException when the command cannot be parsed or the usage is not correct
     */
-  def parseCmd(ctx: AppContext): Cmd
+  def createCmd(ctx: AppContext): Cmd
 
   /** Called during command line parsing and instantiation of [[Cmd]] for execution.
     * This is the prefered method to throw an exception.
@@ -136,16 +152,34 @@ abstract class CmdDescriptor(
     case _ => usageError(s"Invalid network type $network")
   }
 
-  def parseArgs(args: Seq[String]): Seq[Any] = {
-    parameters.zipWithIndex.map { case (p, i) =>
-      if (i >= args.length)
-        usageError(s"parameter '${p.name}' is not specified (run 'ergo-tool help ${this.name}' for usage help)")
-      val arg = args(i)
-      p.tpe match {
-        case CommandNamePType => arg
+  def parseArgs(ctx: AppContext, args: Seq[String]): Seq[Any] = {
+    var iArg = 0
+    val rawParams = parameters.map { p =>
+      p.interactivInput match {
+        case Some(producer) =>
+          (p, producer(ctx))
         case _ =>
-          usageError(s"Unsupported parameter type: ${p.tpe}")
+          if (iArg >= args.length)
+            usageError(s"parameter '${p.name}' is not specified (run 'ergo-tool help ${this.name}' for usage help)")
+          val arg = args(iArg)
+          iArg += 1 // step to the next non-interactive parameter in command line
+          (p, arg)
       }
+    }
+    rawParams.map {
+      case (p, param) if p.interactivInput.isDefined => param  // this is final value
+      case (p, rawArg: String) =>
+        // command line string needs further parsing
+        p.tpe match {
+          case CommandNamePType => rawArg
+          case NetworkPType =>
+            val networkType = parseNetwork(rawArg)
+            networkType
+          case SecretStringPType =>
+            SecretString.create(rawArg)
+          case _ =>
+            usageError(s"Unsupported parameter type: ${p.tpe}")
+        }
     }
   }
 

@@ -77,7 +77,7 @@ object ExtractStorageCmd extends CmdDescriptor(
     if (supportedKeys.contains(prop)) prop
     else propErrorMsg
 
-  override def parseCmd(ctx: AppContext): Cmd = {
+  override def createCmd(ctx: AppContext): Cmd = {
     val args = ctx.cmdArgs
     val storageFile = if (args.length > 1) args(1) else error("storage file is not specified")
     val prop = if (args.length > 2) parsePropName(args(2)) else propErrorMsg

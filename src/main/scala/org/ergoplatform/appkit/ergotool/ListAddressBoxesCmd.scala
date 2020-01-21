@@ -30,7 +30,7 @@ object ListAddressBoxesCmd extends CmdDescriptor(
   name = "listAddressBoxes", cmdParamSyntax = "address [<limit>=10]",
   description = "list top <limit=10> confirmed unspent boxes owned by the given <address>") {
 
-  override def parseCmd(ctx: AppContext): Cmd = {
+  override def createCmd(ctx: AppContext): Cmd = {
     val args = ctx.cmdArgs
     val address = if (args.length > 1) args(1) else usageError(s"address is not specified")
     val limit = if (args.length > 2) args(2).toInt else 10

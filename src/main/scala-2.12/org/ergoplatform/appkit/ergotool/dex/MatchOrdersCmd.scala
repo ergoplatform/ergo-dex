@@ -120,7 +120,7 @@ object MatchOrdersCmd extends CmdDescriptor(
   name = "dex:MatchOrders", cmdParamSyntax = "<wallet file> <sellerHolderBoxId> <buyerHolderBoxId>      <minDexFee",
   description = "match an existing token seller's order (by <sellerHolderBoxId>) and an existing buyer's order (by <buyerHolderBoxId) and send tokens to buyer's address(extracted from buyer's order) and Ergs to seller's address(extracted from seller's order) claiming the minimum fee of <minDexFee> with the given <wallet file> to sign transaction (requests storage password)") {
 
-  override def parseCmd(ctx: AppContext): Cmd = {
+  override def createCmd(ctx: AppContext): Cmd = {
     val args = ctx.cmdArgs
     val storageFile = new File(if (args.length > 1) args(1) else error("Wallet storage file path is not specified"))
     if (!storageFile.exists()) error(s"Specified wallet file is not found: $storageFile")

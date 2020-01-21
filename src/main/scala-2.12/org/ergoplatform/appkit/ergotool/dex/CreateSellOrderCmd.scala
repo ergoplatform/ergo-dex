@@ -90,7 +90,7 @@ object CreateSellOrderCmd extends CmdDescriptor(
   description = "put a token seller order with given <tokenId> and <tokenAmount> for sale at given <ergPrice> price with <dexFee> as a reward for anyone who matches this order with buyer, with <sellerAddr> to be used for withdrawal \n " +
     "with the given <wallet file> to sign transaction (requests storage password)") {
 
-  override def parseCmd(ctx: AppContext): Cmd = {
+  override def createCmd(ctx: AppContext): Cmd = {
     val args = ctx.cmdArgs
     val storageFile = new File(if (args.length > 1) args(1) else error("Wallet storage file path is not specified"))
     if (!storageFile.exists()) error(s"Specified wallet file is not found: $storageFile")
