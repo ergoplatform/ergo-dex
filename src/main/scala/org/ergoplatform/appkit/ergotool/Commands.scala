@@ -1,5 +1,7 @@
 package org.ergoplatform.appkit.ergotool
 
+import java.io.File
+import java.nio.file.{Path, Paths}
 import java.util.Arrays
 
 import org.ergoplatform.appkit._
@@ -69,34 +71,38 @@ trait RunWithErgoClient extends Cmd {
 }
 
 sealed trait PType {
-  def typeCode: Byte
 }
 case object NanoErgPType extends PType {
-  val typeCode: Byte = 1
 }
 
-case object FileNamePType extends PType {
-  val typeCode: Byte = 2
+case object FilePType extends PType {
+}
+
+case object FilePathPType extends PType {
+}
+
+case object DirPathPType extends PType {
 }
 
 case object AddressPType extends PType {
-  val typeCode: Byte = 3
 }
 
 case object NetworkPType extends PType {
-  val typeCode: Byte = 4
 }
 
 case object CommandNamePType extends PType {
-  val typeCode: Byte = 5
 }
 
 case object SecretStringPType extends PType {
-  val typeCode: Byte = 6
 }
 
 case object IntPType extends PType {
-  val typeCode: Byte = 7
+}
+
+case object BooleanPType extends PType {
+}
+
+case object StringPType extends PType {
 }
 
 /** Command parameter descriptor.
@@ -173,22 +179,32 @@ abstract class CmdDescriptor(
     rawParams.map {
       case (p, param) if p.interactivInput.isDefined => param  // this is final value
       case (p, rawArg: String) =>
-        // command line string needs further parsing
-        p.tpe match {
-          case CommandNamePType => rawArg
-          case NetworkPType =>
-            val networkType = parseNetwork(rawArg)
-            networkType
-          case SecretStringPType =>
-            SecretString.create(rawArg)
-          case AddressPType =>
-            Address.create(rawArg)
-          case _ =>
-            usageError(s"Unsupported parameter type: ${p.tpe}")
-        }
+        // command line string needs further parsing according to the parameter descriptor
+        parseRawArg(p, rawArg)
     }
   }
 
+  private def parseRawArg(p: CmdParameter, rawArg: String): Any = {
+    p.tpe match {
+      case CommandNamePType | StringPType => rawArg
+      case NetworkPType =>
+        val networkType = parseNetwork(rawArg)
+        networkType
+      case SecretStringPType =>
+        SecretString.create(rawArg)
+      case AddressPType =>
+        Address.create(rawArg)
+      case DirPathPType =>
+        val file = new File(rawArg)
+        if (!file.exists())
+          usageError(s"Invalid parameter '${p.name}': directory '$file' doesn't exists.")
+        if (!file.isDirectory)
+          usageError(s"Invalid parameter '${p.name}': '$file' is not directory.")
+        file.toPath
+      case _ =>
+        usageError(s"Unsupported parameter type: ${p.tpe}")
+    }
+  }
 
   /** Secure double entry of the new password giving the user many attempts.
     *

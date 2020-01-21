@@ -18,7 +18,7 @@ package org.ergoplatform.appkit.ergotool
   * @param isFlag is set to true if the option is a <i>flag option</i> which doesn't have `optionValue`
   *               part (e.g. `--ni` or `--dry-run`)
   */
-case class CmdOption(name: String, description: String, isFlag: Boolean = false) {
+case class CmdOption(name: String, tpe: PType, description: String, isFlag: Boolean = false) {
   import CmdOption._
   /** The text of the command line with the name of this option. */
   def cmdText: String = Prefix + name
@@ -36,7 +36,7 @@ object CmdOption {
   * The file has json content corresponding to `ErgoToolConfig` class.
   */
 object ConfigOption extends CmdOption(
-  "conf",
+  "conf", FilePType,
   "configuration file path relative to the local directory (Example: `--conf ergo_tool.json`")
 
 /** Flag option to prevent the command to perform actual operation and instead forces it to report
@@ -48,7 +48,7 @@ object ConfigOption extends CmdOption(
   * execution when this option is included in command line.
   */
 object DryRunOption extends CmdOption(
-  "dry-run",
+  "dry-run", BooleanPType,
   "Forces the command to report what will be done by the operation without performing the actual operation.",
   true)
 
@@ -57,7 +57,7 @@ object DryRunOption extends CmdOption(
   * The reported output of a command under this option depends on the command implementation.
   */
 object PrintJsonOption extends CmdOption(
-  "print-json",
+  "print-json", BooleanPType,
   "Forces the commands to print json instead of table rows.",
   true)
 
@@ -66,6 +66,6 @@ object PrintJsonOption extends CmdOption(
   * Usage of this option depends on the command (see command help for details).
   */
 object LimitListOption extends CmdOption(
-  "limit-list",
+  "limit-list", IntPType,
   "Specifies a number of items in the output list.")
 
