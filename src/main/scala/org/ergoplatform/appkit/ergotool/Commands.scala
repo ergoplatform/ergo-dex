@@ -177,6 +177,8 @@ abstract class CmdDescriptor(
             networkType
           case SecretStringPType =>
             SecretString.create(rawArg)
+          case AddressPType =>
+            Address.create(rawArg)
           case _ =>
             usageError(s"Unsupported parameter type: ${p.tpe}")
         }

@@ -41,7 +41,7 @@ object AddressCmd extends CmdDescriptor(
     CmdParameter("mnemonic", SecretStringPType,
       """secret phrase which is used to generate (private, public) key pair, of which
         |public key is used to generate the [[Address]]""".stripMargin),
-    CmdParameter("mnemonicPass", NetworkPType,
+    CmdParameter("mnemonicPass", SecretStringPType,
       "password which is used to additionally protect mnemonic", None,
       Some(ctx => readNewPassword("Mnemonic password> ", "Repeat mnemonic password> ")(ctx)))
   )
