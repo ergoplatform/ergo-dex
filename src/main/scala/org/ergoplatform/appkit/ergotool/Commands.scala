@@ -95,6 +95,10 @@ case object SecretStringPType extends PType {
   val typeCode: Byte = 6
 }
 
+case object IntPType extends PType {
+  val typeCode: Byte = 7
+}
+
 /** Command parameter descriptor.
   * @param name         parameter name
   * @param tpe          type of the object which should be created from command line parameter string

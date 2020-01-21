@@ -9,10 +9,10 @@ import org.ergoplatform.appkit.{ErgoClient, Address, InputBox}
   * @param address string encoding of the address
   * @param limit   limit the size of the list (optional, default is 10)
   */
-case class ListAddressBoxesCmd(toolConf: ErgoToolConfig, name: String, address: String, limit: Int) extends Cmd with RunWithErgoClient {
+case class ListAddressBoxesCmd(toolConf: ErgoToolConfig, name: String, address: Address, limit: Int) extends Cmd with RunWithErgoClient {
   override def runWithClient(ergoClient: ErgoClient, runCtx: AppContext): Unit = {
     val res: String = ergoClient.execute(ctx => {
-      val boxes = ctx.getUnspentBoxesFor(Address.create(address))
+      val boxes = ctx.getUnspentBoxesFor(address)
         .convertTo[IndexedSeq[InputBox]]
         .take(this.limit)
       val lines = if (runCtx.isPrintJson) {
@@ -27,13 +27,16 @@ case class ListAddressBoxesCmd(toolConf: ErgoToolConfig, name: String, address: 
   }
 }
 object ListAddressBoxesCmd extends CmdDescriptor(
-  name = "listAddressBoxes", cmdParamSyntax = "address [<limit>=10]",
-  description = "list top <limit=10> confirmed unspent boxes owned by the given <address>") {
+  name = "listAddressBoxes", cmdParamSyntax = "[--limit-list <limit>] <address>",
+  description = "list top <limit> confirmed unspent boxes owned by the given <address>") {
+
+  override val parameters: Seq[CmdParameter] = Array(
+    CmdParameter("address", AddressPType, "string encoding of the address")
+  )
 
   override def createCmd(ctx: AppContext): Cmd = {
-    val args = ctx.cmdArgs
-    val address = if (args.length > 1) args(1) else usageError(s"address is not specified")
-    val limit = if (args.length > 2) args(2).toInt else 10
+    val Seq(address: Address) = ctx.cmdParameters
+    val limit = ctx.cmdOptions.get("limit-list").fold(10)(_.toInt)
     ListAddressBoxesCmd(ctx.toolConf, name, address, limit)
   }
 }

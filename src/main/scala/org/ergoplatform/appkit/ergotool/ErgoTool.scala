@@ -22,7 +22,7 @@ object ErgoTool {
     ).map(c => (c.name, c)).toMap
 
   /** Options supported by this application */
-  val options: Seq[CmdOption] = Array(ConfigOption, DryRunOption, PrintJsonOption)
+  val options: Seq[CmdOption] = Array(ConfigOption, DryRunOption, PrintJsonOption, LimitListOption)
 
   /** Main entry point of console application. */
   def main(args: Array[String]): Unit = {
