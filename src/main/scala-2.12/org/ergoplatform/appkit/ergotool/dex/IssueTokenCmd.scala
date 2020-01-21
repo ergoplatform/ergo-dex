@@ -8,6 +8,7 @@ import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.ergotool.{AppContext, Cmd, CmdDescriptor, RunWithErgoClient}
 
 /** Issues a new token
+  * following the Assets standard [[https://github.com/ergoplatform/eips/blob/master/eip-0004.md]]
   *
   * Steps:<br/>
   * 1) request storage password from the user<br/>
@@ -15,8 +16,7 @@ import org.ergoplatform.appkit.ergotool.{AppContext, Cmd, CmdDescriptor, RunWith
   * 3) get master public key and compute sender's address<br/>
   * 4) load available coins belonging to the sender's address<br/>
   * 5) select coins to cover ergAmount, compute transaction fee and amount of change<br/>
-  * 6) create an instance of the buyer's order passing token and buyer address<br/>
-  * 7) create an output box protected with the instance of buyer's order from the previous step<br/>
+  * 7) create an output box with ergAmount and tokenAmount using the box if of the first input box as token id <br/>
   * 8) create and sign (using secret key) the transaction<br/>
   * 9) if no `--dry-run` option is specified, send the transaction to the network<br/>
   *    otherwise skip sending<br/>
@@ -24,12 +24,11 @@ import org.ergoplatform.appkit.ergotool.{AppContext, Cmd, CmdDescriptor, RunWith
   *
   * @param storageFile storage with secret key of the sender
   * @param storagePass password to access sender secret key in the storage
-  * @param buyer       address of the buyer (the one who signs this transaction)
-  * @param ergAmount   NanoERG amount for buyer to pay for tokens
-  * @param token       token id and amount
-  * @param dexFee      an amount of NanoERGs to put in addition to ergAmount into the new box protected
-  *                    by the buyer order. When the buyer setup up a bid price he/she also decide on
-  *                    the DEX fee amount to pay
+  * @param ergAmount   NanoERG amount to put in box with issued tokens
+  * @param tokenAmount amount of tokens to issue
+  * @param tokenName   token verbose name (UTF-8 representation)
+  * @param tokenDesc   token description (UTF-8 representation)
+  * @param tokenNumberOfDecimals number or decimals
   */
 case class IssueTokenCmd(toolConf: ErgoToolConfig,
                          name: String,
@@ -40,8 +39,6 @@ case class IssueTokenCmd(toolConf: ErgoToolConfig,
                          tokenName: String,
                          tokenDesc: String,
                          tokenNumberOfDecimals: Byte) extends Cmd with RunWithErgoClient {
-
-  // TODO: update scaladoc
 
   override def runWithClient(ergoClient: ErgoClient, runCtx: AppContext): Unit = {
     val console = runCtx.console
