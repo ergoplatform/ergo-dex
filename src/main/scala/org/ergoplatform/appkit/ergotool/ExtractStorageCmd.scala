@@ -25,13 +25,13 @@ import scorex.util.encode.Base16
   * to obtain address both from mainnet and from testnet.
   *
   * @param storageFile path to encrypted storage file
-  * @param storagePass encryption password necessary to access storage file content
   * @param prop        name of the secret data stored in the file (e.g. [[PropAddress]])
   * @param network     network type
+  * @param storagePass encryption password necessary to access storage file content
   */
 case class ExtractStorageCmd(
     toolConf: ErgoToolConfig, name: String,
-    storageFile: String, storagePass: SecretString, prop: String, network: NetworkType) extends Cmd {
+    storageFile: String, prop: String, network: NetworkType, storagePass: SecretString) extends Cmd {
   import ExtractStorageCmd._
   override def run(ctx: AppContext): Unit = {
     val console = ctx.console
@@ -77,13 +77,30 @@ object ExtractStorageCmd extends CmdDescriptor(
     if (supportedKeys.contains(prop)) prop
     else propErrorMsg
 
+  override val parameters: Seq[CmdParameter] = Array(
+    CmdParameter("storageFile", StringPType,
+      "path to encrypted storage file"),
+    new CmdParameter("propName", StringPType,
+      "secret mnemonic password", None, None) {
+      override def customCmdArgParser = Some { (_, arg) =>
+        parsePropName(arg)
+      }
+    },
+    CmdParameter("network", NetworkPType,
+      "network type"),
+    CmdParameter("storagePass", SecretStringPType,
+      "secret storage password", None,
+      Some(ctx => ctx.console.readPassword("Storage password> ")))
+  )
+
   override def createCmd(ctx: AppContext): Cmd = {
-    val args = ctx.cmdArgs
-    val storageFile = if (args.length > 1) args(1) else error("storage file is not specified")
-    val prop = if (args.length > 2) parsePropName(args(2)) else propErrorMsg
-    val network = parseNetwork(if (args.length > 3) args(3) else error("please specify network type (mainnet|testnet)"))
-    val storagePass = ctx.console.readPassword("Storage password> ")
-    ExtractStorageCmd(ctx.toolConf, name, storageFile, storagePass, prop, network)
+    val Seq(
+      storageFile: String,
+      prop: String,
+      network: NetworkType,
+      storagePass: SecretString) = ctx.cmdParameters
+
+    ExtractStorageCmd(ctx.toolConf, name, storageFile, prop, network, storagePass)
   }
 }
 

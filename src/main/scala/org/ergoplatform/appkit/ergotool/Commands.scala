@@ -105,6 +105,9 @@ case object BooleanPType extends PType {
 case object StringPType extends PType {
 }
 
+case object CustomPType extends PType {
+}
+
 /** Command parameter descriptor.
   * @param name         parameter name
   * @param tpe          type of the object which should be created from command line parameter string
@@ -117,7 +120,13 @@ case class CmdParameter(
   tpe: PType,
   description: String,
   defaultValue: Option[String] = None,
-  interactivInput: Option[AppContext => Any] = None)
+  interactivInput: Option[AppContext => Any] = None) {
+
+  /** Optional custom parser of the parameter, if defined should be used instead
+    * of the default parser defined for the type `tpe`.
+    */
+  def customCmdArgParser: Option[(AppContext, String) => Any] = None
+}
 
 /** Base class for all Cmd descriptors (usually companion objects)
  */
@@ -178,6 +187,8 @@ abstract class CmdDescriptor(
     }
     rawParams.map {
       case (p, param) if p.interactivInput.isDefined => param  // this is final value
+      case (p, rawArg: String) if p.customCmdArgParser.isDefined =>
+        p.customCmdArgParser.get(ctx, rawArg)
       case (p, rawArg: String) =>
         // command line string needs further parsing according to the parameter descriptor
         parseRawArg(p, rawArg)
@@ -190,6 +201,8 @@ abstract class CmdDescriptor(
       case NetworkPType =>
         val networkType = parseNetwork(rawArg)
         networkType
+      case CustomPType =>
+
       case SecretStringPType =>
         SecretString.create(rawArg)
       case AddressPType =>
