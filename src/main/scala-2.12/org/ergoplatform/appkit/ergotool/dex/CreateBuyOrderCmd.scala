@@ -95,14 +95,14 @@ object CreateBuyOrderCmd extends CmdDescriptor(
 
   override def createCmd(ctx: AppContext): Cmd = {
     val args = ctx.cmdArgs
-    val storageFile = new File(if (args.length > 1) args(1) else error("Wallet storage file path is not specified"))
+    val storageFile = new File(if (args.length > 0) args(0) else error("Wallet storage file path is not specified"))
     if (!storageFile.exists()) error(s"Specified wallet file is not found: $storageFile")
-    val buyer = Address.create(if (args.length > 2) args(2) else error("buyer address is not specified"))
-    val ergAmount = if (args.length > 3) args(3).toLong else error("ergAmount is not specified")
-    val tokenId = if(args.length > 4) args(4) else error("tokenId is not specified")
-    val tokenAmount = if(args.length > 5) args(5).toLong else error("tokenAmount is not specified")
+    val buyer = Address.create(if (args.length > 1) args(1) else error("buyer address is not specified"))
+    val ergAmount = if (args.length > 2) args(2).toLong else error("ergAmount is not specified")
+    val tokenId = if(args.length > 3) args(3) else error("tokenId is not specified")
+    val tokenAmount = if(args.length > 4) args(4).toLong else error("tokenAmount is not specified")
     val token = new ErgoToken(tokenId, tokenAmount)
-    val dexFee = if(args.length > 6) args(6).toLong else error("dexFee is not specified")
+    val dexFee = if(args.length > 5) args(5).toLong else error("dexFee is not specified")
     val pass = ctx.console.readPassword("Storage password>")
     CreateBuyOrderCmd(ctx.toolConf, name, storageFile, pass, buyer, ergAmount, token, dexFee)
   }

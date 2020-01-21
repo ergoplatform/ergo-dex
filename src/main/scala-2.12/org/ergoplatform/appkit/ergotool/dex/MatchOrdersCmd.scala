@@ -122,11 +122,11 @@ object MatchOrdersCmd extends CmdDescriptor(
 
   override def createCmd(ctx: AppContext): Cmd = {
     val args = ctx.cmdArgs
-    val storageFile = new File(if (args.length > 1) args(1) else error("Wallet storage file path is not specified"))
+    val storageFile = new File(if (args.length > 0) args(0) else error("Wallet storage file path is not specified"))
     if (!storageFile.exists()) error(s"Specified wallet file is not found: $storageFile")
-    val sellerHolderBoxId = ErgoId.create(if (args.length > 2) args(2) else error("seller order box id is not specified"))
-    val buyerHolderBoxId = ErgoId.create(if (args.length > 3) args(3) else error("buyer order box id is not specified"))
-    val minDexFee = if(args.length > 4) args(4).toLong else error("minDexFee is not specified")
+    val sellerHolderBoxId = ErgoId.create(if (args.length > 1) args(1) else error("seller order box id is not specified"))
+    val buyerHolderBoxId = ErgoId.create(if (args.length > 2) args(2) else error("buyer order box id is not specified"))
+    val minDexFee = if(args.length > 3) args(3).toLong else error("minDexFee is not specified")
     val pass = ctx.console.readPassword("Storage password>")
     MatchOrdersCmd(ctx.toolConf, name, storageFile, pass, sellerHolderBoxId, buyerHolderBoxId, minDexFee)
   }
