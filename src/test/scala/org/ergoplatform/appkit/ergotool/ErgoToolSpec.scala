@@ -1,14 +1,18 @@
 package org.ergoplatform.appkit.ergotool
 
-import org.ergoplatform.appkit.console.{ConsoleTesting, Console}
+import org.ergoplatform.appkit.console.{Console, ConsoleTesting}
 import org.ergoplatform.appkit.FileMockedErgoClient
-import org.scalatest.{PropSpec, Matchers}
+import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import scalan.util.FileUtil
 import org.ergoplatform.appkit.JavaHelpers._
 import java.util.{List => JList}
 import java.lang.{String => JString}
 import java.nio.file.{Files, Paths}
+
+import org.ergoplatform.settings.ErgoAlgos
+import sigmastate.Values.ByteArrayConstant
+import sigmastate.serialization.{SigmaSerializer, ValueSerializer}
 
 class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks with ConsoleTesting {
 
@@ -293,5 +297,54 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     res should include ("969482db6643a16b6d8f4c8b50d0a9d5b47a698014c927ee0fa495e2adabbb8e, 9000000")
   }
 
+  property("dex:IssueToken command") {
+    def encodedRegValue(str: String): String = {
+      ErgoAlgos.encode(ValueSerializer.serialize(ByteArrayConstant(str.getBytes)))
+    }
+
+    val data = MockData(
+      Seq(
+        loadNodeResponse("response_Box1.json"),
+        loadNodeResponse("response_Box2.json"),
+        loadNodeResponse("response_Box3.json"),
+        loadNodeResponse("response_Box4.json"),
+        "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1"),
+      Seq(
+        loadExplorerResponse("response_boxesByAddressUnspent.json")))
+    val ergAmount = "50000000" // NanoERGs
+    val tokenAmount = "1000000"
+    val tokenName = "TKN"
+    val tokenDesc = "Generic token"
+    val numberOfDecimals = "2"
+    val res = runCommand("dex:IssueToken",
+      args = Seq(
+        "storage/E2.json",
+        ergAmount,
+        tokenAmount,
+        tokenName,
+        tokenDesc,
+        numberOfDecimals,
+      ),
+      expectedConsoleScenario =
+        s"""Storage password> ::abc;
+           |""".stripMargin, data)
+    println(res)
+    res should include
+    s"""
+          "amount": $tokenAmount
+        }
+      ],
+      "additionalRegisters": {
+        "R4": "${encodedRegValue(tokenName)}",
+        "R5": "${encodedRegValue(tokenDesc)}",
+        "R6": "${encodedRegValue(numberOfDecimals)}"
+      },
+    """.stripMargin
+
+    res should include
+    s"""
+       | "value": $ergAmount,
+       |""".stripMargin
+  }
 }
 
