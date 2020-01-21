@@ -107,6 +107,12 @@ object CreateSellOrderCmd extends CmdDescriptor(
 
 object SellerContract {
 
+  lazy val contractTemplate: ErgoTreeTemplate = {
+    val anyAddress = Address.create("9f4QF8AD1nQ3nJahQVkMj8hFSVVzVom77b52JU7EW71Zexg6N8v")
+    val sellerContract = SellerContract.contractInstance(0L, anyAddress)
+    ErgoTreeTemplate.fromErgoTree(sellerContract.getErgoTree)
+  }
+
   def contractInstance(tokenPrice: Long, sellerPk: Address): ErgoContract = {
     import sigmastate.verified.VerifiedTypeConverters._
     val sellerPkProp = sigmastate.eval.SigmaDsl.SigmaProp(sellerPk.getPublicKey)

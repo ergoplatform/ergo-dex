@@ -346,5 +346,25 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
        | "value": $ergAmount,
        |""".stripMargin
   }
+
+  property("dex:CancelOrder command") {
+    val data = MockData(
+      Seq(
+        loadNodeResponse("response_Box_AAE_seller_contract.json"),
+        "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1"),
+      Seq(
+      ))
+    val res = runCommand("dex:CancelOrder",
+      args = Seq(
+        "storage/E2.json",
+        "8eda35c7a781e183ab309678499b7fb05c715e1f47fea43b5e0dd05b3c69ab2f", // seller contract box id
+      ),
+      expectedConsoleScenario =
+        s"""Storage password> ::abc;
+           |""".stripMargin, data)
+    println(res)
+    res should include ("\"transactionId\": \"e0fb62af449bf7765fadded16d07232e245c9623f686b694a27fb39066645415\",")
+  }
+
 }
 

@@ -18,28 +18,14 @@ import org.ergoplatform.appkit.ergotool.{AppContext, Cmd, CmdDescriptor, RunWith
 case class ListMatchingOrdersCmd(toolConf: ErgoToolConfig,
                                  name: String) extends Cmd with RunWithErgoClient {
 
-  private lazy val sellerContractTemplate: ErgoTreeTemplate = {
-    val anyAddress = Address.create("9f4QF8AD1nQ3nJahQVkMj8hFSVVzVom77b52JU7EW71Zexg6N8v")
-    val sellerContract = SellerContract.contractInstance(0L, anyAddress)
-    ErgoTreeTemplate.fromErgoTree(sellerContract.getErgoTree)
-  }
-
-  private lazy val buyerContractTemplate: ErgoTreeTemplate = {
-    val anyAddress = Address.create("9f4QF8AD1nQ3nJahQVkMj8hFSVVzVom77b52JU7EW71Zexg6N8v")
-    val token = new ErgoToken("21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1",
-      0L)
-    val buyerContract = BuyerContract.contractInstance(token, anyAddress)
-    ErgoTreeTemplate.fromErgoTree(buyerContract.getErgoTree)
-  }
-
   override def runWithClient(ergoClient: ErgoClient, runCtx: AppContext): Unit = {
     val console = runCtx.console
     ergoClient.execute(ctx => {
       val sellerHolderBoxes = loggedStep(s"Loading seller boxes", console) {
-        ctx.getUnspentBoxesForErgoTreeTemplate(sellerContractTemplate).convertTo[IndexedSeq[InputBox]]
+        ctx.getUnspentBoxesForErgoTreeTemplate(SellerContract.contractTemplate).convertTo[IndexedSeq[InputBox]]
       }
       val buyerHolderBoxes = loggedStep(s"Loading buyer boxes", console) {
-        ctx.getUnspentBoxesForErgoTreeTemplate(buyerContractTemplate).convertTo[IndexedSeq[InputBox]]
+        ctx.getUnspentBoxesForErgoTreeTemplate(BuyerContract.contractTemplate).convertTo[IndexedSeq[InputBox]]
       }
       val matchingOrderPairs = ListMatchingOrders
         .matchingOrders(sellerHolderBoxes, buyerHolderBoxes)
