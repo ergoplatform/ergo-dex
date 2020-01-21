@@ -99,13 +99,13 @@ case object SecretStringPType extends PType {
 case object IntPType extends PType {
 }
 
+case object LongPType extends PType {
+}
+
 case object BooleanPType extends PType {
 }
 
 case object StringPType extends PType {
-}
-
-case object CustomPType extends PType {
 }
 
 /** Command parameter descriptor.
@@ -201,12 +201,16 @@ abstract class CmdDescriptor(
       case NetworkPType =>
         val networkType = parseNetwork(rawArg)
         networkType
-      case CustomPType =>
-
       case SecretStringPType =>
         SecretString.create(rawArg)
+      case IntPType => rawArg.toInt
+      case LongPType => rawArg.toLong
       case AddressPType =>
         Address.create(rawArg)
+      case FilePType =>
+        val storageFile = new File(rawArg)
+        if (!storageFile.exists()) usageError(s"Specified file is not found: $storageFile")
+        storageFile
       case DirPathPType =>
         val file = new File(rawArg)
         if (!file.exists())

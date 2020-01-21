@@ -3,8 +3,11 @@ package org.ergoplatform.appkit.ergotool
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit._
 import java.io.File
+
 import org.ergoplatform.appkit.Parameters.MinFee
 import Utils._
+import org.ergoplatform.appkit.ergotool.ExtractStorageCmd.parsePropName
+import org.ergoplatform.appkit.ergotool.SendCmd.error
 
 /** Creates and sends a new transaction to transfer Ergs from one address to another.
   *
@@ -27,6 +30,8 @@ import Utils._
 case class SendCmd( toolConf: ErgoToolConfig, name: String, storageFile: File, storagePass: SecretString,
   recipient: Address, amountToSend: Long) extends Cmd with RunWithErgoClient {
   override def runWithClient(ergoClient: ErgoClient, runCtx: AppContext): Unit = {
+    if (amountToSend < MinFee) error(s"Please specify amount no less than $MinFee (MinFee)")
+
     val console = runCtx.console
     ergoClient.execute(ctx => {
       val senderProver = loggedStep("Creating prover", console) {
@@ -71,14 +76,25 @@ object SendCmd extends CmdDescriptor(
   description = "send the given <amountToSend> to the given <recipientAddr> using \n " +
     "the given <storageFile> to sign transaction (requests storage password)") {
 
+  override val parameters: Seq[CmdParameter] = Array(
+    CmdParameter("storageFile", FilePType,
+      "storage with secret key of the sender"),
+    CmdParameter("storagePass", SecretStringPType,
+      "password to access sender secret key in the storage", None,
+      Some(ctx => ctx.console.readPassword("Storage password>"))),
+    CmdParameter("recipientAddr", AddressPType,
+      "address of the recepient of the transfer"),
+    CmdParameter("amoundToSend", LongPType,
+      "amount of NanoERG to transfer to recipient")
+  )
+
   override def createCmd(ctx: AppContext): Cmd = {
-    val args = ctx.cmdArgs
-    val storageFile = new File(if (args.length > 1) args(1) else error("Wallet storage file path is not specified"))
-    if (!storageFile.exists()) error(s"Specified wallet file is not found: $storageFile")
-    val recipient = Address.create(if (args.length > 2) args(2) else error("recipient address is not specified"))
-    val amountToSend = if (args.length > 3) args(3).toLong else error("amountToSend is not specified")
-    if (amountToSend < MinFee) error(s"Please specify amount no less than $MinFee (MinFee)")
-    val pass = ctx.console.readPassword("Storage password>")
+    val Seq(
+      storageFile: File,
+      pass: SecretString,
+      recipient: Address,
+      amountToSend: Long) = ctx.cmdParameters
+
     SendCmd(ctx.toolConf, name, storageFile, pass, recipient, amountToSend)
   }
 }
