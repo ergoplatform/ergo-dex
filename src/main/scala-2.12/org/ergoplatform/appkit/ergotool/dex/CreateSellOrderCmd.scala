@@ -109,14 +109,16 @@ object CreateSellOrderCmd extends CmdDescriptor(
   )
 
   override def createCmd(ctx: AppContext): Cmd = {
-    val Seq(
-    storageFile: File,
-    pass: SecretString,
-    sellerAddr: Address,
-    tokenPrice: Long,
-    tokenId: ErgoId,
-    tokenAmount: Long,
-    dexFee: Long) = ctx.cmdParameters
+    val Seq
+      (
+      storageFile: File,
+      pass: SecretString,
+      sellerAddr: Address,
+      tokenPrice: Long,
+      tokenId: ErgoId,
+      tokenAmount: Long,
+      dexFee: Long
+      ) = ctx.cmdParameters
 
     val token = new ErgoToken(tokenId, tokenAmount)
     CreateSellOrderCmd(ctx.toolConf, name, storageFile, pass, sellerAddr, tokenPrice, token, dexFee)

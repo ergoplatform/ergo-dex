@@ -135,12 +135,14 @@ object MatchOrdersCmd extends CmdDescriptor(
   )
 
   override def createCmd(ctx: AppContext): Cmd = {
-    val Seq(
-    storageFile: File,
-    pass: SecretString,
-    sellerHolderBoxId: ErgoId,
-    buyerHolderBoxId: ErgoId,
-    minDexFee: Long) = ctx.cmdParameters
+    val Seq
+      (
+      storageFile: File,
+      pass: SecretString,
+      sellerHolderBoxId: ErgoId,
+      buyerHolderBoxId: ErgoId,
+      minDexFee: Long
+      ) = ctx.cmdParameters
 
 
     MatchOrdersCmd(ctx.toolConf, name, storageFile, pass, sellerHolderBoxId, buyerHolderBoxId, minDexFee)
