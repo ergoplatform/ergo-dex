@@ -6,7 +6,7 @@ import java.util.Optional
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
-import org.ergoplatform.appkit.ergotool.{AddressPType, AppContext, Cmd, CmdDescriptor, CmdParameter, FilePType, LongPType, RunWithErgoClient, SecretStringPType, StringPType}
+import org.ergoplatform.appkit.ergotool.{AddressPType, AppContext, Cmd, CmdDescriptor, CmdParameter, ErgoIdPType, FilePType, LongPType, RunWithErgoClient, SecretStringPType, StringPType}
 import org.ergoplatform.appkit.impl.{ErgoTreeContract, ScalaBridge}
 import sigmastate.{SLong, Values}
 import sigmastate.Values.{ErgoTree, SigmaPropConstant}
@@ -100,7 +100,7 @@ object CreateSellOrderCmd extends CmdDescriptor(
       "address of the seller"),
     CmdParameter("tokenPrice", LongPType,
       "amount of NanoERG asked for tokens"),
-    CmdParameter("tokenId", StringPType,
+    CmdParameter("tokenId", ErgoIdPType,
       "token id offered for sale"),
     CmdParameter("tokenAmount", LongPType,
       "token amount offered for sale"),
@@ -114,7 +114,7 @@ object CreateSellOrderCmd extends CmdDescriptor(
     pass: SecretString,
     sellerAddr: Address,
     tokenPrice: Long,
-    tokenId: String,
+    tokenId: ErgoId,
     tokenAmount: Long,
     dexFee: Long) = ctx.cmdParameters
 

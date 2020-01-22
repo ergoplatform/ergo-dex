@@ -5,7 +5,7 @@ import java.io.File
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
-import org.ergoplatform.appkit.ergotool.{AddressPType, AppContext, Cmd, CmdDescriptor, CmdParameter, FilePType, LongPType, RunWithErgoClient, SecretStringPType, StringPType}
+import org.ergoplatform.appkit.ergotool.{AddressPType, AppContext, Cmd, CmdDescriptor, CmdParameter, ErgoIdPType, FilePType, LongPType, RunWithErgoClient, SecretStringPType, StringPType}
 import org.ergoplatform.appkit.impl.{ErgoTreeContract, ScalaBridge}
 import sigmastate.Values.{ByteArrayConstant, CollectionConstant, ErgoTree, SigmaPropConstant}
 import sigmastate.basics.DLogProtocol.{ProveDlog, ProveDlogProp}
@@ -103,7 +103,7 @@ object CreateBuyOrderCmd extends CmdDescriptor(
       "address of the buyer"),
     CmdParameter("ergAmount", LongPType,
       "amount of NanoERG to pay for tokens"),
-    CmdParameter("tokenId", StringPType,
+    CmdParameter("tokenId", ErgoIdPType,
       "token id to buy"),
     CmdParameter("tokenAmount", LongPType,
       "token amount to buy"),
@@ -117,7 +117,7 @@ object CreateBuyOrderCmd extends CmdDescriptor(
     pass: SecretString,
     buyerAddr: Address,
     ergAmount: Long,
-    tokenId: String,
+    tokenId: ErgoId,
     tokenAmount: Long,
     dexFee: Long) = ctx.cmdParameters
 

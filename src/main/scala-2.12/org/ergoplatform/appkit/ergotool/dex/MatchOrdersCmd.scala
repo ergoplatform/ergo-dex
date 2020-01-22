@@ -6,7 +6,7 @@ import java.util
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
-import org.ergoplatform.appkit.ergotool.{AppContext, Cmd, CmdDescriptor, RunWithErgoClient}
+import org.ergoplatform.appkit.ergotool.{AddressPType, AppContext, Cmd, CmdDescriptor, CmdParameter, ErgoIdPType, FilePType, LongPType, RunWithErgoClient, SecretStringPType, StringPType}
 
 /** Creates and sends a new transaction with boxes that match given buyer and seller orders for AssetsAtomicExchange
   *
@@ -117,17 +117,32 @@ case class MatchOrdersCmd(toolConf: ErgoToolConfig,
 }
 
 object MatchOrdersCmd extends CmdDescriptor(
-  name = "dex:MatchOrders", cmdParamSyntax = "<wallet file> <sellerHolderBoxId> <buyerHolderBoxId>      <minDexFee",
-  description = "match an existing token seller's order (by <sellerHolderBoxId>) and an existing buyer's order (by <buyerHolderBoxId) and send tokens to buyer's address(extracted from buyer's order) and Ergs to seller's address(extracted from seller's order) claiming the minimum fee of <minDexFee> with the given <wallet file> to sign transaction (requests storage password)") {
+  name = "dex:MatchOrders", cmdParamSyntax = "<storageFile> <sellerHolderBoxId> <buyerHolderBoxId>      <minDexFee",
+  description = "match an existing token seller's order (by <sellerHolderBoxId>) and an existing buyer's order (by <buyerHolderBoxId) and send tokens to buyer's address(extracted from buyer's order) and Ergs to seller's address(extracted from seller's order) claiming the minimum fee of <minDexFee> with the given <storageFile> to sign transaction (requests storage password)") {
+
+  override val parameters: Seq[CmdParameter] = Array(
+    CmdParameter("storageFile", FilePType,
+      "storage with secret key of the sender"),
+    CmdParameter("storagePass", SecretStringPType,
+      "password to access sender secret key in the storage", None,
+      Some(ctx => ctx.console.readPassword("Storage password>"))),
+    CmdParameter("sellerHolderBoxId", ErgoIdPType,
+      "box id of the seller order"),
+    CmdParameter("buyerHolderBoxId", ErgoIdPType,
+      "box id of the buyer order"),
+    CmdParameter("minDexFee", LongPType,
+      "lower limit of the reward for the DEX to be claimed from this transaction")
+  )
 
   override def createCmd(ctx: AppContext): Cmd = {
-    val args = ctx.cmdArgs
-    val storageFile = new File(if (args.length > 0) args(0) else error("Wallet storage file path is not specified"))
-    if (!storageFile.exists()) error(s"Specified wallet file is not found: $storageFile")
-    val sellerHolderBoxId = ErgoId.create(if (args.length > 1) args(1) else error("seller order box id is not specified"))
-    val buyerHolderBoxId = ErgoId.create(if (args.length > 2) args(2) else error("buyer order box id is not specified"))
-    val minDexFee = if(args.length > 3) args(3).toLong else error("minDexFee is not specified")
-    val pass = ctx.console.readPassword("Storage password>")
+    val Seq(
+    storageFile: File,
+    pass: SecretString,
+    sellerHolderBoxId: ErgoId,
+    buyerHolderBoxId: ErgoId,
+    minDexFee: Long) = ctx.cmdParameters
+
+
     MatchOrdersCmd(ctx.toolConf, name, storageFile, pass, sellerHolderBoxId, buyerHolderBoxId, minDexFee)
   }
 }
