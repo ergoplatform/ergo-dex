@@ -12,36 +12,31 @@ import org.ergoplatform.appkit.ergotool.{AppContext, Cmd, CmdDescriptor, RunWith
 
 import scala.util.Try
 
-/** Creates and sends a new transaction with boxes that match given buyer and seller orders for AssetsAtomicExchange
+/** Claims an unspent buy/sell order and send the ERGs/tokens to the address of this wallet
   *
   * Steps:<br/>
   * 1) request storage password from the user<br/>
   * 2) read storage file, unlock using password and get secret<br/>
   * 3) get master public key and compute sender's address<br/>
-  * 4) find the box with buyer's order (by buyerHolderBoxId)<br/>
-  * 5) find the box with seller's order (by sellerHolderBoxId)<br/>
-  * 6) select sender's coins to cover the transaction fee, and computes the amount of change<br/>
-  * 7) create output box for buyer's tokens<br/>
-  * 8) create output box for seller's Ergs<br/>
-  * 9) create a transaction using buyer's and seller's order boxes (from steps 4,5) as inputs<br/>
-  * 10) sign (using secret key) the transaction<br/>
-  * 11) if no `--dry-run` option is specified, send the transaction to the network<br/>
+  * 4) find the box with order to cancel (by orderBoxId)<br/>
+  * 5) select sender's coins to cover the transaction fee, and computes the amount of change<br/>
+  * 6) create output box for buyer's tokens<br/>
+  * 7) create output box for ERGs (and tokens if sell order)<br/>
+  * 8) create a transaction canceled order as input<br/>
+  * 9) sign (using secret key) the transaction<br/>
+  * 10) if no `--dry-run` option is specified, send the transaction to the network<br/>
   *    otherwise skip sending<br/>
-  * 12) serialize transaction to Json and print to the console<br/>
+  * 11) serialize transaction to Json and print to the console<br/>
   *
   * @param storageFile storage with secret key of the sender
   * @param storagePass password to access sender secret key in the storage
-  * @param sellerHolderBoxId BoxId of the seller's order
-  * @param buyerHolderBoxId BoxId of the buyer's order
-  * @param minDexFee minimal fee claimable by DEX in this transaction
+  * @param orderBoxId BoxId of the sell/buy order to cancel
   */
 case class CancelOrderCmd(toolConf: ErgoToolConfig,
                           name: String,
                           storageFile: File,
                           storagePass: SecretString,
                           orderBoxId: ErgoId) extends Cmd with RunWithErgoClient {
-
-  // TODO: update scaladoc
 
   override def runWithClient(ergoClient: ErgoClient, runCtx: AppContext): Unit = {
     val console = runCtx.console
