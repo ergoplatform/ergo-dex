@@ -87,6 +87,9 @@ case object DirPathPType extends PType {
 case object AddressPType extends PType {
 }
 
+case object ErgoIdPType extends PType {
+}
+
 case object NetworkPType extends PType {
 }
 
@@ -207,6 +210,8 @@ abstract class CmdDescriptor(
       case LongPType => rawArg.toLong
       case AddressPType =>
         Address.create(rawArg)
+      case ErgoIdPType =>
+        ErgoId.create(rawArg)
       case FilePType =>
         val storageFile = new File(rawArg)
         if (!storageFile.exists()) usageError(s"Specified file is not found: $storageFile")

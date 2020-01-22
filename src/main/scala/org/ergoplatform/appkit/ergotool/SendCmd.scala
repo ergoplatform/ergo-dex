@@ -83,8 +83,8 @@ object SendCmd extends CmdDescriptor(
       "password to access sender secret key in the storage", None,
       Some(ctx => ctx.console.readPassword("Storage password>"))),
     CmdParameter("recipientAddr", AddressPType,
-      "address of the recepient of the transfer"),
-    CmdParameter("amoundToSend", LongPType,
+      "address of the recipient of the transfer"),
+    CmdParameter("amountToSend", LongPType,
       "amount of NanoERG to transfer to recipient")
   )
 

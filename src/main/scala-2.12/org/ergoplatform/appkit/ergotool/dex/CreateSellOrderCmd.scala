@@ -6,7 +6,7 @@ import java.util.Optional
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
-import org.ergoplatform.appkit.ergotool.{AppContext, Cmd, CmdDescriptor, RunWithErgoClient}
+import org.ergoplatform.appkit.ergotool.{AddressPType, AppContext, Cmd, CmdDescriptor, CmdParameter, ErgoIdPType, FilePType, LongPType, RunWithErgoClient, SecretStringPType, StringPType}
 import org.ergoplatform.appkit.impl.{ErgoTreeContract, ScalaBridge}
 import sigmastate.{SLong, Values}
 import sigmastate.Values.{ErgoTree, SigmaPropConstant}
@@ -32,9 +32,9 @@ import sigmastate.verification.contract.AssetsAtomicExchangeCompilation
   * @param storageFile storage with secret key of the sender
   * @param storagePass password to access sender secret key in the storage
   * @param seller address of the seller
-  * @param tokenPrice Ergs amount for seller to receive for tokens
-  * @param token token id and amount
-  * @param dexFee Ergs amount claimable(box.value) in this order (DEX fee)
+  * @param tokenPrice amount of NanoERG asked for tokens
+  * @param token token id and amount offered for sale
+  * @param dexFee reward for anyone who matches this order with buyer's order
   */
 case class CreateSellOrderCmd(toolConf: ErgoToolConfig,
                               name: String,
@@ -86,22 +86,41 @@ case class CreateSellOrderCmd(toolConf: ErgoToolConfig,
 }
 
 object CreateSellOrderCmd extends CmdDescriptor(
-  name = "dex:SellOrder", cmdParamSyntax = "<wallet file> <sellerAddr> <ergPrice> <tokenId> <tokenAmount> <dexFee>",
-  description = "put a token seller order with given <tokenId> and <tokenAmount> for sale at given <ergPrice> price with <dexFee> as a reward for anyone who matches this order with buyer, with <sellerAddr> to be used for withdrawal \n " +
-    "with the given <wallet file> to sign transaction (requests storage password)") {
+  name = "dex:SellOrder", cmdParamSyntax = "<storageFile> <sellerAddr> <tokenPrice> <tokenId> <tokenAmount> <dexFee>",
+  description = "put a token seller order with given <tokenId> and <tokenAmount> for sale at given <tokenPrice> price with <dexFee> as a reward for anyone who matches this order with buyer, with <sellerAddr> to be used for withdrawal \n " +
+    "with the given <storageFile> to sign transaction (requests storage password)") {
+
+  override val parameters: Seq[CmdParameter] = Array(
+    CmdParameter("storageFile", FilePType,
+      "storage with secret key of the sender"),
+    CmdParameter("storagePass", SecretStringPType,
+      "password to access sender secret key in the storage", None,
+      Some(ctx => ctx.console.readPassword("Storage password>"))),
+    CmdParameter("sellerAddr", AddressPType,
+      "address of the seller"),
+    CmdParameter("tokenPrice", LongPType,
+      "amount of NanoERG asked for tokens"),
+    CmdParameter("tokenId", ErgoIdPType,
+      "token id offered for sale"),
+    CmdParameter("tokenAmount", LongPType,
+      "token amount offered for sale"),
+    CmdParameter("dexFee", LongPType,
+      "reward for anyone who matches this order with buyer's order")
+  )
 
   override def createCmd(ctx: AppContext): Cmd = {
-    val args = ctx.cmdArgs
-    val storageFile = new File(if (args.length > 0) args(0) else error("Wallet storage file path is not specified"))
-    if (!storageFile.exists()) error(s"Specified wallet file is not found: $storageFile")
-    val seller = Address.create(if (args.length > 1) args(1) else error("seller address is not specified"))
-    val ergAmount = if (args.length > 2) args(2).toLong else error("ergPrice is not specified")
-    val tokenId = if(args.length > 3) args(3) else error("tokenId is not specified")
-    val tokenAmount = if(args.length > 4) args(4).toLong else error("tokenAmount is not specified")
+    val Seq(
+      storageFile: File,
+      pass: SecretString,
+      sellerAddr: Address,
+      tokenPrice: Long,
+      tokenId: ErgoId,
+      tokenAmount: Long,
+      dexFee: Long
+    ) = ctx.cmdParameters
+
     val token = new ErgoToken(tokenId, tokenAmount)
-    val dexFee = if(args.length > 5) args(5).toLong else error("dexFee is not specified")
-    val pass = ctx.console.readPassword("Storage password>")
-    CreateSellOrderCmd(ctx.toolConf, name, storageFile, pass, seller, ergAmount, token, dexFee)
+    CreateSellOrderCmd(ctx.toolConf, name, storageFile, pass, sellerAddr, tokenPrice, token, dexFee)
   }
 }
 

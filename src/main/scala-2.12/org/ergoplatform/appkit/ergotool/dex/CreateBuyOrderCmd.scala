@@ -5,7 +5,7 @@ import java.io.File
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
-import org.ergoplatform.appkit.ergotool.{AppContext, Cmd, CmdDescriptor, RunWithErgoClient}
+import org.ergoplatform.appkit.ergotool.{AddressPType, AppContext, Cmd, CmdDescriptor, CmdParameter, ErgoIdPType, FilePType, LongPType, RunWithErgoClient, SecretStringPType, StringPType}
 import org.ergoplatform.appkit.impl.{ErgoTreeContract, ScalaBridge}
 import sigmastate.Values.{ByteArrayConstant, CollectionConstant, ErgoTree, SigmaPropConstant}
 import sigmastate.basics.DLogProtocol.{ProveDlog, ProveDlogProp}
@@ -32,11 +32,11 @@ import sigmastate.{SByte, SLong, Values}
   * @param storageFile storage with secret key of the sender
   * @param storagePass password to access sender secret key in the storage
   * @param buyer       address of the buyer (the one who signs this transaction)
-  * @param ergAmount   NanoERG amount for buyer to pay for tokens
-  * @param token       token id and amount
+  * @param ergAmount   amount of NanoERG to pay for tokens
+  * @param token       token id and amount to buy
   * @param dexFee      an amount of NanoERGs to put in addition to ergAmount into the new box protected
   *                    by the buyer order. When the buyer setup up a bid price he/she also decide on
-  *                    the DEX fee amount to pay
+  *                    the DEX fee amount to pay. Reward for anyone who matches this order with seller's order
   */
 case class CreateBuyOrderCmd(toolConf: ErgoToolConfig,
                              name: String,
@@ -89,22 +89,41 @@ case class CreateBuyOrderCmd(toolConf: ErgoToolConfig,
 
 
 object CreateBuyOrderCmd extends CmdDescriptor(
-  name = "dex:BuyOrder", cmdParamSyntax = "<wallet file> <buyerAddr> <ergAmount> <tokenId> <tokenAmount>, <dexFee>",
+  name = "dex:BuyOrder", cmdParamSyntax = "<storageFile> <buyerAddr> <ergAmount> <tokenId> <tokenAmount>, <dexFee>",
   description = "put a token buyer order with given <tokenId> and <tokenAmount> to buy at given <ergPrice> price with <dexFee> as a reward for anyone who matches this order with a seller, with <buyerAddr> to be used for withdrawal \n " +
-    "with the given <wallet file> to sign transaction (requests storage password)") {
+    "with the given <storageFile> to sign transaction (requests storage password)") {
+
+  override val parameters: Seq[CmdParameter] = Array(
+    CmdParameter("storageFile", FilePType,
+      "storage with secret key of the sender"),
+    CmdParameter("storagePass", SecretStringPType,
+      "password to access sender secret key in the storage", None,
+      Some(ctx => ctx.console.readPassword("Storage password>"))),
+    CmdParameter("buyerAddr", AddressPType,
+      "address of the buyer"),
+    CmdParameter("ergAmount", LongPType,
+      "amount of NanoERG to pay for tokens"),
+    CmdParameter("tokenId", ErgoIdPType,
+      "token id to buy"),
+    CmdParameter("tokenAmount", LongPType,
+      "token amount to buy"),
+    CmdParameter("dexFee", LongPType,
+      "an amount of NanoERGs to put in addition to ergAmount into the new box protected by the buyer order. When the buyer setup up a bid price he/she also decide on the DEX fee amount to pay. Reward for anyone who matches this order with seller's order")
+  )
 
   override def createCmd(ctx: AppContext): Cmd = {
-    val args = ctx.cmdArgs
-    val storageFile = new File(if (args.length > 0) args(0) else error("Wallet storage file path is not specified"))
-    if (!storageFile.exists()) error(s"Specified wallet file is not found: $storageFile")
-    val buyer = Address.create(if (args.length > 1) args(1) else error("buyer address is not specified"))
-    val ergAmount = if (args.length > 2) args(2).toLong else error("ergAmount is not specified")
-    val tokenId = if(args.length > 3) args(3) else error("tokenId is not specified")
-    val tokenAmount = if(args.length > 4) args(4).toLong else error("tokenAmount is not specified")
+    val Seq(
+      storageFile: File,
+      pass: SecretString,
+      buyerAddr: Address,
+      ergAmount: Long,
+      tokenId: ErgoId,
+      tokenAmount: Long,
+      dexFee: Long
+    ) = ctx.cmdParameters
+
     val token = new ErgoToken(tokenId, tokenAmount)
-    val dexFee = if(args.length > 5) args(5).toLong else error("dexFee is not specified")
-    val pass = ctx.console.readPassword("Storage password>")
-    CreateBuyOrderCmd(ctx.toolConf, name, storageFile, pass, buyer, ergAmount, token, dexFee)
+    CreateBuyOrderCmd(ctx.toolConf, name, storageFile, pass, buyerAddr, ergAmount, token, dexFee)
   }
 }
 
