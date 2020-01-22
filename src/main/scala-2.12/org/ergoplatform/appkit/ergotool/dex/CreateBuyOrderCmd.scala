@@ -32,11 +32,11 @@ import sigmastate.{SByte, SLong, Values}
   * @param storageFile storage with secret key of the sender
   * @param storagePass password to access sender secret key in the storage
   * @param buyer       address of the buyer (the one who signs this transaction)
-  * @param ergAmount   NanoERG amount for buyer to pay for tokens
-  * @param token       token id and amount
+  * @param ergAmount   amount of NanoERG to pay for tokens
+  * @param token       token id and amount to buy
   * @param dexFee      an amount of NanoERGs to put in addition to ergAmount into the new box protected
   *                    by the buyer order. When the buyer setup up a bid price he/she also decide on
-  *                    the DEX fee amount to pay
+  *                    the DEX fee amount to pay. Reward for anyone who matches this order with seller's order
   */
 case class CreateBuyOrderCmd(toolConf: ErgoToolConfig,
                              name: String,
@@ -108,12 +108,11 @@ object CreateBuyOrderCmd extends CmdDescriptor(
     CmdParameter("tokenAmount", LongPType,
       "token amount to buy"),
     CmdParameter("dexFee", LongPType,
-      "reward for anyone who matches this order with seller's order")
+      "an amount of NanoERGs to put in addition to ergAmount into the new box protected by the buyer order. When the buyer setup up a bid price he/she also decide on the DEX fee amount to pay. Reward for anyone who matches this order with seller's order")
   )
 
   override def createCmd(ctx: AppContext): Cmd = {
-    val Seq
-      (
+    val Seq(
       storageFile: File,
       pass: SecretString,
       buyerAddr: Address,
@@ -121,7 +120,7 @@ object CreateBuyOrderCmd extends CmdDescriptor(
       tokenId: ErgoId,
       tokenAmount: Long,
       dexFee: Long
-      ) = ctx.cmdParameters
+    ) = ctx.cmdParameters
 
     val token = new ErgoToken(tokenId, tokenAmount)
     CreateBuyOrderCmd(ctx.toolConf, name, storageFile, pass, buyerAddr, ergAmount, token, dexFee)

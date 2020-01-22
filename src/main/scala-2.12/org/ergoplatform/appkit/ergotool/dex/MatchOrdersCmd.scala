@@ -29,7 +29,7 @@ import org.ergoplatform.appkit.ergotool.{AddressPType, AppContext, Cmd, CmdDescr
   * @param storagePass password to access sender secret key in the storage
   * @param sellerHolderBoxId BoxId of the seller's order
   * @param buyerHolderBoxId BoxId of the buyer's order
-  * @param minDexFee minimal fee claimable by DEX in this transaction
+  * @param minDexFee lower limit of the reward for the DEX to be claimed from this transaction
   */
 case class MatchOrdersCmd(toolConf: ErgoToolConfig,
                           name: String,
@@ -135,14 +135,13 @@ object MatchOrdersCmd extends CmdDescriptor(
   )
 
   override def createCmd(ctx: AppContext): Cmd = {
-    val Seq
-      (
+    val Seq(
       storageFile: File,
       pass: SecretString,
       sellerHolderBoxId: ErgoId,
       buyerHolderBoxId: ErgoId,
       minDexFee: Long
-      ) = ctx.cmdParameters
+    ) = ctx.cmdParameters
 
 
     MatchOrdersCmd(ctx.toolConf, name, storageFile, pass, sellerHolderBoxId, buyerHolderBoxId, minDexFee)

@@ -32,9 +32,9 @@ import sigmastate.verification.contract.AssetsAtomicExchangeCompilation
   * @param storageFile storage with secret key of the sender
   * @param storagePass password to access sender secret key in the storage
   * @param seller address of the seller
-  * @param tokenPrice Ergs amount for seller to receive for tokens
-  * @param token token id and amount
-  * @param dexFee Ergs amount claimable(box.value) in this order (DEX fee)
+  * @param tokenPrice amount of NanoERG asked for tokens
+  * @param token token id and amount offered for sale
+  * @param dexFee reward for anyone who matches this order with buyer's order
   */
 case class CreateSellOrderCmd(toolConf: ErgoToolConfig,
                               name: String,
@@ -109,8 +109,7 @@ object CreateSellOrderCmd extends CmdDescriptor(
   )
 
   override def createCmd(ctx: AppContext): Cmd = {
-    val Seq
-      (
+    val Seq(
       storageFile: File,
       pass: SecretString,
       sellerAddr: Address,
@@ -118,7 +117,7 @@ object CreateSellOrderCmd extends CmdDescriptor(
       tokenId: ErgoId,
       tokenAmount: Long,
       dexFee: Long
-      ) = ctx.cmdParameters
+    ) = ctx.cmdParameters
 
     val token = new ErgoToken(tokenId, tokenAmount)
     CreateSellOrderCmd(ctx.toolConf, name, storageFile, pass, sellerAddr, tokenPrice, token, dexFee)
