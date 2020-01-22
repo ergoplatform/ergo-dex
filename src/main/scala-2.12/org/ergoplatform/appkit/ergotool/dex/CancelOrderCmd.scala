@@ -111,12 +111,19 @@ object CancelOrder {
   // TODO: extract to use in other commands
   case class OutBoxProto(getValue: Long, tokens: Seq[ErgoToken], contract: ErgoContract) {
 
-    def toOutBox(builder: OutBoxBuilder): OutBox =
-      builder
+    def toOutBox(builder: OutBoxBuilder): OutBox = {
+      val builder2 = builder
         .value(getValue)
-        .tokens(tokens: _*)
         .contract(contract)
-        .build()
+      if (tokens.nonEmpty) {
+        builder2
+          .tokens(tokens: _*)
+          .build()
+      } else {
+        builder2
+          .build()
+      }
+    }
   }
 
   def createTx(orderBox: InputBox, recipientAddress: Address,

@@ -234,7 +234,6 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     val res = runCommand("dex:BuyOrder",
       args = Seq(
         "storage/E2.json",
-        "9hHDQb26AjnJUXxcqriqY1mnhpLuUeC81C4pggtK7tupr92Ea1K", // buyer address
         "50000000", // token price in NanoERGs
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1", // tokenId
         "60", // token amount
@@ -365,5 +364,23 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     res should include ("\"transactionId\": \"f719f7e4c5600491c729f5cf35d13d873057624d26dfed15f48fcad8fdde54a7\",")
   }
 
+  property("dex:CancelOrder command for buy order") {
+    val data = MockData(
+      Seq(
+        loadNodeResponse("response_Box_AAE_buyer_contract.json"),
+        "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1"),
+      Seq(
+      ))
+    val res = runCommand("dex:CancelOrder",
+      args = Seq(
+        "storage/E2.json",
+        "969482db6643a16b6d8f4c8b50d0a9d5b47a698014c927ee0fa495e2adabbb8e", // buyer contract box id
+      ),
+      expectedConsoleScenario =
+        s"""Storage password> ::abc;
+           |""".stripMargin, data)
+    println(res)
+    res should include ("\"transactionId\": \"f719f7e4c5600491c729f5cf35d13d873057624d26dfed15f48fcad8fdde54a7\",")
+  }
 }
 

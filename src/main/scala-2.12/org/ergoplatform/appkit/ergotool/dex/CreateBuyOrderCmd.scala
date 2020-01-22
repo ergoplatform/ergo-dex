@@ -22,7 +22,7 @@ import sigmastate.{SByte, SLong, Values}
   * 3) get master public key and compute sender's address<br/>
   * 4) load available coins belonging to the sender's address<br/>
   * 5) select coins to cover ergAmount, compute transaction fee and amount of change<br/>
-  * 6) create an instance of the buyer's order passing token and buyer address<br/>
+  * 6) create an instance of the buyer's order passing token and wallet address<br/>
   * 7) create an output box protected with the instance of buyer's order from the previous step<br/>
   * 8) create and sign (using secret key) the transaction<br/>
   * 9) if no `--dry-run` option is specified, send the transaction to the network<br/>
@@ -31,7 +31,6 @@ import sigmastate.{SByte, SLong, Values}
   *
   * @param storageFile storage with secret key of the sender
   * @param storagePass password to access sender secret key in the storage
-  * @param buyer       address of the buyer (the one who signs this transaction)
   * @param ergAmount   NanoERG amount for buyer to pay for tokens
   * @param token       token id and amount
   * @param dexFee      an amount of NanoERGs to put in addition to ergAmount into the new box protected
@@ -42,7 +41,6 @@ case class CreateBuyOrderCmd(toolConf: ErgoToolConfig,
                              name: String,
                              storageFile: File,
                              storagePass: SecretString,
-                             buyer: Address,
                              ergAmount: Long,
                              token: ErgoToken,
                              dexFee: Long) extends Cmd with RunWithErgoClient {
@@ -50,12 +48,12 @@ case class CreateBuyOrderCmd(toolConf: ErgoToolConfig,
   override def runWithClient(ergoClient: ErgoClient, runCtx: AppContext): Unit = {
     val console = runCtx.console
     ergoClient.execute(ctx => {
-      val buyerContract = BuyerContract.contractInstance(token, buyer)
-      println(s"contract ergo tree: ${ScalaBridge.isoStringToErgoTree.from( buyerContract.getErgoTree)}")
       val senderProver = loggedStep("Creating prover", console) {
         BoxOperations.createProver(ctx, storageFile.getPath, storagePass).build()
       }
       val sender = senderProver.getAddress
+      val buyerContract = BuyerContract.contractInstance(token, sender)
+//      println(s"contract ergo tree: ${ScalaBridge.isoStringToErgoTree.from( buyerContract.getErgoTree)}")
       val unspent = loggedStep(s"Loading unspent boxes from at address $sender", console) {
         ctx.getUnspentBoxesFor(sender)
       }
@@ -97,14 +95,13 @@ object CreateBuyOrderCmd extends CmdDescriptor(
     val args = ctx.cmdArgs
     val storageFile = new File(if (args.length > 1) args(1) else error("Wallet storage file path is not specified"))
     if (!storageFile.exists()) error(s"Specified wallet file is not found: $storageFile")
-    val buyer = Address.create(if (args.length > 2) args(2) else error("buyer address is not specified"))
-    val ergAmount = if (args.length > 3) args(3).toLong else error("ergAmount is not specified")
-    val tokenId = if(args.length > 4) args(4) else error("tokenId is not specified")
-    val tokenAmount = if(args.length > 5) args(5).toLong else error("tokenAmount is not specified")
+    val ergAmount = if (args.length > 2) args(2).toLong else error("ergAmount is not specified")
+    val tokenId = if(args.length > 3) args(3) else error("tokenId is not specified")
+    val tokenAmount = if(args.length > 4) args(4).toLong else error("tokenAmount is not specified")
     val token = new ErgoToken(tokenId, tokenAmount)
-    val dexFee = if(args.length > 6) args(6).toLong else error("dexFee is not specified")
+    val dexFee = if(args.length > 5) args(5).toLong else error("dexFee is not specified")
     val pass = ctx.console.readPassword("Storage password>")
-    CreateBuyOrderCmd(ctx.toolConf, name, storageFile, pass, buyer, ergAmount, token, dexFee)
+    CreateBuyOrderCmd(ctx.toolConf, name, storageFile, pass, ergAmount, token, dexFee)
   }
 }
 
