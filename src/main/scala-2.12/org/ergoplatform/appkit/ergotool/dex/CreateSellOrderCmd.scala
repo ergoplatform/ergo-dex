@@ -88,7 +88,7 @@ case class CreateSellOrderCmd(toolConf: ErgoToolConfig,
 object CreateSellOrderCmd extends CmdDescriptor(
   name = "dex:SellOrder", cmdParamSyntax = "<storageFile> <sellerAddr> <tokenPrice> <tokenId> <tokenAmount> <dexFee>",
   description = "put a token seller order with given <tokenId> and <tokenAmount> for sale at given <tokenPrice> price with <dexFee> as a reward for anyone who matches this order with buyer, with <sellerAddr> to be used for withdrawal \n " +
-    "with the given <wallet file> to sign transaction (requests storage password)") {
+    "with the given <storageFile> to sign transaction (requests storage password)") {
 
   override val parameters: Seq[CmdParameter] = Array(
     CmdParameter("storageFile", FilePType,
