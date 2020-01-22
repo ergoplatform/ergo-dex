@@ -3,12 +3,13 @@ package org.ergoplatform.appkit.ergotool.dex
 import java.io.File
 import java.util
 
-import org.ergoplatform.ErgoAddress
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.JavaHelpers._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.ergotool.{AppContext, Cmd, CmdDescriptor, RunWithErgoClient}
+import org.ergoplatform.appkit.impl.ErgoTreeContract
+import sigmastate.Values.SigmaPropConstant
 
 import scala.util.Try
 
@@ -57,8 +58,7 @@ case class CancelOrderCmd(toolConf: ErgoToolConfig,
         BoxOperations.selectTop(unspent, nanoErgs).convertTo[IndexedSeq[InputBox]]
       }
 
-      val contract = ErgoContracts.sendToPK(ctx, recipientAddress)
-      val tx = CancelOrder.txProto(orderBox, recipientAddress, contract, unspentBoxesForAmount)
+      val tx = CancelOrder.createTx(orderBox, recipientAddress, unspentBoxesForAmount)
         .fold(t => error(s"$t"), tx => tx).toTx(ctx.newTxBuilder)
 
       val signed = loggedStep(s"Signing the transaction", console) {
@@ -93,20 +93,22 @@ object CancelOrderCmd extends CmdDescriptor(
 
 object CancelOrder {
 
+  // TODO: extract to use in other commands
   case class TxProto(inputBoxes: Seq[InputBox],
                      outputBoxes: Seq[OutBoxProto],
                      fee: Long,
-                     sendChangeTo: ErgoAddress) {
+                     sendChangeTo: Address) {
 
     def toTx(builder: UnsignedTransactionBuilder): UnsignedTransaction =
       builder
         .boxesToSpend(Iso.JListToIndexedSeq(Iso.identityIso[InputBox]).from(inputBoxes.toIndexedSeq))
         .outputs(outputBoxes.map(_.toOutBox(builder.outBoxBuilder)): _*)
         .fee(fee)
-        .sendChangeTo(sendChangeTo)
+        .sendChangeTo(sendChangeTo.getErgoAddress)
         .build()
   }
 
+  // TODO: extract to use in other commands
   case class OutBoxProto(getValue: Long, tokens: Seq[ErgoToken], contract: ErgoContract) {
 
     def toOutBox(builder: OutBoxBuilder): OutBox =
@@ -117,19 +119,20 @@ object CancelOrder {
         .build()
   }
 
-  def txProto(orderBox: InputBox, recipientAddress: Address, contract: ErgoContract,
-              unspentBoxesForAmount: (Long) => Seq[InputBox]): Try[TxProto] =
-    outBoxProto(orderBox, recipientAddress, contract)
+  def createTx(orderBox: InputBox, recipientAddress: Address,
+               unspentBoxesForAmount: (Long) => Seq[InputBox]): Try[TxProto] =
+    outBoxProto(orderBox, recipientAddress)
       .map { outbox =>
         val inputBoxes = selectInputBoxes(orderBox, outbox.getValue, unspentBoxesForAmount)
-        TxProto(inputBoxes, Seq(outbox), MinFee, recipientAddress.getErgoAddress)
+        TxProto(inputBoxes, Seq(outbox), MinFee, recipientAddress)
       }
 
-  def outBoxProto(orderBox: InputBox, recipientAddress: Address, contract: ErgoContract): Try[OutBoxProto] = {
+  def outBoxProto(orderBox: InputBox, recipientAddress: Address): Try[OutBoxProto] = {
     Try {
       val orderBoxContractTemplate = ErgoTreeTemplate.fromErgoTree(orderBox.getErgoTree)
       val orderBoxId = orderBox.getId
       val txFee = MinFee
+      val outboxContract = new ErgoTreeContract(SigmaPropConstant(recipientAddress.getPublicKey))
       // TODO: add ErgoTreeTemplate.equals
       if (util.Arrays.equals(orderBoxContractTemplate.getBytes, SellerContract.contractTemplate.getBytes)) {
         // sell order
@@ -137,14 +140,14 @@ object CancelOrder {
           .getOrElse(sys.error(s"cannot extract seller PK from order box $orderBoxId"))
         require(sellerPk == recipientAddress.getPublicKey,
           s"sell order box $orderBoxId can be claimed with $sellerPk PK, while your's is ${recipientAddress.getPublicKey}")
-        OutBoxProto(orderBox.getValue - txFee, Seq(orderBox.getTokens.get(0)), contract)
+        OutBoxProto(orderBox.getValue - txFee, Seq(orderBox.getTokens.get(0)), outboxContract)
       } else if (util.Arrays.equals(orderBoxContractTemplate.getBytes, BuyerContract.contractTemplate.getBytes)) {
         // buy order
         val buyerPk = BuyerContract.buyerPkFromTree(orderBox.getErgoTree)
           .getOrElse(sys.error(s"cannot extract buyer PK from order box $orderBoxId"))
         require(buyerPk == recipientAddress.getPublicKey,
           s"buy order box $orderBoxId can be claimed with ${buyerPk} PK, while yours is ${recipientAddress.getPublicKey}")
-        OutBoxProto(orderBox.getValue - txFee, Seq(), contract)
+        OutBoxProto(orderBox.getValue - txFee, Seq(), outboxContract)
       } else {
         sys.error(s"unsupported contract type in box ${orderBoxId.toString}")
       }
@@ -158,5 +161,6 @@ object CancelOrder {
     } else {
       unspentBoxes(MinFee - outboxValue) :+ orderBox
     }
+
 }
 
