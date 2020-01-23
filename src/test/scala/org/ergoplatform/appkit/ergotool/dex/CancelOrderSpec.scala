@@ -72,7 +72,10 @@ class CancelOrderSpec extends PropSpec
       txProto.outputBoxes.length shouldBe 1
       val outbox = txProto.outputBoxes.head
       outbox.getValue shouldBe orderBox.getValue - MinFee
-      outbox.tokens shouldBe empty
+      // although in this case outbox.tokes should be empty
+      // as a workaround for https://github.com/ScorexFoundation/sigmastate-interpreter/issues/628
+      // box.tokens cannot be empty
+      //      outbox.tokens shouldBe empty
       val expectedOutboxContract = sendToPk(orderAuthorAddress)
       outbox.contract.getErgoTree shouldEqual expectedOutboxContract.getErgoTree
     }
