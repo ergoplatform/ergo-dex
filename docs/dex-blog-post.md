@@ -41,7 +41,7 @@ Standard](https://github.com/ergoplatform/eips/blob/master/eip-0004.md).
 The following ErgoTool command allows to issue a new token on the Ergo blockchain.
 // TODO implement issueToken command and show usage help  
 ```
-$ ergo-tool help issueToken
+$ ergo-tool help dex:IssueToken
 ...
 ``` 
 
@@ -49,12 +49,12 @@ A token is issued by creating a new box with the `ergAmount` of ERGs and
 (`tokenId`, `tokenAmount`) pair in the `R2` register. Additional registers should also be
 specified as required by
 [EIP-4](https://github.com/ergoplatform/eips/blob/master/eip-0004.md) standard.
-The `issueToken` command uses a wallet storage given by `storageFile` to transfer given `ergAmount` of ERGs 
+The `dex:IssueToken` command uses a wallet storage given by `storageFile` to transfer given `ergAmount` of ERGs 
 to the new box with tokens. The new box will belong the same wallet given by storageFile.
 
 // TODO show an example of command usage with command results
 ```
-$ ergo-tool issueToken ...
+$ ergo-tool dex:IssueToken ...
 ...
 ``` 
 
@@ -86,7 +86,11 @@ atomically) with the matched _buyer box_ (see [buy tokens](#buy-tokens)).
 The following command can be used to create new _ask order_ to sell tokens.
 ```
 $ ergo-tool help dex:SellOrder
-// TODO show usage help
+Command Name:	dex:SellOrder
+Usage Syntax:	ergo-tool dex:SellOrder <storageFile> <sellerAddr> <tokenPrice> <tokenId> <tokenAmount> <dexFee>
+Description:	put a token seller order with given <tokenId> and <tokenAmount> for sale at given <tokenPrice> price with <dexFee> as a reward for anyone who matches this order with buyer, with <sellerAddr> to be used for withdrawal 
+ with the given <storageFile> to sign transaction (requests storage password)
+Doc page:	https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/dex/CreateSellOrderCmd.html
 ```
 
   
