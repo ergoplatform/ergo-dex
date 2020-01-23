@@ -39,10 +39,12 @@ according to the [Assets
 Standard](https://github.com/ergoplatform/eips/blob/master/eip-0004.md). 
 
 The following ErgoTool command allows to issue a new token on the Ergo blockchain.
-// TODO implement issueToken command and show usage help  
 ```
 $ ergo-tool help dex:IssueToken
-...
+Command Name:	dex:IssueToken
+Usage Syntax:	ergo-tool dex:IssueToken <wallet file> <ergAmount> <tokenAmount> <tokenName> <tokenDesc> <tokenNumberOfDecimals
+Description:	issue a token with given <tokenName>, <tokenAmount>, <tokenDesc>, <tokenNumberOfDecimals> and <ergAmount> with the given <wallet file> to sign transaction (requests storage password)
+Doc page:	https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/dex/IssueTokenCmd.html
 ``` 
 
 A token is issued by creating a new box with the `ergAmount` of ERGs and 
@@ -52,10 +54,81 @@ specified as required by
 The `dex:IssueToken` command uses a wallet storage given by `storageFile` to transfer given `ergAmount` of ERGs 
 to the new box with tokens. The new box will belong the same wallet given by storageFile.
 
-// TODO show an example of command usage with command results
 ```
-$ ergo-tool dex:IssueToken ...
-...
+$ ergo-tool dex:IssueToken "storage/E2.json" 50000000 1000000 "TKN" "Generic token" 2
+Creating prover... Ok
+Loading unspent boxes from at address 9hHDQb26AjnJUXxcqriqY1mnhpLuUeC81C4pggtK7tupr92Ea1K... Ok
+Signing the transaction... Ok
+Tx: {
+  "id": "5d899e1551b324012c6c17636422fceb8077c444585de06f444fe680f9badd92",
+  "inputs": [
+    {
+      "boxId": "d47f958b201dc7162f641f7eb055e9fa7a9cb65cc24d4447a10f86675fc58328",
+      "spendingProof": {
+        "proofBytes": "a8e796930fb11cb122bd8a506bd7b7dad38bbe287122580669aa28c36a08f7b5be95bd084878be05b695bfb1753417f45efe1e7647691304",
+        "extension": {}
+      }
+    },
+    {
+      "boxId": "e050a3af38241ce444c34eb25c0ab880674fc23a0e63632633ae14f547141c37",
+      "spendingProof": {
+        "proofBytes": "dc22066266ec65058457b87f36e4ad825df644c97c7d36abefa6e396ff3ceee21f0599861b46725839b575bcdd5f0292344502aead9bde6e",
+        "extension": {}
+      }
+    },
+    {
+      "boxId": "26d6e08027e005270b38e5c5f4a73ffdb6d65a3289efb51ac37f98ad395d887c",
+      "spendingProof": {
+        "proofBytes": "d09fd17f6f1a11f903b435538fd8badb9185160ce8e5e8c9ec6d09041b5dc7c8b587d304696460e11abf77d348ca153ad29e8b9c6fdd91f4",
+        "extension": {}
+      }
+    }
+  ],
+  "dataInputs": [],
+  "outputs": [
+    {
+      "boxId": "7e704ede7958b647bd7f008a80b01972f7251d0d717eaeda7ef2caf50ade3e1a",
+      "value": 50000000,
+      "ergoTree": "ErgoTree(0,WrappedArray(),Right(ConstantNode(SigmaProp(ProveDlog(ECPoint(6ba5cf,8ae5ac,...))),SSigmaProp)),80,[B@1a07bf6)",
+      "creationHeight": 123414,
+      "assets": [
+        {
+          "tokenId": "d47f958b201dc7162f641f7eb055e9fa7a9cb65cc24d4447a10f86675fc58328",
+          "amount": 1000000
+        }
+      ],
+      "additionalRegisters": {
+        "R4": "0e03544b4e",
+        "R5": "0e0d47656e6572696320746f6b656e",
+        "R6": "0e0132"
+      },
+      "transactionId": "5d899e1551b324012c6c17636422fceb8077c444585de06f444fe680f9badd92",
+      "index": 0
+    },
+    {
+      "boxId": "d35162679ff1479df4851020278ad83e6fdc78acfde1e66fe1efffc9869ab41a",
+      "value": 1000000,
+      "ergoTree": "ErgoTree(16,WrappedArray(IntConstant(0), IntConstant(0), ConstantNode(Coll(16,2,4,-96,11,8,-51,2,121,-66,102,126,-7,-36,-69,-84,85,-96,98,-107,-50,-121,11,7,2,-101,-4,-37,45,-50,40,-39,89,-14,-127,91,22,-8,23,-104,-22,2,-47,-110,-93,-102,-116,-57,-89,1,115,0,115,1),Coll[SByte$]), ConstantNode(Coll(1),Coll[SInt$]), IntConstant(1)),Right(BoolToSigmaProp(AND(ConcreteCollection(WrappedArray(EQ(Height$(163),SelectField(ExtractCreationInfo(ByIndex(Outputs$(165),ConstantPlaceholder(0,SInt$),None)),1)), EQ(ExtractScriptBytes(ByIndex(Outputs$(165),ConstantPlaceholder(1,SInt$),None)),SubstConstants(ConstantPlaceholder(2,Coll[SByte$]),ConstantPlaceholder(3,Coll[SInt$]),ConcreteCollection(WrappedArray(CreateProveDlog(DecodePoint(MinerPubkey$(172)))),SSigmaProp))), EQ(SizeOf(Outputs$(165)),ConstantPlaceholder(4,SInt$))),SBoolean)))),4836,[B@713ec32d)",
+      "creationHeight": 123414,
+      "assets": [],
+      "additionalRegisters": {},
+      "transactionId": "5d899e1551b324012c6c17636422fceb8077c444585de06f444fe680f9badd92",
+      "index": 1
+    },
+    {
+      "boxId": "57dc06e5a197e15d9a73804735231d6c240ca6bdd45753073883c79cf726ea96",
+      "value": 9951000000,
+      "ergoTree": "ErgoTree(0,WrappedArray(),Right(ConstantNode(SigmaProp(ProveDlog(ECPoint(6ba5cf,8ae5ac,...))),SSigmaProp)),80,[B@34d713a2)",
+      "creationHeight": 123414,
+      "assets": [],
+      "additionalRegisters": {},
+      "transactionId": "5d899e1551b324012c6c17636422fceb8077c444585de06f444fe680f9badd92",
+      "index": 2
+    }
+  ]
+}
+Sending the transaction... Ok
+Server returned tx id: 5d899e1551b324012c6c17636422fceb8077c444585de06f444fe680f9badd92
 ``` 
 
 ## Sell Tokens
