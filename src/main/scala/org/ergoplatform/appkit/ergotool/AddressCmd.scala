@@ -43,7 +43,7 @@ object AddressCmd extends CmdDescriptor(
         |public key is used to generate the [[Address]]""".stripMargin),
     CmdParameter("mnemonicPass", SecretStringPType,
       "password which is used to additionally protect mnemonic", None,
-      Some(ctx => readNewPassword("Mnemonic password> ", "Repeat mnemonic password> ")(ctx)))
+      Some(ctx => ctx.console.readPassword("Mnemonic password> ")))
   )
 
   override def createCmd(ctx: AppContext): Cmd = {

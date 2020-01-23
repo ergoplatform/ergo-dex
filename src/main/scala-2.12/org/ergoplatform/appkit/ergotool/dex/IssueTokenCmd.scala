@@ -16,7 +16,7 @@ import org.ergoplatform.appkit.ergotool.{AppContext, Cmd, CmdDescriptor, RunWith
   * 3) get master public key and compute sender's address<br/>
   * 4) load available coins belonging to the sender's address<br/>
   * 5) select coins to cover ergAmount, compute transaction fee and amount of change<br/>
-  * 7) create an output box with ergAmount and tokenAmount using the box if of the first input box as token id <br/>
+  * 7) create an output box with ergAmount and tokenAmount using the box id of the first input box as token id <br/>
   * 8) create and sign (using secret key) the transaction<br/>
   * 9) if no `--dry-run` option is specified, send the transaction to the network<br/>
   *    otherwise skip sending<br/>
@@ -92,7 +92,7 @@ object IssueTokenCmd extends CmdDescriptor(
   description = "issue a token with given <tokenName>, <tokenAmount>, <tokenDesc>, <tokenNumberOfDecimals> and <ergAmount> " +
     "with the given <wallet file> to sign transaction (requests storage password)") {
 
-  override def parseCmd(ctx: AppContext): Cmd = {
+  override def createCmd(ctx: AppContext): Cmd = {
     val args = ctx.cmdArgs
     val storageFile = new File(if (args.length > 1) args(1) else error("Wallet storage file path is not specified"))
     if (!storageFile.exists()) error(s"Specified wallet file is not found: $storageFile")
