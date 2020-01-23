@@ -88,7 +88,7 @@ case class IssueTokenCmd(toolConf: ErgoToolConfig,
 
 
 object IssueTokenCmd extends CmdDescriptor(
-  name = "dex:IssueToken", cmdParamSyntax = "<wallet file> <ergAmount> <tokenAmount> <tokenName> <tokenDesc> <tokenNumberOfDecimals",
+  name = "dex:IssueToken", cmdParamSyntax = "<wallet file> <ergAmount> <tokenAmount> <tokenName> <tokenDesc> <tokenNumberOfDecimals>",
   description = "issue a token with given <tokenName>, <tokenAmount>, <tokenDesc>, <tokenNumberOfDecimals> and <ergAmount> " +
     "with the given <wallet file> to sign transaction (requests storage password)") {
 

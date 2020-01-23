@@ -42,17 +42,18 @@ The following ErgoTool command allows to issue a new token on the Ergo blockchai
 ```
 $ ergo-tool help dex:IssueToken
 Command Name:	dex:IssueToken
-Usage Syntax:	ergo-tool dex:IssueToken <wallet file> <ergAmount> <tokenAmount> <tokenName> <tokenDesc> <tokenNumberOfDecimals
+Usage Syntax:	ergo-tool dex:IssueToken <wallet file> <ergAmount> <tokenAmount> <tokenName> <tokenDesc> <tokenNumberOfDecimals>
 Description:	issue a token with given <tokenName>, <tokenAmount>, <tokenDesc>, <tokenNumberOfDecimals> and <ergAmount> with the given <wallet file> to sign transaction (requests storage password)
 Doc page:	https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/dex/IssueTokenCmd.html
 ``` 
 
 A token is issued by creating a new box with the `ergAmount` of ERGs and 
-(`tokenId`, `tokenAmount`) pair in the `R2` register. Additional registers should also be
-specified as required by
+(`tokenId`, `tokenAmount`) pair in the `R2` register, where `tokenId` is selected
+automatically using the id of the first input box of the transaction (as required by Ergo
+protocol). Additional registers should also be specified as required by
 [EIP-4](https://github.com/ergoplatform/eips/blob/master/eip-0004.md) standard.
 The `dex:IssueToken` command uses a wallet storage given by `storageFile` to transfer given `ergAmount` of ERGs 
-to the new box with tokens. The new box will belong the same wallet given by storageFile.
+to a new box with tokens. The new box will belong the same wallet given by `storageFile`.
 
 ```
 $ ergo-tool dex:IssueToken "storage/E2.json" 50000000 1000000 "TKN" "Generic token" 2
@@ -166,7 +167,7 @@ Description:	put a token seller order with given <tokenId> and <tokenAmount> for
 Doc page:	https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/dex/CreateSellOrderCmd.html
 ```
 
-Here is an example of using `dex:SellOrder` to 
+Here is an example of using `dex:SellOrder` to submit the order to the blockchain.
   
 ## Buy Tokens
 
