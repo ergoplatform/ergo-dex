@@ -60,7 +60,7 @@ case class IssueTokenCmd(toolConf: ErgoToolConfig,
         .tokens(token)
         .registers(
           ErgoValue.of(tokenName.getBytes), // token name in R4 (see EIP-4)
-          ErgoValue.of(tokenDesc.getBytes), // token name in R5 (see EIP-4)
+          ErgoValue.of(tokenDesc.getBytes), // token description in R5 (see EIP-4)
           ErgoValue.of(tokenNumberOfDecimals.toString.getBytes), // number of decimals in R6 (see EIP-4)
         )
         .contract(ErgoContracts.sendToPK(ctx, sender))
