@@ -12,6 +12,7 @@ case class MockInputBox(getId: ErgoId,
                         getTokens: JList[ErgoToken],
                         getErgoTree: ErgoTree) extends InputBox {
   override def toJson(prettyPrint: Boolean): String = ???
+  override def getRegisters: (JList[ErgoValue[_]]) = ???
 }
 
 object MockInputBox extends ObjectGenerators {

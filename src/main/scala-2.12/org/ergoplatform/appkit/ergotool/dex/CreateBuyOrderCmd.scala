@@ -7,11 +7,11 @@ import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.ergotool.{AppContext, Cmd, CmdDescriptor, RunWithErgoClient}
 import org.ergoplatform.appkit.impl.{ErgoTreeContract, ScalaBridge}
+import org.ergoplatform.contracts.AssetsAtomicExchangeCompilation
 import sigmastate.Values.{ByteArrayConstant, CollectionConstant, ErgoTree, SigmaPropConstant}
 import sigmastate.basics.DLogProtocol.{ProveDlog, ProveDlogProp}
 import sigmastate.eval.WrapperOf
 import sigmastate.eval.Extensions._
-import sigmastate.verification.contract.AssetsAtomicExchangeCompilation
 import sigmastate.{SByte, SLong, Values}
 
 /** Creates and sends a new transaction with buyer's order for AssetsAtomicExchange
@@ -116,7 +116,7 @@ object BuyerContract {
   }
 
   def contractInstance(token: ErgoToken, buyerPk: Address): ErgoContract = {
-    import sigmastate.verified.VerifiedTypeConverters._
+    import org.ergoplatform.sigma.verified.VerifiedTypeConverters._
     val buyerPkProp = sigmastate.eval.SigmaDsl.SigmaProp(buyerPk.getPublicKey)
     val tokenId = token.getId.getBytes.toColl
     val verifiedContract = AssetsAtomicExchangeCompilation.buyerContractInstance(tokenId,

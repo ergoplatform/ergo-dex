@@ -9,13 +9,14 @@ lazy val sonatypeSnapshots = "Sonatype Snapshots" at "https://oss.sonatype.org/c
 resolvers ++= Seq(Resolver.mavenLocal, sonatypeReleases, sonatypeSnapshots, Resolver.mavenCentral)
 
 version := "3.1.1"
-val appkit = "org.ergoplatform" %% "ergo-appkit" % "develop-5d5ddeb4-SNAPSHOT"
+val appkit = "org.ergoplatform" %% "ergo-appkit" % "use-stable-sigma-54b827f6-SNAPSHOT"
 
 libraryDependencies ++= Seq(
   appkit, (appkit % Test).classifier("tests"),
   //.classifier("tests-sources") // uncomment this for debuging to make sources available (doesn't work when appkit is published locally) ,
   "org.graalvm.sdk" % "graal-sdk" % "19.2.1",
   "com.squareup.okhttp3" % "mockwebserver" % "3.12.0",
+  "org.ergoplatform" %% "verified-contracts" % "0.0.0-5-ee53f015-SNAPSHOT",
   "org.scalatest" %% "scalatest" % "3.0.8" % "test",
   "org.scalacheck" %% "scalacheck" % "1.14.1" % "test"
 )
