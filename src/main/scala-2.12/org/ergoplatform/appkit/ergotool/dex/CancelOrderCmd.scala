@@ -155,9 +155,9 @@ object CancelOrder {
         require(buyerPk == recipientAddress.getPublicKey,
           s"buy order box $orderBoxId can be claimed with ${buyerPk} PK, while yours is ${recipientAddress.getPublicKey}")
         // as a workaround for https://github.com/ScorexFoundation/sigmastate-interpreter/issues/628
-        // box.tokens cannot be empty
-        val token = new ErgoToken("21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1",
-          0L)
+        // box.tokens cannot be empty, so we mint new token
+        val token = new ErgoToken(orderBox.getId, 1L)
+        // TODO: fill R4, R5, R6 according to https://github.com/ergoplatform/eips/blob/master/eip-0004.md
         OutBoxProto(orderBox.getValue - txFee, Seq(token), outboxContract)
       } else {
         sys.error(s"unsupported contract type in box ${orderBoxId.toString}")
