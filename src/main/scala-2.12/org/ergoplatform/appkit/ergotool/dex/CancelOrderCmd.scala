@@ -170,7 +170,7 @@ object CancelOrder {
     if (outboxValue >= MinFee) {
       Seq(orderBox)
     } else {
-      unspentBoxes(MinFee - outboxValue) :+ orderBox
+      Seq(orderBox) ++ unspentBoxes(MinFee - outboxValue)
     }
 
 }
