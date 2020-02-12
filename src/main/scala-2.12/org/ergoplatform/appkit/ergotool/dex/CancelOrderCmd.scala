@@ -109,12 +109,20 @@ object CancelOrder {
   }
 
   // TODO: extract to use in other commands
-  case class OutBoxProto(getValue: Long, tokens: Seq[ErgoToken], contract: ErgoContract) {
+  case class OutBoxProto(getValue: Long, tokens: Seq[ErgoToken], registers: Seq[ErgoValue[_]], contract: ErgoContract) {
 
     def toOutBox(builder: OutBoxBuilder): OutBox = {
-      val builder2 = builder
-        .value(getValue)
-        .contract(contract)
+      val builder2 =
+        if (registers.nonEmpty) {
+          builder
+            .value(getValue)
+            .contract(contract)
+            .registers(registers: _*)
+        } else {
+          builder
+            .value(getValue)
+            .contract(contract)
+        }
       if (tokens.nonEmpty) {
         builder2
           .tokens(tokens: _*)
@@ -147,7 +155,7 @@ object CancelOrder {
           .getOrElse(sys.error(s"cannot extract seller PK from order box $orderBoxId"))
         require(sellerPk == recipientAddress.getPublicKey,
           s"sell order box $orderBoxId can be claimed with $sellerPk PK, while your's is ${recipientAddress.getPublicKey}")
-        OutBoxProto(orderBox.getValue - txFee, Seq(orderBox.getTokens.get(0)), outboxContract)
+        OutBoxProto(orderBox.getValue - txFee, Seq(orderBox.getTokens.get(0)), Seq(), outboxContract)
       } else if (util.Arrays.equals(orderBoxContractTemplate.getBytes, BuyerContract.contractTemplate.getBytes)) {
         // buy order
         val buyerPk = BuyerContract.buyerPkFromTree(orderBox.getErgoTree)
@@ -157,8 +165,13 @@ object CancelOrder {
         // as a workaround for https://github.com/ScorexFoundation/sigmastate-interpreter/issues/628
         // box.tokens cannot be empty, so we mint new token
         val token = new ErgoToken(orderBox.getId, 1L)
-        // TODO: fill R4, R5, R6 according to https://github.com/ergoplatform/eips/blob/master/eip-0004.md
-        OutBoxProto(orderBox.getValue - txFee, Seq(token), outboxContract)
+        // fill R4, R5, R6 according to https://github.com/ergoplatform/eips/blob/master/eip-0004.md
+        val registers: Seq[ErgoValue[_]] = Seq(
+          ErgoValue.of("CANCELDEXBUY".getBytes), // token name in R4 (see EIP-4)
+          ErgoValue.of("New token each time DEX buy order is cancelled".getBytes), // token description in R5 (see EIP-4)
+          ErgoValue.of("2".getBytes), // number of decimals in R6 (see EIP-4)
+        )
+        OutBoxProto(orderBox.getValue - txFee, Seq(token), registers, outboxContract)
       } else {
         sys.error(s"unsupported contract type in box ${orderBoxId.toString}")
       }
