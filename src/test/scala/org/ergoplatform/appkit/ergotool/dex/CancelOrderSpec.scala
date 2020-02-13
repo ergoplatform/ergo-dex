@@ -8,8 +8,6 @@ import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import sigmastate.Values.SigmaPropConstant
 
-import scala.util.Failure
-
 class CancelOrderSpec extends PropSpec
   with Matchers
   with ScalaCheckDrivenPropertyChecks
@@ -26,7 +24,7 @@ class CancelOrderSpec extends PropSpec
     val orderAuthorAddress = testnetAddressGen.sample.get
     forAll(Gen.oneOf(sellOrderBoxGen(orderAuthorAddress), buyOrderBoxGen(orderAuthorAddress))) { orderBox =>
 
-      val txProto = CancelOrder.createTx(orderBox, orderAuthorAddress, getOneInputBox).get
+      val txProto = CancelOrder.createTx(orderBox, orderAuthorAddress, getOneInputBox)
 
       val valueToCoverTxFeeAndMinimumTransfer = MinFee * 2
       if (orderBox.getValue >= valueToCoverTxFeeAndMinimumTransfer) {
@@ -39,23 +37,21 @@ class CancelOrderSpec extends PropSpec
 
   property("cancel wrong contract type (neither sell or buy order) should fail"){
     val orderBox = MockInputBox(validBoxValueGen.sample.get)
-    CancelOrder.createTx(orderBox, testnetAddressGen.sample.get, getOneInputBox) shouldBe
-      a [Failure[_]]
+    an[RuntimeException] should be thrownBy CancelOrder.createTx(orderBox, testnetAddressGen.sample.get, getOneInputBox)
   }
 
   property("using withdrawal address not in the order contract should fail "){
     val orderAuthorAddress = testnetAddressGen.sample.get
     forAll(Gen.oneOf(sellOrderBoxGen(orderAuthorAddress), buyOrderBoxGen(orderAuthorAddress))) { orderBox =>
       val invalidRecipientAddress = testnetAddressGen.sample.get
-      CancelOrder.createTx(orderBox, invalidRecipientAddress, getOneInputBox) shouldBe
-        a [Failure[_]]
+      an[RuntimeException] should be thrownBy CancelOrder.createTx(orderBox, invalidRecipientAddress, getOneInputBox)
     }
   }
 
   property("valid outbox for sell order"){
     val orderAuthorAddress = testnetAddressGen.sample.get
     forAll(sellOrderBoxGen(orderAuthorAddress)) { orderBox =>
-      val txProto = CancelOrder.createTx(orderBox, orderAuthorAddress, getOneInputBox).get
+      val txProto = CancelOrder.createTx(orderBox, orderAuthorAddress, getOneInputBox)
       txProto.outputBoxes.length shouldBe 1
       val outbox = txProto.outputBoxes.head
       outbox.getValue shouldBe orderBox.getValue - MinFee
@@ -68,7 +64,7 @@ class CancelOrderSpec extends PropSpec
   property("valid outbox for buy order"){
     val orderAuthorAddress = testnetAddressGen.sample.get
     forAll(buyOrderBoxGen(orderAuthorAddress)) { orderBox =>
-      val txProto = CancelOrder.createTx(orderBox, orderAuthorAddress, getOneInputBox).get
+      val txProto = CancelOrder.createTx(orderBox, orderAuthorAddress, getOneInputBox)
       txProto.outputBoxes.length shouldBe 1
       val outbox = txProto.outputBoxes.head
       outbox.getValue shouldBe orderBox.getValue - MinFee
@@ -84,7 +80,7 @@ class CancelOrderSpec extends PropSpec
   property("valid tx.fee"){
     val orderAuthorAddress = testnetAddressGen.sample.get
     forAll(Gen.oneOf(sellOrderBoxGen(orderAuthorAddress), buyOrderBoxGen(orderAuthorAddress))) { orderBox =>
-      val txProto = CancelOrder.createTx(orderBox, orderAuthorAddress, getOneInputBox).get
+      val txProto = CancelOrder.createTx(orderBox, orderAuthorAddress, getOneInputBox)
       txProto.fee shouldBe MinFee
     }
   }
@@ -92,7 +88,7 @@ class CancelOrderSpec extends PropSpec
   property("valid tx.sendChangeTo address"){
     val orderAuthorAddress = testnetAddressGen.sample.get
     forAll(Gen.oneOf(sellOrderBoxGen(orderAuthorAddress), buyOrderBoxGen(orderAuthorAddress))) { orderBox =>
-      val txProto = CancelOrder.createTx(orderBox, orderAuthorAddress, getOneInputBox).get
+      val txProto = CancelOrder.createTx(orderBox, orderAuthorAddress, getOneInputBox)
       txProto.sendChangeTo shouldEqual orderAuthorAddress
     }
   }

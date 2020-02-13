@@ -59,7 +59,7 @@ case class CancelOrderCmd(toolConf: ErgoToolConfig,
       }
 
       val tx = CancelOrder.createTx(orderBox, recipientAddress, unspentBoxesForAmount)
-        .fold(t => error(s"$t"), tx => tx).toTx(ctx.newTxBuilder)
+        .toTx(ctx.newTxBuilder)
 
       val signed = loggedStep(s"Signing the transaction", console) {
         senderProver.sign(tx)
@@ -135,46 +135,43 @@ object CancelOrder {
   }
 
   def createTx(orderBox: InputBox, recipientAddress: Address,
-               unspentBoxesForAmount: (Long) => Seq[InputBox]): Try[TxProto] =
-    outBoxProto(orderBox, recipientAddress)
-      .map { outbox =>
-        val inputBoxes = selectInputBoxes(orderBox, outbox.getValue, unspentBoxesForAmount)
-        TxProto(inputBoxes, Seq(outbox), MinFee, recipientAddress)
-      }
+               unspentBoxesForAmount: (Long) => Seq[InputBox]): TxProto = {
+    val outbox = outBoxProto(orderBox, recipientAddress)
+    val inputBoxes = selectInputBoxes(orderBox, outbox.getValue, unspentBoxesForAmount)
+    TxProto(inputBoxes, Seq(outbox), MinFee, recipientAddress)
+  }
 
-  def outBoxProto(orderBox: InputBox, recipientAddress: Address): Try[OutBoxProto] = {
-    Try {
-      val orderBoxContractTemplate = ErgoTreeTemplate.fromErgoTree(orderBox.getErgoTree)
-      val orderBoxId = orderBox.getId
-      val txFee = MinFee
-      val outboxContract = new ErgoTreeContract(SigmaPropConstant(recipientAddress.getPublicKey))
-      // TODO: add ErgoTreeTemplate.equals
-      if (util.Arrays.equals(orderBoxContractTemplate.getBytes, SellerContract.contractTemplate.getBytes)) {
-        // sell order
-        val sellerPk = SellerContract.sellerPkFromTree(orderBox.getErgoTree)
-          .getOrElse(sys.error(s"cannot extract seller PK from order box $orderBoxId"))
-        require(sellerPk == recipientAddress.getPublicKey,
-          s"sell order box $orderBoxId can be claimed with $sellerPk PK, while your's is ${recipientAddress.getPublicKey}")
-        OutBoxProto(orderBox.getValue - txFee, Seq(orderBox.getTokens.get(0)), Seq(), outboxContract)
-      } else if (util.Arrays.equals(orderBoxContractTemplate.getBytes, BuyerContract.contractTemplate.getBytes)) {
-        // buy order
-        val buyerPk = BuyerContract.buyerPkFromTree(orderBox.getErgoTree)
-          .getOrElse(sys.error(s"cannot extract buyer PK from order box $orderBoxId"))
-        require(buyerPk == recipientAddress.getPublicKey,
-          s"buy order box $orderBoxId can be claimed with ${buyerPk} PK, while yours is ${recipientAddress.getPublicKey}")
-        // as a workaround for https://github.com/ScorexFoundation/sigmastate-interpreter/issues/628
-        // box.tokens cannot be empty, so we mint new token
-        val token = new ErgoToken(orderBox.getId, 1L)
-        // fill R4, R5, R6 according to https://github.com/ergoplatform/eips/blob/master/eip-0004.md
-        val registers: Seq[ErgoValue[_]] = Seq(
-          ErgoValue.of("CANCELDEXBUY".getBytes), // token name in R4 (see EIP-4)
-          ErgoValue.of("New token each time DEX buy order is cancelled".getBytes), // token description in R5 (see EIP-4)
-          ErgoValue.of("2".getBytes), // number of decimals in R6 (see EIP-4)
-        )
-        OutBoxProto(orderBox.getValue - txFee, Seq(token), registers, outboxContract)
-      } else {
-        sys.error(s"unsupported contract type in box ${orderBoxId.toString}")
-      }
+  def outBoxProto(orderBox: InputBox, recipientAddress: Address): OutBoxProto = {
+    val orderBoxContractTemplate = ErgoTreeTemplate.fromErgoTree(orderBox.getErgoTree)
+    val orderBoxId = orderBox.getId
+    val txFee = MinFee
+    val outboxContract = new ErgoTreeContract(SigmaPropConstant(recipientAddress.getPublicKey))
+    // TODO: add ErgoTreeTemplate.equals
+    if (util.Arrays.equals(orderBoxContractTemplate.getBytes, SellerContract.contractTemplate.getBytes)) {
+      // sell order
+      val sellerPk = SellerContract.sellerPkFromTree(orderBox.getErgoTree)
+        .getOrElse(sys.error(s"cannot extract seller PK from order box $orderBoxId"))
+      require(sellerPk == recipientAddress.getPublicKey,
+        s"sell order box $orderBoxId can be claimed with $sellerPk PK, while your's is ${recipientAddress.getPublicKey}")
+      OutBoxProto(orderBox.getValue - txFee, Seq(orderBox.getTokens.get(0)), Seq(), outboxContract)
+    } else if (util.Arrays.equals(orderBoxContractTemplate.getBytes, BuyerContract.contractTemplate.getBytes)) {
+      // buy order
+      val buyerPk = BuyerContract.buyerPkFromTree(orderBox.getErgoTree)
+        .getOrElse(sys.error(s"cannot extract buyer PK from order box $orderBoxId"))
+      require(buyerPk == recipientAddress.getPublicKey,
+        s"buy order box $orderBoxId can be claimed with ${buyerPk} PK, while yours is ${recipientAddress.getPublicKey}")
+      // as a workaround for https://github.com/ScorexFoundation/sigmastate-interpreter/issues/628
+      // box.tokens cannot be empty, so we mint new token
+      val token = new ErgoToken(orderBox.getId, 1L)
+      // fill R4, R5, R6 according to https://github.com/ergoplatform/eips/blob/master/eip-0004.md
+      val registers: Seq[ErgoValue[_]] = Seq(
+        ErgoValue.of("CANCELDEXBUY".getBytes), // token name in R4 (see EIP-4)
+        ErgoValue.of("New token each time DEX buy order is cancelled".getBytes), // token description in R5 (see EIP-4)
+        ErgoValue.of("2".getBytes), // number of decimals in R6 (see EIP-4)
+      )
+      OutBoxProto(orderBox.getValue - txFee, Seq(token), registers, outboxContract)
+    } else {
+      sys.error(s"unsupported contract type in box ${orderBoxId.toString}")
     }
   }
 
