@@ -176,11 +176,11 @@ object CancelOrder {
   }
 
   def selectInputBoxes(orderBox: InputBox, outboxValue: Long,
-                       unspentBoxes: (Long) => Seq[InputBox]): Seq[InputBox] =
+                       unspentBoxesForAmount: (Long) => Seq[InputBox]): Seq[InputBox] =
     if (outboxValue >= MinFee) {
       Seq(orderBox)
     } else {
-      Seq(orderBox) ++ unspentBoxes(MinFee - outboxValue)
+      Seq(orderBox) ++ unspentBoxesForAmount(MinFee - outboxValue)
     }
 
 }
