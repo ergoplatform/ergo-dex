@@ -57,12 +57,7 @@ case class IssueTokenCmd(toolConf: ErgoToolConfig,
       val txB = ctx.newTxBuilder
       val newBox = txB.outBoxBuilder
         .value(ergAmount)
-        .tokens(token)
-        .registers(
-          ErgoValue.of(tokenName.getBytes), // token name in R4 (see EIP-4)
-          ErgoValue.of(tokenDesc.getBytes), // token description in R5 (see EIP-4)
-          ErgoValue.of(tokenNumberOfDecimals.toString.getBytes), // number of decimals in R6 (see EIP-4)
-        )
+        .mintToken(token, tokenName,tokenDesc, tokenNumberOfDecimals)
         .contract(ErgoContracts.sendToPK(ctx, sender))
         .build()
       val tx = txB
