@@ -129,7 +129,7 @@ object CancelOrder {
       }
       if (mintToken.isDefined) {
         val t = mintToken.get
-        builder2.mintToken(t.token, t.name, t.desc, t.numberOfDecimals.toString)
+        builder2.mintToken(t.token, t.name, t.desc, t.numberOfDecimals)
       }
       builder2.build()
     }
