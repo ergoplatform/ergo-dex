@@ -117,7 +117,7 @@ case class MatchOrdersCmd(toolConf: ErgoToolConfig,
 }
 
 object MatchOrdersCmd extends CmdDescriptor(
-  name = "dex:MatchOrders", cmdParamSyntax = "<wallet file> <sellerHolderBoxId> <buyerHolderBoxId>      <minDexFee",
+  name = "dex:MatchOrders", cmdParamSyntax = "<wallet file> <sellerHolderBoxId> <buyerHolderBoxId> <minDexFee",
   description = "match an existing token seller's order (by <sellerHolderBoxId>) and an existing buyer's order (by <buyerHolderBoxId) and send tokens to buyer's address(extracted from buyer's order) and Ergs to seller's address(extracted from seller's order) claiming the minimum fee of <minDexFee> with the given <wallet file> to sign transaction (requests storage password)") {
 
   override def parseCmd(ctx: AppContext): Cmd = {
