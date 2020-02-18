@@ -87,8 +87,8 @@ case class CreateBuyOrderCmd(toolConf: ErgoToolConfig,
 
 
 object CreateBuyOrderCmd extends CmdDescriptor(
-  name = "dex:BuyOrder", cmdParamSyntax = "<wallet file> <buyerAddr> <ergAmount> <tokenId> <tokenAmount>, <dexFee>",
-  description = "put a token buyer order with given <tokenId> and <tokenAmount> to buy at given <ergPrice> price with <dexFee> as a reward for anyone who matches this order with a seller, with <buyerAddr> to be used for withdrawal \n " +
+  name = "dex:BuyOrder", cmdParamSyntax = "<wallet file> <ergAmount> <tokenId> <tokenAmount>, <dexFee>",
+  description = "put a token buyer order with given <tokenId> and <tokenAmount> to buy at given <ergPrice> price with <dexFee> as a reward for anyone who matches this order with a seller, with wallet's address to be used for withdrawal \n " +
     "with the given <wallet file> to sign transaction (requests storage password)") {
 
   override def parseCmd(ctx: AppContext): Cmd = {
