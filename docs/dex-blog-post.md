@@ -197,3 +197,15 @@ ErgoTool, stay tuned!
 - [Ergo Appkit](https://github.com/aslesarenko/ergo-appkit)
 - [Ergo Tool](https://github.com/aslesarenko/ergo-tool)
 
+### Questions to be answered
+ So probably we need a steps, how to make a swap in DEX. E.g. I want to swap Token1/BTC
+ 1. What is the request to extract Token1/BTC orderbook?
+ 2. How to construct correct transaction that put a new order to orderbook (market maker deal)
+ 3. How to construct correct transaction that takes some orders from orderbook (market taker deal)
+ 4. What if both? E.g. I want to make a request that is partially market taker, and the rest should
+ go to market maker
+ 5. What is with parallel request/front running attacks? How to ensure that my transaction will be
+ executed?
+ 6. Do we have a separate centralized backend for DEX?
+ 7. Can you please refer to DEX documentation, I should probably read more about it, before asking a
+ lot of questions)
