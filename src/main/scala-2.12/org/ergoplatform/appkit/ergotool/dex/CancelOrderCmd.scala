@@ -93,7 +93,6 @@ object CancelOrderCmd extends CmdDescriptor(
 
 object CancelOrder {
 
-  // TODO: extract to use in other commands
   case class TxProto(inputBoxes: Seq[InputBox],
                      outputBoxes: Seq[OutBoxProto],
                      fee: Long,
@@ -110,7 +109,6 @@ object CancelOrder {
 
   case class MintTokenInfo(token: ErgoToken, name: String, desc: String, numberOfDecimals: Int)
 
-  // TODO: extract to use in other commands
   case class OutBoxProto(getValue: Long,
                          tokens: Seq[ErgoToken],
                          mintToken: Option[MintTokenInfo],
@@ -147,15 +145,14 @@ object CancelOrder {
     val orderBoxId = orderBox.getId
     val txFee = MinFee
     val outboxContract = new ErgoTreeContract(SigmaPropConstant(recipientAddress.getPublicKey))
-    // TODO: add ErgoTreeTemplate.equals
-    if (util.Arrays.equals(orderBoxContractTemplate.getBytes, SellerContract.contractTemplate.getBytes)) {
+    if (orderBoxContractTemplate.equals(SellerContract.contractTemplate)) {
       // sell order
       val sellerPk = SellerContract.sellerPkFromTree(orderBox.getErgoTree)
         .getOrElse(sys.error(s"cannot extract seller PK from order box $orderBoxId"))
       require(sellerPk == recipientAddress.getPublicKey,
         s"sell order box $orderBoxId can be claimed with $sellerPk PK, while your's is ${recipientAddress.getPublicKey}")
       OutBoxProto(orderBox.getValue - txFee, Seq(orderBox.getTokens.get(0)), None, Seq(), outboxContract)
-    } else if (util.Arrays.equals(orderBoxContractTemplate.getBytes, BuyerContract.contractTemplate.getBytes)) {
+    } else if (orderBoxContractTemplate.equals(BuyerContract.contractTemplate)) {
       // buy order
       val buyerPk = BuyerContract.buyerPkFromTree(orderBox.getErgoTree)
         .getOrElse(sys.error(s"cannot extract buyer PK from order box $orderBoxId"))

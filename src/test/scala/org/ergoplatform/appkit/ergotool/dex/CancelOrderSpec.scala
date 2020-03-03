@@ -16,7 +16,6 @@ class CancelOrderSpec extends PropSpec
   private def getOneInputBox(amountToSpent: Long): Seq[InputBox] =
     Seq(MockInputBox(amountToSpent + unsignedLongGen.sample.get))
 
-  // TODO: extract to use in other commands
   def sendToPk(address: Address): ErgoContract =
     new ErgoTreeContract(SigmaPropConstant(address.getPublicKey))
 
