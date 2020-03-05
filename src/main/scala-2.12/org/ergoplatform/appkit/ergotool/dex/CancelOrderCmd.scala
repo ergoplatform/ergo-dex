@@ -59,7 +59,7 @@ case class CancelOrderCmd(toolConf: ErgoToolConfig,
       }
 
       val tx = CancelOrder.createTx(orderBox, recipientAddress, unspentBoxesForAmount)
-        .fold(t => error(s"$t"), tx => tx).toTx(ctx.newTxBuilder)
+        .toTx(ctx.newTxBuilder)
 
       val signed = loggedStep(s"Signing the transaction", console) {
         senderProver.sign(tx)
@@ -93,7 +93,6 @@ object CancelOrderCmd extends CmdDescriptor(
 
 object CancelOrder {
 
-  // TODO: extract to use in other commands
   case class TxProto(inputBoxes: Seq[InputBox],
                      outputBoxes: Seq[OutBoxProto],
                      fee: Long,
@@ -108,69 +107,79 @@ object CancelOrder {
         .build()
   }
 
-  // TODO: extract to use in other commands
-  case class OutBoxProto(getValue: Long, tokens: Seq[ErgoToken], contract: ErgoContract) {
+  case class MintTokenInfo(token: ErgoToken, name: String, desc: String, numberOfDecimals: Int)
+
+  case class OutBoxProto(getValue: Long,
+                         tokens: Seq[ErgoToken],
+                         mintToken: Option[MintTokenInfo],
+                         registers: Seq[ErgoValue[_]],
+                         contract: ErgoContract) {
 
     def toOutBox(builder: OutBoxBuilder): OutBox = {
       val builder2 = builder
         .value(getValue)
         .contract(contract)
-      if (tokens.nonEmpty) {
-        builder2
-          .tokens(tokens: _*)
-          .build()
-      } else {
-        builder2
-          .build()
+      if (registers.nonEmpty) {
+        builder2.registers(registers: _*)
       }
+      if (tokens.nonEmpty) {
+        builder2.tokens(tokens: _*)
+      }
+      if (mintToken.isDefined) {
+        val t = mintToken.get
+        builder2.mintToken(t.token, t.name, t.desc, t.numberOfDecimals)
+      }
+      builder2.build()
     }
   }
 
   def createTx(orderBox: InputBox, recipientAddress: Address,
-               unspentBoxesForAmount: (Long) => Seq[InputBox]): Try[TxProto] =
-    outBoxProto(orderBox, recipientAddress)
-      .map { outbox =>
-        val inputBoxes = selectInputBoxes(orderBox, outbox.getValue, unspentBoxesForAmount)
-        TxProto(inputBoxes, Seq(outbox), MinFee, recipientAddress)
-      }
+               unspentBoxesForAmount: (Long) => Seq[InputBox]): TxProto = {
+    val outbox = outBoxProto(orderBox, recipientAddress)
+    val inputBoxes = selectInputBoxes(orderBox, outbox.getValue, unspentBoxesForAmount)
+    TxProto(inputBoxes, Seq(outbox), MinFee, recipientAddress)
+  }
 
-  def outBoxProto(orderBox: InputBox, recipientAddress: Address): Try[OutBoxProto] = {
-    Try {
-      val orderBoxContractTemplate = ErgoTreeTemplate.fromErgoTree(orderBox.getErgoTree)
-      val orderBoxId = orderBox.getId
-      val txFee = MinFee
-      val outboxContract = new ErgoTreeContract(SigmaPropConstant(recipientAddress.getPublicKey))
-      // TODO: add ErgoTreeTemplate.equals
-      if (util.Arrays.equals(orderBoxContractTemplate.getBytes, SellerContract.contractTemplate.getBytes)) {
-        // sell order
-        val sellerPk = SellerContract.sellerPkFromTree(orderBox.getErgoTree)
-          .getOrElse(sys.error(s"cannot extract seller PK from order box $orderBoxId"))
-        require(sellerPk == recipientAddress.getPublicKey,
-          s"sell order box $orderBoxId can be claimed with $sellerPk PK, while your's is ${recipientAddress.getPublicKey}")
-        OutBoxProto(orderBox.getValue - txFee, Seq(orderBox.getTokens.get(0)), outboxContract)
-      } else if (util.Arrays.equals(orderBoxContractTemplate.getBytes, BuyerContract.contractTemplate.getBytes)) {
-        // buy order
-        val buyerPk = BuyerContract.buyerPkFromTree(orderBox.getErgoTree)
-          .getOrElse(sys.error(s"cannot extract buyer PK from order box $orderBoxId"))
-        require(buyerPk == recipientAddress.getPublicKey,
-          s"buy order box $orderBoxId can be claimed with ${buyerPk} PK, while yours is ${recipientAddress.getPublicKey}")
-        // as a workaround for https://github.com/ScorexFoundation/sigmastate-interpreter/issues/628
-        // box.tokens cannot be empty
-        val token = new ErgoToken("21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1",
-          0L)
-        OutBoxProto(orderBox.getValue - txFee, Seq(token), outboxContract)
-      } else {
-        sys.error(s"unsupported contract type in box ${orderBoxId.toString}")
-      }
+  def outBoxProto(orderBox: InputBox, recipientAddress: Address): OutBoxProto = {
+    val orderBoxContractTemplate = ErgoTreeTemplate.fromErgoTree(orderBox.getErgoTree)
+    val orderBoxId = orderBox.getId
+    val txFee = MinFee
+    val outboxContract = new ErgoTreeContract(SigmaPropConstant(recipientAddress.getPublicKey))
+    if (orderBoxContractTemplate.equals(SellerContract.contractTemplate)) {
+      // sell order
+      val sellerPk = SellerContract.sellerPkFromTree(orderBox.getErgoTree)
+        .getOrElse(sys.error(s"cannot extract seller PK from order box $orderBoxId"))
+      require(sellerPk == recipientAddress.getPublicKey,
+        s"sell order box $orderBoxId can be claimed with $sellerPk PK, while your's is ${recipientAddress.getPublicKey}")
+      OutBoxProto(orderBox.getValue - txFee, Seq(orderBox.getTokens.get(0)), None, Seq(), outboxContract)
+    } else if (orderBoxContractTemplate.equals(BuyerContract.contractTemplate)) {
+      // buy order
+      val buyerPk = BuyerContract.buyerPkFromTree(orderBox.getErgoTree)
+        .getOrElse(sys.error(s"cannot extract buyer PK from order box $orderBoxId"))
+      require(buyerPk == recipientAddress.getPublicKey,
+        s"buy order box $orderBoxId can be claimed with ${buyerPk} PK, while yours is ${recipientAddress.getPublicKey}")
+      // as a workaround for https://github.com/ScorexFoundation/sigmastate-interpreter/issues/628
+      // box.tokens cannot be empty, so we mint new token
+      val token = new ErgoToken(orderBox.getId, 1L)
+      // according to https://github.com/ergoplatform/eips/blob/master/eip-0004.md
+      val mintTokenInfo = MintTokenInfo(
+        token = token,
+        name = "CANCELDEXBUY", // token name (see EIP-4)
+        desc = "New token each time DEX buy order is cancelled", // token description (see EIP-4)
+        numberOfDecimals = 2 // number of decimals (see EIP-4)
+      )
+      OutBoxProto(orderBox.getValue - txFee, Seq(), Some(mintTokenInfo), Seq(), outboxContract)
+    } else {
+      sys.error(s"unsupported contract type in box ${orderBoxId.toString}")
     }
   }
 
   def selectInputBoxes(orderBox: InputBox, outboxValue: Long,
-                       unspentBoxes: (Long) => Seq[InputBox]): Seq[InputBox] =
+                       unspentBoxesForAmount: (Long) => Seq[InputBox]): Seq[InputBox] =
     if (outboxValue >= MinFee) {
       Seq(orderBox)
     } else {
-      unspentBoxes(MinFee - outboxValue) :+ orderBox
+      Seq(orderBox) ++ unspentBoxesForAmount(MinFee - outboxValue)
     }
 
 }

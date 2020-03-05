@@ -52,17 +52,12 @@ case class IssueTokenCmd(toolConf: ErgoToolConfig,
       }
       // id of the issued token has to be the same as the box id of the first input box
       // see https://github.com/ergoplatform/eips/blob/master/eip-0004.md
-      val token = new ErgoToken(unspent.get(0).getId, tokenAmount)
       val boxesToSpend = BoxOperations.selectTop(unspent, ergAmount + MinFee)
+      val token = new ErgoToken(boxesToSpend.get(0).getId, tokenAmount)
       val txB = ctx.newTxBuilder
       val newBox = txB.outBoxBuilder
         .value(ergAmount)
-        .tokens(token)
-        .registers(
-          ErgoValue.of(tokenName.getBytes), // token name in R4 (see EIP-4)
-          ErgoValue.of(tokenDesc.getBytes), // token description in R5 (see EIP-4)
-          ErgoValue.of(tokenNumberOfDecimals.toString.getBytes), // number of decimals in R6 (see EIP-4)
-        )
+        .mintToken(token, tokenName,tokenDesc, tokenNumberOfDecimals)
         .contract(ErgoContracts.sendToPK(ctx, sender))
         .build()
       val tx = txB

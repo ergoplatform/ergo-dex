@@ -380,7 +380,7 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         s"""Storage password> ::abc;
            |""".stripMargin, data)
     println(res)
-    res should include ("\"transactionId\": \"558b8221a5a6e01cb07765588b7f6f57a808138deba54cdc25a963ef5da66d7a\",")
+    res should include ("\"transactionId\": \"3acd12f5a85cfeba4096d2d5a562ac3f44ee2bb7e3ba4861b1d85d2f01eac048\",")
   }
 
   property("dex:ListMyOrders command") {
