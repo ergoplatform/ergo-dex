@@ -28,12 +28,13 @@ transaction without knowing any secrets. The matching can be incentivized by _DE
 payed as part of a _swap transaction_. Anyone who first discover the match of the two
 orders can create the swap transaction and get a reward in ERGs.
 
-In this post we describe a simple yet functional implementation of DEX protocol
-as a command line interface (CLI) utility using [Ergo Commands]() framework.  
+In this post we describe a simple yet functional implementation of DEX protocol as a
+command line interface (CLI) utility using [ErgoTool Commands
+Framework](https://github.com/aslesarenko/ergo-tool).
 
 ## DEX Transactions Overview
 
-![DEX](DEXDiagram.png)
+![DEX](dex-flowcard.png)
 
 ## Issue A New Token
 
