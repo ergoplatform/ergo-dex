@@ -4,6 +4,7 @@ import org.ergoplatform.appkit.console.{Console, ConsoleTesting}
 import org.ergoplatform.appkit.FileMockedErgoClient
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
+import org.mockito.scalatest.MockitoSugar
 import scalan.util.FileUtil
 import org.ergoplatform.appkit.JavaHelpers._
 import java.util.{List => JList}
@@ -13,8 +14,14 @@ import java.nio.file.{Files, Paths}
 import org.ergoplatform.settings.ErgoAlgos
 import sigmastate.Values.ByteArrayConstant
 import sigmastate.serialization.{SigmaSerializer, ValueSerializer}
+import org.ergoplatform.appkit.BlockchainContext
 
-class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks with ConsoleTesting {
+class ErgoToolSpec 
+  extends PropSpec 
+  with Matchers 
+  with ScalaCheckDrivenPropertyChecks 
+  with ConsoleTesting 
+  with MockitoSugar {
 
   // test values which correspond to each other (see also addr.json storage file, which is obtained using this values)
   val addrStr = "3WzR39tWQ5cxxWWX6ys7wNdJKLijPeyaKgx72uqg9FJRBCdZPovL"
@@ -64,6 +71,16 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
       runErgoTool(console, name, args, data)
     }
   }
+
+  def runCommand(name: String, args: Seq[String], expectedConsoleScenario: String, ergoClient: MockedErgoClientProxy): String = {
+    val consoleOps = parseScenario(expectedConsoleScenario)
+    runScenario(consoleOps) { console =>
+      ErgoTool.run(name +: (Seq(ConfigOption.cmdText, testConfigFile) ++ args), console, { ctx => 
+        ergoClient 
+      })
+    }
+  }
+
 
   def testCommand(name: String, args: Seq[String], expectedConsoleScenario: String, data: MockData = MockData.empty): Unit = {
     val consoleOps = parseScenario(expectedConsoleScenario)
@@ -217,6 +234,25 @@ class ErgoToolSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
       expectedConsoleScenario =
         s"""Storage password> ::abc;
            |""".stripMargin, data)
+    println(res)
+    res should include ("\"transactionId\": \"ded098c633a7bc145ba87dfa58ae9fde8be252d17aa36fbe734c7cb3f57bbaf3\",")
+  }
+
+  property("dex:SellOrder - not enough tokens") {
+    val blockchainCtxStub = mock[BlockchainContext]
+    // when(blockchainCtxStub.getUnspentBoxesFor(any[Address])) thenReturn(List())
+    val mockedErgoClient = new MockedErgoClientProxy(blockchainCtxStub)
+    val res = runCommand("dex:SellOrder",
+      args = Seq(
+        "storage/E2.json",
+        "50000000", // token price in NanoERGs
+        "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1", // tokenId
+        "60", // token amount
+        "5000000" // DEX fee
+      ),
+      expectedConsoleScenario =
+        s"""Storage password> ::abc;
+           |""".stripMargin, mockedErgoClient)
     println(res)
     res should include ("\"transactionId\": \"ded098c633a7bc145ba87dfa58ae9fde8be252d17aa36fbe734c7cb3f57bbaf3\",")
   }
