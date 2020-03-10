@@ -17,6 +17,7 @@ import sigmastate.serialization.{SigmaSerializer, ValueSerializer}
 import org.ergoplatform.appkit.BlockchainContext
 import org.ergoplatform.appkit.InputBox
 import org.ergoplatform.appkit.Address
+import org.ergoplatform.appkit.impl.BlockchainContextImpl
 
 class ErgoToolSpec 
   extends PropSpec 
@@ -251,16 +252,7 @@ class ErgoToolSpec
     res should include ("\"transactionId\": \"ded098c633a7bc145ba87dfa58ae9fde8be252d17aa36fbe734c7cb3f57bbaf3\",")
   }
 
-  property("dex:SellOrder - not enough tokens") {
-    val data = MockData(
-      Seq(
-        loadNodeResponse("response_Box1.json"),
-        loadNodeResponse("response_Box2.json"),
-        loadNodeResponse("response_Box3.json"),
-        loadNodeResponse("response_Box4.json"),
-        "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1"),
-      Seq(
-        loadExplorerResponse("response_boxesByAddressUnspent.json")))
+  property("dex:SellOrder - failed, no assets") {
     val res = runCommandWithCtxStubber("dex:SellOrder",
       args = Seq(
         "storage/E2.json",
@@ -271,16 +263,14 @@ class ErgoToolSpec
       ),
       expectedConsoleScenario =
         s"""Storage password> ::abc;
-           |""".stripMargin, 
-      data, 
-      { ctx: BlockchainContext =>
+          |""".stripMargin, 
+      ctxStubber = { ctx: BlockchainContext =>
           val spiedCtx = spy(ctx)
-          val boxes = new java.util.ArrayList[InputBox](0)
-          when(spiedCtx.getUnspentBoxesFor(any[Address])) thenReturn boxes
+          val emptyInputBoxes = new java.util.ArrayList[InputBox](0)
+          doReturn(emptyInputBoxes).when(spiedCtx).getUnspentBoxesFor(any[Address])
           spiedCtx
       })
-    println(res)
-    res should include ("\"transactionId\": \"ded098c633a7bc145ba87dfa58ae9fde8be252d17aa36fbe734c7cb3f57bbaf3\",")
+    res should include ("RuntimeException")
   }
 
   property("dex:BuyOrder command") {
