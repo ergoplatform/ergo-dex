@@ -274,9 +274,31 @@ class ErgoToolSpec
     res should include ("RuntimeException")
   }
 
-  property("dex:SellOrder - failed, not enough coins") {
-    val token = new ErgoToken("21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1", 69L)
+  property("dex:SellOrder - failed, not enough tokens") {
+    val token = new ErgoToken("21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1", 59L)
     val inputBoxes: IndexedSeq[InputBox] = IndexedSeq(MockInputBox(1000000000L, IndexedSeq(token)))
+    val res = runCommandWithCtxStubber("dex:SellOrder",
+      args = Seq(
+        "storage/E2.json",
+        "50000000", // token price in NanoERGs
+        "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1", // tokenId
+        "60", // token amount
+        "5000000" // DEX fee
+      ),
+      expectedConsoleScenario =
+        s"""Storage password> ::abc;
+          |""".stripMargin, 
+      ctxStubber = { ctx: BlockchainContext =>
+          val spiedCtx = spy(ctx)
+          doReturn(inputBoxes.convertTo[JList[InputBox]]).when(spiedCtx).getUnspentBoxesFor(any[Address])
+          spiedCtx
+      })
+    res should include ("RuntimeException")
+  }
+
+  property("dex:SellOrder - failed, not enough coins") {
+    val token = new ErgoToken("21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1", 60L)
+    val inputBoxes: IndexedSeq[InputBox] = IndexedSeq(MockInputBox(100L, IndexedSeq(token)))
     val res = runCommandWithCtxStubber("dex:SellOrder",
       args = Seq(
         "storage/E2.json",
