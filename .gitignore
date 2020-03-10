@@ -4,6 +4,7 @@
 .idea
 .bloop/
 .metals/
+.vscode/
 project/metals.sbt
 build
 target
