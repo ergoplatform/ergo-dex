@@ -296,6 +296,57 @@ class ErgoToolSpec
     res should include ("RuntimeException")
   }
 
+  property("dex:SellOrder - failed, incorrect user input, tokenPrice") {
+    val sellOrderCmdArgs = Seq(
+      "storage/E2.json",
+      "0", // !!!
+      "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1", // tokenId
+      "60", // token amount
+      "5000000" // DEX fee
+    )
+    val res = runCommand("dex:SellOrder",
+      sellOrderCmdArgs,
+      expectedConsoleScenario =
+        s"""Storage password> ::abc;
+           |""".stripMargin)
+    println(res)
+    res should include ("java.lang.IllegalArgumentException: requirement failed: invalid tokenPrice")
+  }
+
+  property("dex:SellOrder - failed, incorrect user input, token amount") {
+    val sellOrderCmdArgs = Seq(
+      "storage/E2.json",
+      "5000000", // !!!
+      "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1", // tokenId
+      "0", // token amount
+      "5000000" // DEX fee
+    )
+    val res = runCommand("dex:SellOrder",
+      sellOrderCmdArgs,
+      expectedConsoleScenario =
+        s"""Storage password> ::abc;
+           |""".stripMargin)
+    println(res)
+    res should include ("java.lang.IllegalArgumentException: requirement failed: invalid token amount")
+  }
+
+  property("dex:SellOrder - failed, incorrect user input, dex fee") {
+    val sellOrderCmdArgs = Seq(
+      "storage/E2.json",
+      "5000000", // !!!
+      "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1", // tokenId
+      "60", // token amount
+      "-1" // DEX fee
+    )
+    val res = runCommand("dex:SellOrder",
+      sellOrderCmdArgs,
+      expectedConsoleScenario =
+        s"""Storage password> ::abc;
+           |""".stripMargin)
+    println(res)
+    res should include ("java.lang.IllegalArgumentException: requirement failed: invalid DEX fee")
+  }
+
   property("dex:BuyOrder command") {
     val data = MockData(
       Seq(
