@@ -95,16 +95,6 @@ class ErgoToolSpec
     }
   }
 
-  def runCommand(name: String, args: Seq[String], expectedConsoleScenario: String, ergoClient: ErgoClientMock): String = {
-    val consoleOps = parseScenario(expectedConsoleScenario)
-    runScenario(consoleOps) { console =>
-      ErgoTool.run(name +: (Seq(ConfigOption.cmdText, testConfigFile) ++ args), console, { ctx => 
-        ergoClient 
-      })
-    }
-  }
-
-
   def testCommand(name: String, args: Seq[String], expectedConsoleScenario: String, data: MockData = MockData.empty): Unit = {
     val consoleOps = parseScenario(expectedConsoleScenario)
     testScenario(consoleOps) { console =>
