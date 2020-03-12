@@ -5,7 +5,7 @@ import org.ergoplatform.appkit.{ErgoClient, RestApiErgoClient}
 import scala.util.control.NonFatal
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.console.Console
-import org.ergoplatform.appkit.ergotool.dex.{CreateSellOrderCmd, CreateBuyOrderCmd, ListMatchingOrdersCmd, MatchOrdersCmd}
+import org.ergoplatform.appkit.ergotool.dex.{CancelOrderCmd, CreateBuyOrderCmd, CreateSellOrderCmd, IssueTokenCmd, ListMatchingOrdersCmd, ListMyOrdersCmd, MatchOrdersCmd}
 
 /** ErgoTool implementation, contains main entry point of the console application.
   *
@@ -18,7 +18,8 @@ object ErgoTool {
     AddressCmd, MnemonicCmd, CheckAddressCmd,
     ListAddressBoxesCmd,
     CreateStorageCmd, ExtractStorageCmd, SendCmd,
-    CreateSellOrderCmd, CreateBuyOrderCmd, MatchOrdersCmd, ListMatchingOrdersCmd
+    CreateSellOrderCmd, CreateBuyOrderCmd, MatchOrdersCmd,
+    ListMatchingOrdersCmd, IssueTokenCmd, CancelOrderCmd, ListMyOrdersCmd
     ).map(c => (c.name, c)).toMap
 
   /** Options supported by this application */
@@ -52,6 +53,7 @@ object ErgoTool {
         case e: CmdException => throw e
         case e: UsageException => throw e
         case NonFatal(t) =>
+          t.printStackTrace()
           throw CmdException(s"Error executing command $cmd:\n $t", cmd, t)
       }
     }
