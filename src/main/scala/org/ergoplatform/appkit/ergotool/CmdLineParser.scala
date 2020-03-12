@@ -1,5 +1,7 @@
 package org.ergoplatform.appkit.ergotool
 
+import org.ergoplatform.appkit.NetworkType
+
 import scala.collection.mutable.ArrayBuffer
 import org.ergoplatform.appkit.ergotool.ErgoTool.{options, usageError}
 
@@ -60,4 +62,12 @@ object CmdLineParser {
     }
     (resOptions, resArgs)
   }
+
+  def parseNetwork(network: String): NetworkType = network match {
+    case "testnet" => NetworkType.TESTNET
+    case "mainnet" => NetworkType.MAINNET
+    case _ => usageError(s"Invalid network type $network", None)
+  }
+
+
 }

@@ -8,6 +8,7 @@ import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.console.Console
 import org.ergoplatform.appkit.ergotool.HelpCmd.usageError
+import org.ergoplatform.appkit.ergotool.ErgoTool.usageError
 
 /** Base class for all commands which can be executed by ErgoTool.
   * Inherit this class to implement a new command.
@@ -112,12 +113,15 @@ case object StringPType extends PType {
 }
 
 /** Command parameter descriptor.
-  * @param name         parameter name
-  * @param displayName  parameter name suitable for UI (e.g. name: "ergAmount", displayName: "Amount of ERGs")
-  * @param tpe          type of the object which should be created from command line parameter string
-  * @param description  description of the command parameter
-  * @param defaultValue the string value which will be used when parameter is missing in the command line
+  *
+  * @param name            parameter name
+  * @param displayName     parameter name suitable for UI (e.g. name: "ergAmount", displayName: "Amount of ERGs")
+  * @param tpe             type of the object which should be created from command line parameter string
+  * @param description     description of the command parameter
+  * @param defaultValue    the string value which will be used when parameter is missing in the command line
   * @param interactivInput Some(producer) when parameter is entered interactively, i.e. it is not parsed from the command line
+  * @param argParser       Optional custom parser of the parameter, if defined should be used instead
+  *                        of the default parser defined for the type `tpe`.
   */
 case class CmdParameter(
   name: String,
@@ -125,12 +129,8 @@ case class CmdParameter(
   tpe: PType,
   description: String,
   defaultValue: Option[String],
-  interactivInput: Option[AppContext => Any]) {
-
-  /** Optional custom parser of the parameter, if defined should be used instead
-    * of the default parser defined for the type `tpe`.
-    */
-  def customCmdArgParser: Option[(AppContext, String) => Any] = None
+  interactivInput: Option[AppContext => Any],
+  argParser: Option[CmdArgParser]) {
 }
 object CmdParameter {
   /** Construct parameter with default `displayName` which is equal `name`. */
@@ -139,7 +139,7 @@ object CmdParameter {
             description: String,
             defaultValue: Option[String] = None,
             interactivInput: Option[AppContext => Any] = None): CmdParameter =
-    CmdParameter(name, name, tpe, description, defaultValue, interactivInput)
+    CmdParameter(name, name, tpe, description, defaultValue, interactivInput, None)
 }
 
 /** Base class for all Cmd descriptors (usually companion objects)
@@ -179,12 +179,6 @@ abstract class CmdDescriptor(
   /** Can be used by concrete command descriptors to report usage errors. */
   protected def usageError(msg: String) = throw UsageException(msg, Some(this))
 
-  def parseNetwork(network: String): NetworkType = network match {
-    case "testnet" => NetworkType.TESTNET
-    case "mainnet" => NetworkType.MAINNET
-    case _ => usageError(s"Invalid network type $network")
-  }
-
   def parseArgs(ctx: AppContext, args: Seq[String]): Seq[Any] = {
     var iArg = 0
     val rawParams = parameters.map { p =>
@@ -201,42 +195,12 @@ abstract class CmdDescriptor(
     }
     rawParams.map {
       case (p, param) if p.interactivInput.isDefined => param  // this is final value
-      case (p, rawArg: String) if p.customCmdArgParser.isDefined =>
-        p.customCmdArgParser.get(ctx, rawArg)
+      case (p, rawArg: String) if p.argParser.isDefined =>
+        p.argParser.get.parse(this, p, rawArg)
       case (p, rawArg: String) =>
         // command line string needs further parsing according to the parameter descriptor
         // using default parser
-        parseRawArg(p, rawArg)
-    }
-  }
-
-  private def parseRawArg(p: CmdParameter, rawArg: String): Any = {
-    p.tpe match {
-      case CommandNamePType | StringPType => rawArg
-      case NetworkPType =>
-        val networkType = parseNetwork(rawArg)
-        networkType
-      case SecretStringPType =>
-        SecretString.create(rawArg)
-      case IntPType => rawArg.toInt
-      case LongPType => rawArg.toLong
-      case AddressPType =>
-        Address.create(rawArg)
-      case ErgoIdPType =>
-        ErgoId.create(rawArg)
-      case FilePType =>
-        val storageFile = new File(rawArg)
-        if (!storageFile.exists()) usageError(s"Specified file is not found: $storageFile")
-        storageFile
-      case DirPathPType =>
-        val file = new File(rawArg)
-        if (!file.exists())
-          usageError(s"Invalid parameter '${p.name}': directory '$file' doesn't exists.")
-        if (!file.isDirectory)
-          usageError(s"Invalid parameter '${p.name}': '$file' is not directory.")
-        file.toPath
-      case _ =>
-        usageError(s"Unsupported parameter type: ${p.tpe}")
+        DefaultCmdArgParser.parse(this, p, rawArg)
     }
   }
 
@@ -254,12 +218,39 @@ abstract class CmdDescriptor(
 
 }
 
-abstract class CmdArgParser[T] {
-  def parse(p: CmdParameter, rawArg: String): T
+abstract class CmdArgParser {
+  def parse(cmd: CmdDescriptor, p: CmdParameter, rawArg: String): Any
 }
-object DefaultCmdArgParser extends CmdArgParser[Any] {
-  override def parse(p: CmdParameter, rawArg: String): Any = {
-    null
+object DefaultCmdArgParser extends CmdArgParser {
+  override def parse(cmd: CmdDescriptor, p: CmdParameter, rawArg: String): Any = {
+    p.tpe match {
+      case CommandNamePType | StringPType => rawArg
+      case NetworkPType =>
+        val networkType = CmdLineParser.parseNetwork(rawArg)
+        networkType
+      case SecretStringPType =>
+        SecretString.create(rawArg)
+      case IntPType => rawArg.toInt
+      case LongPType => rawArg.toLong
+      case AddressPType =>
+        Address.create(rawArg)
+      case ErgoIdPType =>
+        ErgoId.create(rawArg)
+      case FilePType =>
+        val storageFile = new File(rawArg)
+        if (!storageFile.exists())
+          usageError(s"Specified file is not found: $storageFile", Some(cmd))
+        storageFile
+      case DirPathPType =>
+        val file = new File(rawArg)
+        if (!file.exists())
+          usageError(s"Invalid parameter '${p.name}': directory '$file' doesn't exists.", Some(cmd))
+        if (!file.isDirectory)
+          usageError(s"Invalid parameter '${p.name}': '$file' is not directory.", Some(cmd))
+        file.toPath
+      case _ =>
+        usageError(s"Unsupported parameter type: ${p.tpe}", Some(cmd))
+    }
   }
 }
 

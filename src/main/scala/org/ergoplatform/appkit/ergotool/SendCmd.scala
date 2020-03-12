@@ -5,9 +5,6 @@ import org.ergoplatform.appkit._
 import java.io.File
 
 import org.ergoplatform.appkit.Parameters.MinFee
-import Utils._
-import org.ergoplatform.appkit.ergotool.ExtractStorageCmd.parsePropName
-import org.ergoplatform.appkit.ergotool.SendCmd.error
 
 /** Creates and sends a new transaction to transfer Ergs from one address to another.
   *
