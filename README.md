@@ -78,7 +78,7 @@ Now run the compiled ErgoTool using the following command which runs the ErgoToo
 Note, you should run this command while in the root folder of the cloned ErgoTool repository.
 
 ```
-java -cp target/scala-2.12/ergotool-3.1.0.jar org.ergoplatform.appkit.ergotool.ErgoTool          
+java -cp target/scala-2.12/ergotool-*.jar org.ergoplatform.appkit.ergotool.ErgoTool 
 Please specify command name and parameters.
 
 Usage:
