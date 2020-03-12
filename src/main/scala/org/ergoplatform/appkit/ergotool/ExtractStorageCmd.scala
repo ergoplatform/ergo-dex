@@ -80,7 +80,7 @@ object ExtractStorageCmd extends CmdDescriptor(
   override val parameters: Seq[CmdParameter] = Array(
     CmdParameter("storageFile", StringPType,
       "path to encrypted storage file"),
-    new CmdParameter("propName", StringPType,
+    new CmdParameter("propName", "propName", StringPType,
       "secret mnemonic password", None, None) {
       override def customCmdArgParser = Some { (_, arg) =>
         parsePropName(arg)

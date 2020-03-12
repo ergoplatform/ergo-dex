@@ -113,6 +113,7 @@ case object StringPType extends PType {
 
 /** Command parameter descriptor.
   * @param name         parameter name
+  * @param displayName  parameter name suitable for UI (e.g. name: "ergAmount", displayName: "Amount of ERGs")
   * @param tpe          type of the object which should be created from command line parameter string
   * @param description  description of the command parameter
   * @param defaultValue the string value which will be used when parameter is missing in the command line
@@ -120,15 +121,25 @@ case object StringPType extends PType {
   */
 case class CmdParameter(
   name: String,
+  displayName: String,
   tpe: PType,
   description: String,
-  defaultValue: Option[String] = None,
-  interactivInput: Option[AppContext => Any] = None) {
+  defaultValue: Option[String],
+  interactivInput: Option[AppContext => Any]) {
 
   /** Optional custom parser of the parameter, if defined should be used instead
     * of the default parser defined for the type `tpe`.
     */
   def customCmdArgParser: Option[(AppContext, String) => Any] = None
+}
+object CmdParameter {
+  /** Construct parameter with default `displayName` which is equal `name`. */
+  def apply(name: String,
+            tpe: PType,
+            description: String,
+            defaultValue: Option[String] = None,
+            interactivInput: Option[AppContext => Any] = None): CmdParameter =
+    CmdParameter(name, name, tpe, description, defaultValue, interactivInput)
 }
 
 /** Base class for all Cmd descriptors (usually companion objects)
