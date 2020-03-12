@@ -7,7 +7,8 @@ import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.JavaHelpers._
 import org.ergoplatform.appkit.config.ErgoToolConfig
-import org.ergoplatform.appkit.ergotool.{AppContext, Cmd, CmdDescriptor, RunWithErgoClient}
+import org.ergoplatform.appkit.ergotool.dex.CreateBuyOrderCmd.name
+import org.ergoplatform.appkit.ergotool.{CmdParameter, FilePType, RunWithErgoClient, ErgoIdPType, Cmd, SecretStringPType, CmdDescriptor, AppContext}
 import org.ergoplatform.appkit.impl.ErgoTreeContract
 import sigmastate.Values.SigmaPropConstant
 
@@ -81,12 +82,23 @@ object CancelOrderCmd extends CmdDescriptor(
   name = "dex:CancelOrder", cmdParamSyntax = "<wallet file> <orderBoxId>",
   description = "claim an unspent buy/sell order (by <orderBoxId>) and sends the ERGs/tokens to the address of this wallet (requests storage password)") {
 
-  override def parseCmd(ctx: AppContext): Cmd = {
-    val args = ctx.cmdArgs
-    val storageFile = new File(if (args.length > 1) args(1) else error("Wallet storage file path is not specified"))
-    if (!storageFile.exists()) error(s"Specified wallet file is not found: $storageFile")
-    val orderBoxId = ErgoId.create(if (args.length > 2) args(2) else error("seller order box id is not specified"))
-    val pass = ctx.console.readPassword("Storage password>")
+  override val parameters: Seq[CmdParameter] = Array(
+    CmdParameter("storageFile", FilePType,
+      "storage with secret key of the sender"),
+    CmdParameter("storagePass", SecretStringPType,
+      "password to access sender secret key in the storage", None,
+      Some(ctx => ctx.console.readPassword("Storage password>"))),
+    CmdParameter("orderBoxId", ErgoIdPType,
+      "order box id"),
+
+  )
+
+  override def createCmd(ctx: AppContext): Cmd = {
+    val Seq(
+      storageFile: File,
+      pass: SecretString,
+      orderBoxId: ErgoId
+    ) = ctx.cmdParameters
     CancelOrderCmd(ctx.toolConf, name, storageFile, pass, orderBoxId)
   }
 }
