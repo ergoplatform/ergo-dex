@@ -22,11 +22,12 @@ object HelpCmd extends CmdDescriptor(
   name = "help", cmdParamSyntax = "<commandName>",
   description = "prints usage help for a command") {
 
-  override def parseCmd(ctx: AppContext): Cmd = {
-    val args = ctx.cmdArgs
-    val askedCmd =
-      if (args.length > 1) args(1)
-      else usageError("command name is not specified (run ergo-tool without arguments to list commands)")
+  override val parameters: Seq[CmdParameter] = Array(
+    CmdParameter("commandName", CommandNamePType, "command name which usage help should be printed")
+  )
+
+  override def createCmd(ctx: AppContext): Cmd = {
+    val Seq(askedCmd: String) = ctx.cmdParameters
     HelpCmd(ctx.toolConf, name, askedCmd)
   }
 }

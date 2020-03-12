@@ -178,7 +178,7 @@ class ErgoToolSpec
     val filePath = Paths.get(storageDir, storageFileName)
     try {
       // create a storage file
-      testCommand("createStorage", Seq(),
+      testCommand("createStorage", Seq(storageDir, storageFileName),
         expectedConsoleScenario =
             s"""Enter mnemonic phrase> ::$mnemonic;
               |Mnemonic password> ::$mnemonicPassword;

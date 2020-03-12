@@ -1,7 +1,7 @@
 {
   "node": {
     "nodeApi": {
-      "apiUrl": "http://159.65.11.55:9053",
+      "apiUrl": "http://139.59.29.87:9053",
       "apiKey": ""
     },
     "networkType": "MAINNET"

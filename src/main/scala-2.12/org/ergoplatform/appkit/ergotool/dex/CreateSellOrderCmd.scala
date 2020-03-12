@@ -6,7 +6,7 @@ import java.util.Optional
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
-import org.ergoplatform.appkit.ergotool.{AppContext, Cmd, CmdDescriptor, RunWithErgoClient}
+import org.ergoplatform.appkit.ergotool.{AddressPType, AppContext, Cmd, CmdDescriptor, CmdParameter, ErgoIdPType, FilePType, LongPType, RunWithErgoClient, SecretStringPType, StringPType}
 import org.ergoplatform.appkit.impl.{ErgoTreeContract, ScalaBridge}
 import org.ergoplatform.contracts.AssetsAtomicExchangeCompilation
 import sigmastate.{SLong, Values}
@@ -91,17 +91,34 @@ object CreateSellOrderCmd extends CmdDescriptor(
   description = "put a token seller order with given <tokenId> and <tokenAmount> for sale at given <ergPrice> price with <dexFee> as a reward for anyone who matches this order with buyer, with wallet's address to be used for withdrawal \n " +
     "with the given <wallet file> to sign transaction (requests storage password)") {
 
-  override def parseCmd(ctx: AppContext): Cmd = {
-    val args = ctx.cmdArgs
-    val storageFile = new File(if (args.length > 1) args(1) else error("Wallet storage file path is not specified"))
-    if (!storageFile.exists()) error(s"Specified wallet file is not found: $storageFile")
-    val ergAmount = if (args.length > 2) args(2).toLong else error("ergPrice is not specified")
-    val tokenId = if(args.length > 3) args(3) else error("tokenId is not specified")
-    val tokenAmount = if(args.length > 4) args(4).toLong else error("tokenAmount is not specified")
+  override val parameters: Seq[CmdParameter] = Array(
+    CmdParameter("storageFile", FilePType,
+      "storage with secret key of the sender"),
+    CmdParameter("storagePass", SecretStringPType,
+      "password to access sender secret key in the storage", None,
+      Some(ctx => ctx.console.readPassword("Storage password>"))),
+    CmdParameter("tokenPrice", LongPType,
+      "amount of NanoERG asked for tokens"),
+    CmdParameter("tokenId", ErgoIdPType,
+      "token id offered for sale"),
+    CmdParameter("tokenAmount", LongPType,
+      "token amount offered for sale"),
+    CmdParameter("dexFee", LongPType,
+      "reward for anyone who matches this order with buyer's order")
+  )
+
+  override def createCmd(ctx: AppContext): Cmd = {
+    val Seq(
+      storageFile: File,
+      pass: SecretString,
+      tokenPrice: Long,
+      tokenId: ErgoId,
+      tokenAmount: Long,
+      dexFee: Long
+    ) = ctx.cmdParameters
+
     val token = new ErgoToken(tokenId, tokenAmount)
-    val dexFee = if(args.length > 5) args(5).toLong else error("dexFee is not specified")
-    val pass = ctx.console.readPassword("Storage password>")
-    CreateSellOrderCmd(ctx.toolConf, name, storageFile, pass, ergAmount, token, dexFee)
+    CreateSellOrderCmd(ctx.toolConf, name, storageFile, pass, tokenPrice, token, dexFee)
   }
 }
 
@@ -121,6 +138,7 @@ object SellerContract {
   }
 
   def tokenPriceFromTree(tree: ErgoTree): Option[Long] =
+    // TODO get rid on magic constant (consider refactoring using ErgoContract.getConstantByName())
     tree.constants.lift(5).collect {
       case Values.ConstantNode(value, SLong) => value.asInstanceOf[Long]
     }

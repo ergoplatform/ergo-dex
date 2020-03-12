@@ -35,12 +35,19 @@ object AddressCmd extends CmdDescriptor(
   name = "address", cmdParamSyntax = "testnet|mainnet <mnemonic>",
   description = "return address for a given mnemonic and password pair") {
 
-  override def parseCmd(ctx: AppContext): Cmd = {
-    val args = ctx.cmdArgs
-    val network = if (args.length > 1) args(1) else usageError("network is not specified (mainnet or testnet)")
-    val networkType = parseNetwork(network)
-    val mnemonic = if (args.length > 2) SecretString.create(args(2)) else usageError("mnemonic is not specified")
-    val mnemonicPass = readNewPassword("Mnemonic password> ", "Repeat mnemonic password> ")(ctx)
+  override val parameters: Seq[CmdParameter] = Array(
+    CmdParameter("network", NetworkPType,
+      "[[NetworkType]] of the target network for which the address should be generated"),
+    CmdParameter("mnemonic", SecretStringPType,
+      """secret phrase which is used to generate (private, public) key pair, of which
+        |public key is used to generate the [[Address]]""".stripMargin),
+    CmdParameter("mnemonicPass", SecretStringPType,
+      "password which is used to additionally protect mnemonic", None,
+      Some(ctx => readNewPassword("Mnemonic password> ", "Repeat mnemonic password> ")(ctx)))
+  )
+
+  override def createCmd(ctx: AppContext): Cmd = {
+    val Seq(networkType: NetworkType, mnemonic: SecretString, mnemonicPass: SecretString) = ctx.cmdParameters
     AddressCmd(ctx.toolConf, name, networkType, mnemonic, mnemonicPass)
   }
 }

@@ -22,7 +22,7 @@ object MnemonicCmd extends CmdDescriptor(
   name = "mnemonic", cmdParamSyntax = "",
   description = "generate new mnemonic phrase using english words and default cryptographic strength") {
 
-  override def parseCmd(ctx: AppContext): Cmd = {
+  override def createCmd(ctx: AppContext): Cmd = {
     MnemonicCmd(ctx.toolConf, name)
   }
 }

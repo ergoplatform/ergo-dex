@@ -5,7 +5,8 @@ import java.io.File
 import org.ergoplatform.appkit.JavaHelpers._
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
-import org.ergoplatform.appkit.ergotool.{AppContext, Cmd, CmdDescriptor, RunWithErgoClient}
+import org.ergoplatform.appkit.ergotool.dex.IssueTokenCmd.name
+import org.ergoplatform.appkit.ergotool.{CmdParameter, FilePType, LongPType, RunWithErgoClient, Cmd, SecretStringPType, IntPType, StringPType, CmdDescriptor, AppContext}
 
 /** Shows buy and sell orders created from the address of this wallet
   *
@@ -68,11 +69,19 @@ object ListMyOrdersCmd extends CmdDescriptor(
   name = "dex:ListMyOrders", cmdParamSyntax = "<storageFile>",
   description = "show buy and sell orders created from the address of this wallet") {
 
-  override def parseCmd(ctx: AppContext): Cmd = {
-    val args = ctx.cmdArgs
-    val storageFile = new File(if (args.length > 1) args(1) else error("Wallet storage file path is not specified"))
-    if (!storageFile.exists()) error(s"Specified wallet file is not found: $storageFile")
-    val pass = ctx.console.readPassword("Storage password>")
+  override val parameters: Seq[CmdParameter] = Array(
+    CmdParameter("storageFile", FilePType,
+      "storage with secret key of the sender"),
+    CmdParameter("storagePass", SecretStringPType,
+      "password to access sender secret key in the storage", None,
+      Some(ctx => ctx.console.readPassword("Storage password>"))),
+  )
+
+  override def createCmd(ctx: AppContext): Cmd = {
+    val Seq(
+      storageFile: File,
+      pass: SecretString,
+    ) = ctx.cmdParameters
     ListMyOrdersCmd(ctx.toolConf, name, storageFile, pass)
   }
 }

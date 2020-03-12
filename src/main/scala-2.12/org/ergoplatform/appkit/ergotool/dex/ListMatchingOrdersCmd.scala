@@ -41,7 +41,7 @@ object ListMatchingOrdersCmd extends CmdDescriptor(
   name = "dex:ListMatchingOrders", cmdParamSyntax = "",
   description = "show matching token seller's and buyer's orders") {
 
-  override def parseCmd(ctx: AppContext): Cmd = {
+  override def createCmd(ctx: AppContext): Cmd = {
     ListMatchingOrdersCmd(ctx.toolConf, name)
   }
 

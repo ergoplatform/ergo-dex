@@ -5,7 +5,8 @@ import java.io.File
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
-import org.ergoplatform.appkit.ergotool.{AppContext, Cmd, CmdDescriptor, RunWithErgoClient}
+import org.ergoplatform.appkit.ergotool.dex.CreateBuyOrderCmd.name
+import org.ergoplatform.appkit.ergotool.{CmdParameter, FilePType, LongPType, RunWithErgoClient, ErgoIdPType, Cmd, SecretStringPType, IntPType, StringPType, CmdDescriptor, AppContext}
 
 /** Issues a new token
   * following the Assets standard [[https://github.com/ergoplatform/eips/blob/master/eip-0004.md]]
@@ -38,7 +39,7 @@ case class IssueTokenCmd(toolConf: ErgoToolConfig,
                          tokenAmount: Long,
                          tokenName: String,
                          tokenDesc: String,
-                         tokenNumberOfDecimals: Byte) extends Cmd with RunWithErgoClient {
+                         tokenNumberOfDecimals: Int) extends Cmd with RunWithErgoClient {
 
   override def runWithClient(ergoClient: ErgoClient, runCtx: AppContext): Unit = {
     val console = runCtx.console
@@ -87,17 +88,37 @@ object IssueTokenCmd extends CmdDescriptor(
   description = "issue a token with given <tokenName>, <tokenAmount>, <tokenDesc>, <tokenNumberOfDecimals> and <ergAmount> " +
     "with the given <wallet file> to sign transaction (requests storage password)") {
 
-  override def parseCmd(ctx: AppContext): Cmd = {
-    val args = ctx.cmdArgs
-    val storageFile = new File(if (args.length > 1) args(1) else error("Wallet storage file path is not specified"))
-    if (!storageFile.exists()) error(s"Specified wallet file is not found: $storageFile")
-    val ergAmount = if (args.length > 2) args(2).toLong else error("ergAmount is not specified")
-    val tokenAmount = if(args.length > 3) args(3).toLong else error("tokenAmount is not specified")
-    val tokenName = if(args.length > 4) args(4) else error("tokenName is not specified")
-    val tokenDesc = if(args.length > 5) args(5) else error("tokenDesc is not specified")
-    val tokenNumberOfDecimals = if(args.length > 6) args(6).toByte else error("tokenNumberOfDecimals is not specified")
-    val pass = ctx.console.readPassword("Storage password>")
-    IssueTokenCmd(ctx.toolConf, name, storageFile, pass, ergAmount,
-      tokenAmount, tokenName, tokenDesc, tokenNumberOfDecimals)
+  override val parameters: Seq[CmdParameter] = Array(
+    CmdParameter("storageFile", FilePType,
+      "storage with secret key of the sender"),
+    CmdParameter("storagePass", SecretStringPType,
+      "password to access sender secret key in the storage", None,
+      Some(ctx => ctx.console.readPassword("Storage password>"))),
+    CmdParameter("ergAmount", LongPType,
+      "NanoERG amount to put in box with issued tokens"),
+    CmdParameter("tokenAmount", LongPType,
+      "Amount of tokens to issue"),
+    CmdParameter("tokenName", StringPType,
+      "token verbose name (UTF-8 representation)"),
+    CmdParameter("tokenDesc", StringPType,
+      "token description (UTF-8 representation)"),
+    CmdParameter("tokenNumberOfDecimals", IntPType,
+      "number or decimals")
+  )
+
+  override def createCmd(ctx: AppContext): Cmd = {
+    val Seq(
+      storageFile: File,
+      pass: SecretString,
+      ergAmount: Long,
+      tokenAmount: Long,
+      tokenName: String,
+      tokenDesc: String,
+      tokenNumberOfDecimals: Int
+    ) = ctx.cmdParameters
+    IssueTokenCmd(
+      ctx.toolConf, name, storageFile, pass, ergAmount, tokenAmount, tokenName,
+      tokenDesc, tokenNumberOfDecimals)
   }
+
 }
