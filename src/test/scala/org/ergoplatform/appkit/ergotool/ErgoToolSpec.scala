@@ -19,6 +19,7 @@ import org.ergoplatform.appkit.InputBox
 import org.ergoplatform.appkit.Address
 import org.ergoplatform.appkit.MockInputBox
 import org.ergoplatform.appkit.ErgoToken
+import org.ergoplatform.appkit.ErgoTreeTemplate
 
 class ErgoToolSpec 
   extends PropSpec 
@@ -584,6 +585,41 @@ class ErgoToolSpec
     println(res)
     res should include ("655ad79f579677fa0f44e72713ecd8f054e534a02e66d8aef4fc2729b9e62b76 21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1 60            50000000     5000000")
     res should include ("969482db6643a16b6d8f4c8b50d0a9d5b47a698014c927ee0fa495e2adabbb8e 21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1 60            55000000")
+  }
+
+  property("dex:ListMyOrders command: no orders") {
+    val data = MockData(
+      Seq(
+        loadNodeResponse("response_Box_AAE_seller_contract.json"),
+        loadNodeResponse("response_Box1.json"),
+        loadNodeResponse("response_Box2.json"),
+        loadNodeResponse("response_Box3.json"),
+        loadNodeResponse("response_Box_AAE_buyer_contract.json"),
+        loadNodeResponse("response_Box1.json"),
+        loadNodeResponse("response_Box2.json"),
+        loadNodeResponse("response_Box3.json"),
+      ),
+      Seq(
+        loadExplorerResponse("response_boxesByAddressUnspent.json"),
+        loadExplorerResponse("response_boxesByAddressUnspent.json")
+      )
+    )
+    val inputBoxes = IndexedSeq[InputBox]()
+    val res = runCommandWithCtxStubber("dex:ListMyOrders",
+      args = Seq(
+        "storage/E2.json",
+      ),
+      expectedConsoleScenario =
+        s"""Storage password> ::abc;
+           |""".stripMargin, 
+      ctxStubber = { ctx: BlockchainContext =>
+          doReturn(inputBoxes.convertTo[JList[InputBox]])
+            .when(ctx)
+            .getUnspentBoxesForErgoTreeTemplate(any[ErgoTreeTemplate])
+      })
+    println(res)
+    res should not include ("655ad79f579677fa0f44e72713ecd8f054e534a02e66d8aef4fc2729b9e62b76 21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1 60            50000000     5000000")
+    res should not include ("969482db6643a16b6d8f4c8b50d0a9d5b47a698014c927ee0fa495e2adabbb8e 21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1 60            55000000")
   }
 }
 
