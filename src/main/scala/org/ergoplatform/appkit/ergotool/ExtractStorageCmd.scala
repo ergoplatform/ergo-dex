@@ -69,21 +69,11 @@ object ExtractStorageCmd extends CmdDescriptor(
   val supportedKeys: Seq[String] = Array(PropAddress, PropMasterKey, PropPublicKey, PropSecretKey)
   override val cmdParamSyntax = s"<storage file> ${supportedKeys.mkString("|")} mainnet|testnet"
 
-  private def propErrorMsg = {
-    error(s"Please specify one of the supported properties: ${supportedKeys.map(k => s"`$k`").mkString(",")}")
-  }
-
-  object PropNameParser extends CmdArgParser {
-    override def parse(cmd: CmdDescriptor, p: CmdParameter, rawArg: String): Any =
-      if (supportedKeys.contains(rawArg)) rawArg
-      else propErrorMsg
-  }
-
   override val parameters: Seq[CmdParameter] = Array(
     CmdParameter("storageFile", StringPType,
       "path to encrypted storage file"),
-    CmdParameter("propName", "propName", StringPType,
-      "secret mnemonic password", None, None, Some(PropNameParser)),
+    CmdParameter("propName", EnumPType(supportedKeys zip supportedKeys),
+      "secret mnemonic password"),
     CmdParameter("network", NetworkPType,
       "network type"),
     CmdParameter("storagePass", SecretStringPType,

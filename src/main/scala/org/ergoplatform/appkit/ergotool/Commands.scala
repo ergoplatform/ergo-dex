@@ -9,6 +9,7 @@ import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.console.Console
 import org.ergoplatform.appkit.ergotool.HelpCmd.usageError
 import org.ergoplatform.appkit.ergotool.ErgoTool.usageError
+import org.ergoplatform.appkit.ergotool.ExtractStorageCmd.{propErrorMsg, supportedKeys}
 
 /** Base class for all commands which can be executed by ErgoTool.
   * Inherit this class to implement a new command.
@@ -71,7 +72,7 @@ trait RunWithErgoClient extends Cmd {
   def runWithClient(ergoClient: ErgoClient, ctx: AppContext): Unit
 }
 
-sealed trait PType {
+sealed abstract class PType {
 }
 case object NanoErgPType extends PType {
 }
@@ -110,6 +111,11 @@ case object BooleanPType extends PType {
 }
 
 case object StringPType extends PType {
+}
+
+/** List of possible enum values (name and the value itself). */
+case class EnumPType(values: Seq[(String, Any)]) extends PType {
+  def getByName(name: String): Option[Any] = values.collectFirst { case (n, v) if n == name => v }
 }
 
 /** Command parameter descriptor.
@@ -248,11 +254,29 @@ object DefaultCmdArgParser extends CmdArgParser {
         if (!file.isDirectory)
           usageError(s"Invalid parameter '${p.name}': '$file' is not directory.", Some(cmd))
         file.toPath
+      case et: EnumPType =>
+        val parser = new EnumParser(et)
+        parser.parse(cmd, p, rawArg)
       case _ =>
         usageError(s"Unsupported parameter type: ${p.tpe}", Some(cmd))
     }
   }
 }
+
+class EnumParser(enum: EnumPType) extends CmdArgParser {
+  override def parse(cmd: CmdDescriptor, p: CmdParameter, rawArg: String): Any =
+    enum.getByName(rawArg) match {
+      case Some(value) => value
+      case _ => propErrorMsg
+    }
+
+  private def propErrorMsg = {
+    usageError(
+      s"Please specify one of the supported properties: ${enum.values.map(k => s"`${k._1}`").mkString(",")}",
+      None)
+  }
+}
+
 
 /** Exception thrown by ErgoTool application when incorrect usage is detected.
   * @param message error message
