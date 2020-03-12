@@ -205,6 +205,7 @@ abstract class CmdDescriptor(
         p.customCmdArgParser.get(ctx, rawArg)
       case (p, rawArg: String) =>
         // command line string needs further parsing according to the parameter descriptor
+        // using default parser
         parseRawArg(p, rawArg)
     }
   }
@@ -239,45 +240,6 @@ abstract class CmdDescriptor(
     }
   }
 
-  /** Secure double entry of the new password giving the user many attempts.
-    *
-    * @param nAttemps number of attempts before failing with exception
-    * @param block  code block which can request the user to enter a new password twice
-    * @return password returned by `block` as `Array[Char]` instead of `String`. This allows
-    *        the password to be erased as fast as possible and avoid leaking to GC.
-    * @throws UsageException
-    */
-  def readNewPassword(nAttemps: Int, console: Console)(block: => (SecretString, SecretString)): SecretString = {
-    var i = 0
-    do {
-      val (p1, p2) = block
-      i += 1
-      if (p1.equals(p2)) {
-        p2.erase() // cleanup duplicate copy
-        return p1
-      }
-      else {
-        p1.erase() // cleanup sensitive data
-        p2.erase()
-        if (i < nAttemps) {
-          console.println(s"Passwords are different, try again [${i + 1}/$nAttemps]")
-          // and loop
-        } else
-          usageError(s"Cannot continue without providing valid password")
-      }
-    } while (true)
-    error("should never go here due to exhaustive `if` above")
-  }
-
-  def readNewPassword(prompt: String, secondPrompt: String)(implicit ctx: AppContext): SecretString = {
-    val console = ctx.console
-    readNewPassword(3, console) {
-      val p1 = console.readPassword(prompt)
-      val p2 = console.readPassword(secondPrompt)
-      (p1, p2)
-    }
-  }
-
   /** Outputs the usage help for this command to the given console */
   def printUsage(console: Console) = {
     val msg =
@@ -290,6 +252,15 @@ abstract class CmdDescriptor(
     console.println(msg)
   }
 
+}
+
+abstract class CmdArgParser[T] {
+  def parse(p: CmdParameter, rawArg: String): T
+}
+object DefaultCmdArgParser extends CmdArgParser[Any] {
+  override def parse(p: CmdParameter, rawArg: String): Any = {
+    null
+  }
 }
 
 /** Exception thrown by ErgoTool application when incorrect usage is detected.

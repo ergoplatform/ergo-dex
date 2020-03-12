@@ -3,7 +3,7 @@ package org.ergoplatform.appkit.ergotool
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.{Mnemonic, SecretStorage, SecretString}
 import java.nio.file.{Files, StandardCopyOption, Paths, Path}
-import java.util
+import org.ergoplatform.appkit.console.Console._
 
 /** Create a new json file with encrypted content storing a secret key.
   *
