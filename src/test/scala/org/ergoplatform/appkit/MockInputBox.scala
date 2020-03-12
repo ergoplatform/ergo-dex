@@ -26,5 +26,8 @@ object MockInputBox extends ObjectGenerators {
   def apply(getValue: Long): MockInputBox =
     MockInputBox(ergoIdGen.sample.get, getValue, ErgoTree.fromProposition(TrueLeaf))
 
+  def apply(getValue: Long, getTokens: IndexedSeq[ErgoToken]): MockInputBox =
+    new MockInputBox(ergoIdGen.sample.get, getValue, getTokens.convertTo[JList[ErgoToken]],
+     ErgoTree.fromProposition(TrueLeaf))
 }
 

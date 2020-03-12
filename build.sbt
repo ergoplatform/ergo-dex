@@ -8,8 +8,11 @@ lazy val sonatypeSnapshots = "Sonatype Snapshots" at "https://oss.sonatype.org/c
 
 resolvers ++= Seq(Resolver.mavenLocal, sonatypeReleases, sonatypeSnapshots, Resolver.mavenCentral)
 
+scalaVersion := "2.12.10"
 version := "3.1.1"
 val appkit = "org.ergoplatform" %% "ergo-appkit" % "develop-5e213620-SNAPSHOT"
+
+val mockitoScalaVerstion = "1.11.4"
 
 libraryDependencies ++= Seq(
   appkit, (appkit % Test).classifier("tests"),
@@ -18,7 +21,9 @@ libraryDependencies ++= Seq(
   "com.squareup.okhttp3" % "mockwebserver" % "3.12.0",
   "org.ergoplatform" %% "verified-contracts" % "0.0.0-5-ee53f015-SNAPSHOT",
   "org.scalatest" %% "scalatest" % "3.0.8" % "test",
-  "org.scalacheck" %% "scalacheck" % "1.14.1" % "test"
+  "org.scalacheck" %% "scalacheck" % "1.14.1" % "test",
+  "org.mockito" %% "mockito-scala" % mockitoScalaVerstion % "test",
+  "org.mockito" %% "mockito-scala-scalatest" % mockitoScalaVerstion % "test"
 )
 
 publishMavenStyle in ThisBuild := true

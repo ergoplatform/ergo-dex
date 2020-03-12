@@ -46,6 +46,9 @@ case class CreateBuyOrderCmd(toolConf: ErgoToolConfig,
                              dexFee: Long) extends Cmd with RunWithErgoClient {
 
   override def runWithClient(ergoClient: ErgoClient, runCtx: AppContext): Unit = {
+    require(ergAmount > 0, s"invalid ergAmount: $ergAmount")
+    require(token.getValue > 0, s"invalid token amount: ${token.getValue}")
+    require(dexFee > 0, s"invalid DEX fee: $dexFee")
     val console = runCtx.console
     ergoClient.execute(ctx => {
       val senderProver = loggedStep("Creating prover", console) {
