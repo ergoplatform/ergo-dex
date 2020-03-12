@@ -296,56 +296,48 @@ class ErgoToolSpec
     res should include ("RuntimeException")
   }
 
-  property("dex:SellOrder - failed, incorrect user input, tokenPrice") {
-    val sellOrderCmdArgs = Seq(
+  def sellOrderCheckUserInputValidation(tokenPrice: Long = 5000000L,
+    tokenAmount: Long = 60L,
+    dexFee: Long = 5000000L, 
+    expectedStr: String) = {
+    val args = Seq(
       "storage/E2.json",
-      "0", // !!!
+      s"$tokenPrice",
       "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1", // tokenId
-      "60", // token amount
-      "5000000" // DEX fee
+      s"$tokenAmount",
+      s"$dexFee",
     )
     val res = runCommand("dex:SellOrder",
-      sellOrderCmdArgs,
+      args,
       expectedConsoleScenario =
         s"""Storage password> ::abc;
            |""".stripMargin)
     println(res)
-    res should include ("java.lang.IllegalArgumentException: requirement failed: invalid tokenPrice")
+    res should include (expectedStr)
+  }
+
+  property("dex:SellOrder - failed, incorrect user input, tokenPrice") {
+    sellOrderCheckUserInputValidation(tokenPrice = 0, 
+      expectedStr = "java.lang.IllegalArgumentException: requirement failed: invalid tokenPrice")
   }
 
   property("dex:SellOrder - failed, incorrect user input, token amount") {
-    val sellOrderCmdArgs = Seq(
-      "storage/E2.json",
-      "5000000", // !!!
-      "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1", // tokenId
-      "0", // token amount
-      "5000000" // DEX fee
-    )
-    val res = runCommand("dex:SellOrder",
-      sellOrderCmdArgs,
-      expectedConsoleScenario =
-        s"""Storage password> ::abc;
-           |""".stripMargin)
-    println(res)
-    res should include ("java.lang.IllegalArgumentException: requirement failed: invalid token amount")
+    sellOrderCheckUserInputValidation(tokenAmount = 0, 
+      expectedStr = "java.lang.IllegalArgumentException: requirement failed: invalid token amount")
   }
 
   property("dex:SellOrder - failed, incorrect user input, dex fee") {
-    val sellOrderCmdArgs = Seq(
-      "storage/E2.json",
-      "5000000", // !!!
-      "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1", // tokenId
-      "60", // token amount
-      "-1" // DEX fee
-    )
-    val res = runCommand("dex:SellOrder",
-      sellOrderCmdArgs,
-      expectedConsoleScenario =
-        s"""Storage password> ::abc;
-           |""".stripMargin)
-    println(res)
-    res should include ("java.lang.IllegalArgumentException: requirement failed: invalid DEX fee")
+    sellOrderCheckUserInputValidation(dexFee = 0, 
+      expectedStr = "java.lang.IllegalArgumentException: requirement failed: invalid DEX fee")
   }
+
+  val buyOrderCmdArgs = Seq(
+    "storage/E2.json",
+    "50000000", // token price in NanoERGs
+    "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1", // tokenId
+    "60", // token amount
+    "5000000", // DEX fee
+  )
 
   property("dex:BuyOrder command") {
     val data = MockData(
@@ -358,18 +350,73 @@ class ErgoToolSpec
       Seq(
         loadExplorerResponse("response_boxesByAddressUnspent.json")))
     val res = runCommand("dex:BuyOrder",
-      args = Seq(
-        "storage/E2.json",
-        "50000000", // token price in NanoERGs
-        "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1", // tokenId
-        "60", // token amount
-        "5000000", // DEX fee
-      ),
+      args = buyOrderCmdArgs,
       expectedConsoleScenario =
         s"""Storage password> ::abc;
            |""".stripMargin, data)
     println(res)
     res should include ("\"transactionId\": \"1bf5cdad177b24f9543573337ca789982b4b6bd9ac2be8f6e6113b14e52bd544\",")
+  }
+
+    property("dex:BuyOrder - failed, no coins") {
+    val res = runCommandWithCtxStubber("dex:BuyOrder",
+      buyOrderCmdArgs,
+      expectedConsoleScenario =
+        s"""Storage password> ::abc;
+          |""".stripMargin, 
+      ctxStubber = { ctx: BlockchainContext =>
+          val emptyInputBoxes = new java.util.ArrayList[InputBox](0)
+          doReturn(emptyInputBoxes).when(ctx).getUnspentBoxesFor(any[Address])
+      })
+    res should include ("RuntimeException")
+  }
+
+  property("dex:BuyOrder - failed, not enough coins") {
+    val inputBoxes: IndexedSeq[InputBox] = IndexedSeq(MockInputBox(100L))
+    val res = runCommandWithCtxStubber("dex:BuyOrder",
+      args = buyOrderCmdArgs,
+      expectedConsoleScenario =
+        s"""Storage password> ::abc;
+          |""".stripMargin, 
+      ctxStubber = { ctx: BlockchainContext =>
+          doReturn(inputBoxes.convertTo[JList[InputBox]]).when(ctx).getUnspentBoxesFor(any[Address])
+      })
+    res should include ("RuntimeException")
+  }
+
+  def buyOrderCheckUserInputValidation(ergAmount: Long = 5000000L,
+    tokenAmount: Long = 60L,
+    dexFee: Long = 5000000L, 
+    expectedStr: String) = {
+    val args = Seq(
+      "storage/E2.json",
+      s"$ergAmount", // token price in NanoERGs
+      "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1", // tokenId
+      s"$tokenAmount", // token amount
+      s"$dexFee", // DEX fee
+    )
+    val res = runCommand("dex:BuyOrder",
+      args,
+      expectedConsoleScenario =
+        s"""Storage password> ::abc;
+           |""".stripMargin)
+    println(res)
+    res should include (expectedStr)
+  }
+
+  property("dex:BuyOrder - failed, incorrect user input, ergAmount") {
+    buyOrderCheckUserInputValidation(ergAmount = 0,
+      expectedStr = "java.lang.IllegalArgumentException: requirement failed: invalid ergAmount")
+  }
+
+  property("dex:BuyOrder - failed, incorrect user input, token amount") {
+    buyOrderCheckUserInputValidation(tokenAmount = 0,
+      expectedStr = "java.lang.IllegalArgumentException: requirement failed: invalid token amount")
+  }
+
+  property("dex:BuyOrder - failed, incorrect user input, DEX fee") {
+    buyOrderCheckUserInputValidation(dexFee = 0,
+      expectedStr = "java.lang.IllegalArgumentException: requirement failed: invalid DEX fee")
   }
 
   property("dex:MatchOrders command") {
