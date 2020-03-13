@@ -6,7 +6,7 @@ import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.ergotool.dex.CreateBuyOrderCmd.name
-import org.ergoplatform.appkit.ergotool.{CmdParameter, FilePType, LongPType, RunWithErgoClient, ErgoIdPType, Cmd, SecretStringPType, IntPType, StringPType, CmdDescriptor, AppContext}
+import org.ergoplatform.appkit.ergotool.{CmdParameter, FilePType, LongPType, RunWithErgoClient, ErgoIdPType, PasswordInput, Cmd, SecretStringPType, IntPType, StringPType, CmdDescriptor, AppContext}
 
 /** Issues a new token
   * following the Assets standard [[https://github.com/ergoplatform/eips/blob/master/eip-0004.md]]
@@ -91,9 +91,9 @@ object IssueTokenCmd extends CmdDescriptor(
   override val parameters: Seq[CmdParameter] = Array(
     CmdParameter("storageFile", FilePType,
       "storage with secret key of the sender"),
-    CmdParameter("storagePass", SecretStringPType,
+    CmdParameter("storagePass", "Storage password", SecretStringPType,
       "password to access sender secret key in the storage", None,
-      Some(ctx => ctx.console.readPassword("Storage password>"))),
+      Some(PasswordInput), None),
     CmdParameter("ergAmount", LongPType,
       "NanoERG amount to put in box with issued tokens"),
     CmdParameter("tokenAmount", LongPType,

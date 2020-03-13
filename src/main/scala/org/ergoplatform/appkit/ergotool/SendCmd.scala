@@ -76,9 +76,9 @@ object SendCmd extends CmdDescriptor(
   override val parameters: Seq[CmdParameter] = Array(
     CmdParameter("storageFile", FilePType,
       "storage with secret key of the sender"),
-    CmdParameter("storagePass", SecretStringPType,
+    CmdParameter("storagePass", "Storage password", SecretStringPType,
       "password to access sender secret key in the storage", None,
-      Some(ctx => ctx.console.readPassword("Storage password>"))),
+      Some(PasswordInput), None),
     CmdParameter("recipientAddr", AddressPType,
       "address of the recipient of the transfer"),
     CmdParameter("amountToSend", LongPType,

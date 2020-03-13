@@ -5,6 +5,7 @@ import java.io.File
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.console.Console
+import org.ergoplatform.appkit.console.Console.readNewPassword
 import org.ergoplatform.appkit.ergotool.ErgoTool.usageError
 
 /** Base class for all commands which can be executed by ErgoTool.
@@ -121,18 +122,18 @@ case class EnumPType(values: Seq[(String, Any)]) extends PType {
   * @param tpe             type of the object which should be created from command line parameter string
   * @param description     description of the command parameter
   * @param defaultValue    the string value which will be used when parameter is missing in the command line
-  * @param interactivInput Some(producer) when parameter is entered interactively, i.e. it is not parsed from the command line
+  * @param interactiveInput Some(producer) when parameter is entered interactively, i.e. it is not parsed from the command line
   * @param argParser       Optional custom parser of the parameter, if defined should be used instead
   *                        of the default parser defined for the type `tpe`.
   */
 case class CmdParameter(
-  name: String,
-  displayName: String,
-  tpe: PType,
-  description: String,
-  defaultValue: Option[String],
-  interactivInput: Option[AppContext => Any],
-  argParser: Option[CmdArgParser]) {
+    name: String,
+    displayName: String,
+    tpe: PType,
+    description: String,
+    defaultValue: Option[String],
+    interactiveInput: Option[CmdArgInput],
+    argParser: Option[CmdArgParser]) {
 }
 object CmdParameter {
   /** Construct parameter with default `displayName` which is equal `name`. */
@@ -140,8 +141,8 @@ object CmdParameter {
             tpe: PType,
             description: String,
             defaultValue: Option[String] = None,
-            interactivInput: Option[AppContext => Any] = None): CmdParameter =
-    CmdParameter(name, name, tpe, description, defaultValue, interactivInput, None)
+            interactiveInput: Option[CmdArgInput] = None): CmdParameter =
+    CmdParameter(name, name, tpe, description, defaultValue, interactiveInput, None)
 }
 
 /** Base class for all Cmd descriptors (usually companion objects)
@@ -184,9 +185,9 @@ abstract class CmdDescriptor(
   def parseArgs(ctx: AppContext, args: Seq[String]): Seq[Any] = {
     var iArg = 0
     val rawParams = parameters.map { p =>
-      p.interactivInput match {
+      p.interactiveInput match {
         case Some(producer) =>
-          (p, producer(ctx))
+          (p, producer.input(ctx, this, p))
         case _ =>
           if (iArg >= args.length)
             usageError(s"parameter '${p.name}' is not specified (run 'ergo-tool help ${this.name}' for usage help)")
@@ -196,7 +197,7 @@ abstract class CmdDescriptor(
       }
     }
     rawParams.map {
-      case (p, param) if p.interactivInput.isDefined => param  // this is final value
+      case (p, param) if p.interactiveInput.isDefined => param  // this is final value
       case (p, rawArg: String) if p.argParser.isDefined =>
         p.argParser.get.parse(this, p, rawArg)
       case (p, rawArg: String) =>
@@ -220,9 +221,12 @@ abstract class CmdDescriptor(
 
 }
 
+/** Parser of the command line string. */
 abstract class CmdArgParser {
+  /** Parses the given raw string into a value of the parameter type.*/
   def parse(cmd: CmdDescriptor, p: CmdParameter, rawArg: String): Any
 }
+
 object DefaultCmdArgParser extends CmdArgParser {
   override def parse(cmd: CmdDescriptor, p: CmdParameter, rawArg: String): Any = {
     p.tpe match {
@@ -273,6 +277,39 @@ class EnumParser(enum: EnumPType) extends CmdArgParser {
   }
 }
 
+/** Input handler of [[CmdParameter]]. */
+abstract class CmdArgInput {
+  /** Called to input the given parameter `param`.
+    * @param ctx       context of the running command invocation
+    * @param parameter descriptor of the parameter
+    * @return  the valued of the parameter which doesn't require further parsing
+    */
+  def input(ctx: AppContext, cmd: CmdDescriptor, parameter: CmdParameter): Any
+}
+
+object DefaultParameterInput extends CmdArgInput {
+  override def input(ctx: AppContext, cmd: CmdDescriptor, parameter: CmdParameter): Any = {
+    val rawStr = ctx.console.readLine(s"Enter ${parameter.displayName}>")
+    parameter.tpe match {
+      case SecretStringPType =>
+        SecretString.create(rawStr)
+      case _ =>
+        DefaultCmdArgParser.parse(cmd, parameter, rawStr)
+    }
+  }
+}
+
+object PasswordInput extends CmdArgInput {
+  override def input(ctx: AppContext, cmd: CmdDescriptor, param: CmdParameter): Any = {
+    ctx.console.readPassword(s"${param.displayName}>")
+  }
+}
+
+object NewPasswordInput extends CmdArgInput {
+  override def input(ctx: AppContext, cmd: CmdDescriptor, param: CmdParameter): Any = {
+    readNewPassword(s"${param.displayName}>", s"Repeat ${param.displayName}>")(ctx)
+  }
+}
 
 /** Exception thrown by ErgoTool application when incorrect usage is detected.
   * @param message error message

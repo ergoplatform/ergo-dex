@@ -119,8 +119,8 @@ class ErgoToolSpec
   property("address command") {
     testCommand("address", Seq("testnet", mnemonic),
       expectedConsoleScenario =
-        s"""Mnemonic password> ::$mnemonicPassword;
-          |Repeat mnemonic password> ::$mnemonicPassword;
+        s"""Mnemonic password>::$mnemonicPassword;
+          |Repeat Mnemonic password>::$mnemonicPassword;
           |$addrStr::;
           |""".stripMargin)
   }
@@ -133,7 +133,7 @@ class ErgoToolSpec
   property("checkAddress command") {
     testCommand("checkAddress", Seq("testnet", mnemonic, addrStr),
       expectedConsoleScenario =
-        s"""Mnemonic password> ::$mnemonicPassword;
+        s"""Mnemonic password>::$mnemonicPassword;
            |Ok::;
            |""".stripMargin)
   }
@@ -180,11 +180,11 @@ class ErgoToolSpec
       // create a storage file
       testCommand("createStorage", Seq(storageDir, storageFileName),
         expectedConsoleScenario =
-            s"""Enter mnemonic phrase> ::$mnemonic;
-              |Mnemonic password> ::$mnemonicPassword;
-              |Repeat mnemonic password> ::$mnemonicPassword;
-              |Storage password> ::$storagePassword;
-              |Repeat storage password> ::$storagePassword;
+            s"""Enter Mnemonic Phrase>::$mnemonic;
+              |Mnemonic password>::$mnemonicPassword;
+              |Repeat Mnemonic password>::$mnemonicPassword;
+              |Storage password>::$storagePassword;
+              |Repeat Storage password>::$storagePassword;
               |Storage File: $filePath\n::;
               |""".stripMargin)
 
@@ -196,7 +196,7 @@ class ErgoToolSpec
         PropSecretKey -> secretKey).foreach { case (propName, expectedValue) =>
         testCommand("extractStorage", Seq(filePath.toString, propName, "testnet"),
           expectedConsoleScenario =
-            s"""Storage password> ::$storagePassword;
+            s"""Storage password>::$storagePassword;
               |$expectedValue\n::;
               |""".stripMargin)
         println(s"$propName: ok")

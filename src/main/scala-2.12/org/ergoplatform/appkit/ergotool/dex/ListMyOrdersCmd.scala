@@ -6,7 +6,7 @@ import org.ergoplatform.appkit.JavaHelpers._
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.ergotool.dex.IssueTokenCmd.name
-import org.ergoplatform.appkit.ergotool.{CmdParameter, FilePType, LongPType, RunWithErgoClient, Cmd, SecretStringPType, IntPType, StringPType, CmdDescriptor, AppContext}
+import org.ergoplatform.appkit.ergotool.{CmdParameter, FilePType, LongPType, RunWithErgoClient, PasswordInput, Cmd, SecretStringPType, IntPType, StringPType, CmdDescriptor, AppContext}
 
 /** Shows buy and sell orders created from the address of this wallet
   *
@@ -72,9 +72,9 @@ object ListMyOrdersCmd extends CmdDescriptor(
   override val parameters: Seq[CmdParameter] = Array(
     CmdParameter("storageFile", FilePType,
       "storage with secret key of the sender"),
-    CmdParameter("storagePass", SecretStringPType,
+    CmdParameter("storagePass", "Storage password", SecretStringPType,
       "password to access sender secret key in the storage", None,
-      Some(ctx => ctx.console.readPassword("Storage password>"))),
+      Some(PasswordInput), None),
   )
 
   override def createCmd(ctx: AppContext): Cmd = {

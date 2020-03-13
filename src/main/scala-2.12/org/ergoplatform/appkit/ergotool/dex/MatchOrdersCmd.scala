@@ -6,7 +6,7 @@ import java.util
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
-import org.ergoplatform.appkit.ergotool.{AddressPType, AppContext, Cmd, CmdDescriptor, CmdParameter, ErgoIdPType, FilePType, LongPType, RunWithErgoClient, SecretStringPType, StringPType}
+import org.ergoplatform.appkit.ergotool.{CmdParameter, FilePType, AddressPType, LongPType, RunWithErgoClient, ErgoIdPType, PasswordInput, Cmd, SecretStringPType, StringPType, CmdDescriptor, AppContext}
 
 /** Creates and sends a new transaction with boxes that match given buyer and seller orders for AssetsAtomicExchange
   *
@@ -128,9 +128,9 @@ object MatchOrdersCmd extends CmdDescriptor(
   override val parameters: Seq[CmdParameter] = Array(
     CmdParameter("storageFile", FilePType,
       "storage with secret key of the sender"),
-    CmdParameter("storagePass", SecretStringPType,
+    CmdParameter("storagePass", "Storage password", SecretStringPType,
       "password to access sender secret key in the storage", None,
-      Some(ctx => ctx.console.readPassword("Storage password>"))),
+      Some(PasswordInput), None),
     CmdParameter("sellerHolderBoxId", ErgoIdPType,
       "box id of the seller order"),
     CmdParameter("buyerHolderBoxId", ErgoIdPType,

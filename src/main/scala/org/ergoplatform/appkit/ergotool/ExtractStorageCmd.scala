@@ -76,9 +76,9 @@ object ExtractStorageCmd extends CmdDescriptor(
       "secret mnemonic password"),
     CmdParameter("network", NetworkPType,
       "network type"),
-    CmdParameter("storagePass", SecretStringPType,
+    CmdParameter("storagePass", "Storage password", SecretStringPType,
       "secret storage password", None,
-      Some(ctx => ctx.console.readPassword("Storage password> ")))
+      Some(PasswordInput), None)
   )
 
   override def createCmd(ctx: AppContext): Cmd = {

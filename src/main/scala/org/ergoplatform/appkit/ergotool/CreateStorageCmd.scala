@@ -56,15 +56,15 @@ object CreateStorageCmd extends CmdDescriptor(
       "directory (relative to the current) where to put storage file"),
     CmdParameter("storageFileName", StringPType,
       "name of the storage file"),
-    CmdParameter("mnemonicPhrase", SecretStringPType,
+    CmdParameter("mnemonicPhrase", "Mnemonic Phrase", SecretStringPType,
       "secret mnemonic phrase", None,
-      Some(ctx => SecretString.create(ctx.console.readLine("Enter mnemonic phrase> ")))),
-    CmdParameter("mnemonicPass", SecretStringPType,
+      Some(DefaultParameterInput), None),
+    CmdParameter("mnemonicPass", "Mnemonic password", SecretStringPType,
       "secret mnemonic password", None,
-      Some(ctx => readNewPassword("Mnemonic password> ", "Repeat mnemonic password> ")(ctx))),
-    CmdParameter("storagePass", SecretStringPType,
+      Some(NewPasswordInput), None),
+    CmdParameter("storagePass", "Storage password", SecretStringPType,
       "secret storage password", None,
-      Some(ctx => readNewPassword("Storage password> ", "Repeat storage password> ")(ctx)))
+      Some(NewPasswordInput), None)
   )
 
 

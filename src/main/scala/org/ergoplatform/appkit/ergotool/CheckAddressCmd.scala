@@ -47,9 +47,9 @@ object CheckAddressCmd extends CmdDescriptor(
     CmdParameter("mnemonic", SecretStringPType,
       """secret phrase which is used to generate (private, public) key pair, of which
        |public key is used to generate the [[Address]]""".stripMargin),
-    CmdParameter("mnemonicPass", SecretStringPType,
+    CmdParameter("mnemonicPass", "Mnemonic password", SecretStringPType,
       "password which is used to additionally protect mnemonic", None,
-      Some(ctx => ctx.console.readPassword("Mnemonic password> "))),
+      Some(PasswordInput), None),
     CmdParameter("address", AddressPType, "address to check")
   )
 
