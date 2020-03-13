@@ -1,15 +1,11 @@
 package org.ergoplatform.appkit.ergotool
 
 import java.io.File
-import java.nio.file.{Path, Paths}
-import java.util.Arrays
 
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.console.Console
-import org.ergoplatform.appkit.ergotool.HelpCmd.usageError
 import org.ergoplatform.appkit.ergotool.ErgoTool.usageError
-import org.ergoplatform.appkit.ergotool.ExtractStorageCmd.{propErrorMsg, supportedKeys}
 
 /** Base class for all commands which can be executed by ErgoTool.
   * Inherit this class to implement a new command.
