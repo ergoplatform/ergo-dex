@@ -2,6 +2,7 @@ package org.ergoplatform.appkit.ergotool
 
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.Mnemonic
+import org.ergoplatform.appkit.commands.{Cmd, CmdDescriptor}
 
 /** Generates a new mnemonic phrase using english words and default cryptographic strength
   * parameters (number of random bits, which is 160 by default).

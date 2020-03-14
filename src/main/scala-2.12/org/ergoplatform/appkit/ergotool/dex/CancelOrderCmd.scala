@@ -6,9 +6,10 @@ import java.util
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.JavaHelpers._
+import org.ergoplatform.appkit.commands.{CmdParameter, FilePType, RunWithErgoClient, ErgoIdPType, PasswordInput, Cmd, SecretStringPType, CmdDescriptor}
 import org.ergoplatform.appkit.config.ErgoToolConfig
+import org.ergoplatform.appkit.ergotool.AppContext
 import org.ergoplatform.appkit.ergotool.dex.CreateBuyOrderCmd.name
-import org.ergoplatform.appkit.ergotool.{CmdParameter, FilePType, RunWithErgoClient, ErgoIdPType, PasswordInput, Cmd, SecretStringPType, CmdDescriptor, AppContext}
 import org.ergoplatform.appkit.impl.ErgoTreeContract
 import sigmastate.Values.SigmaPropConstant
 

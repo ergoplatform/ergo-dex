@@ -1,5 +1,6 @@
 package org.ergoplatform.appkit.ergotool
 
+import org.ergoplatform.appkit.commands.{CmdParameter, CmdException, CommandNamePType, Cmd, CmdDescriptor}
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.{NetworkType, Address}
 

@@ -1,6 +1,5 @@
 package org.ergoplatform.appkit.commands
 
-import org.ergoplatform.appkit.ergotool.UsageException
 import org.scalatest.{PropSpec, Matchers}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 

@@ -1,5 +1,7 @@
 package org.ergoplatform.appkit.ergotool
 
+import org.ergoplatform.appkit.commands.{IntPType, FilePType, PType, BooleanPType}
+
 /** Represents ErgoTool option description.
   *
   * Options can be used in command line to specify parameters to be used by the command during its operation.

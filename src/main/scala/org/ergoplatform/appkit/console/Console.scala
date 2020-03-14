@@ -3,7 +3,8 @@ package org.ergoplatform.appkit.console
 import java.io.{BufferedReader, PrintStream}
 
 import org.ergoplatform.appkit.SecretString
-import org.ergoplatform.appkit.ergotool.{UsageException, AppContext}
+import org.ergoplatform.appkit.commands.UsageException
+import org.ergoplatform.appkit.ergotool.AppContext
 
 /** Abstract interface for Console interactions (print and read operations).
  * Console read operations consume from input stream, and print operations

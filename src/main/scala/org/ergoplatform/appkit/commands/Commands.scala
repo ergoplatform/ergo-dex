@@ -1,12 +1,12 @@
-package org.ergoplatform.appkit.ergotool
+package org.ergoplatform.appkit.commands
 
 import java.io.File
 
 import org.ergoplatform.appkit._
-import org.ergoplatform.appkit.commands.CmdLineParser
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.console.Console
 import org.ergoplatform.appkit.console.Console.readNewPassword
+import org.ergoplatform.appkit.ergotool.{ErgoTool, AppContext}
 import org.ergoplatform.appkit.ergotool.ErgoTool.usageError
 
 /** Base class for all commands which can be executed by ErgoTool.

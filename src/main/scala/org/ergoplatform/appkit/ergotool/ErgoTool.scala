@@ -1,6 +1,6 @@
 package org.ergoplatform.appkit.ergotool
 
-import org.ergoplatform.appkit.commands.CmdLineParser
+import org.ergoplatform.appkit.commands.{CmdException, CmdLineParser, Cmd, UsageException, CmdDescriptor}
 import org.ergoplatform.appkit.{ErgoClient, RestApiErgoClient}
 
 import scala.util.control.NonFatal
