@@ -1,9 +1,9 @@
-package org.ergoplatform.appkit.ergotool
-
-import org.ergoplatform.appkit.NetworkType
+package org.ergoplatform.appkit.commands
 
 import scala.collection.mutable.ArrayBuffer
 import org.ergoplatform.appkit.ergotool.ErgoTool.{options, usageError}
+import org.ergoplatform.appkit.NetworkType
+import org.ergoplatform.appkit.ergotool.{CmdOption, ErgoTool}
 
 object CmdLineParser {
   /** Extracts options like `--conf myconf.json` from the command line.

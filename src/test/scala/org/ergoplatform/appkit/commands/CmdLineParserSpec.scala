@@ -1,6 +1,7 @@
-package org.ergoplatform.appkit.ergotool
+package org.ergoplatform.appkit.commands
 
-import org.scalatest.{Matchers, PropSpec}
+import org.ergoplatform.appkit.ergotool.UsageException
+import org.scalatest.{PropSpec, Matchers}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 class CmdLineParserSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks {

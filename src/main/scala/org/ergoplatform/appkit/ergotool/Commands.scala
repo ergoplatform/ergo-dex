@@ -3,6 +3,7 @@ package org.ergoplatform.appkit.ergotool
 import java.io.File
 
 import org.ergoplatform.appkit._
+import org.ergoplatform.appkit.commands.CmdLineParser
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.console.Console
 import org.ergoplatform.appkit.console.Console.readNewPassword
