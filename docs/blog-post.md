@@ -71,11 +71,11 @@ Description:	Creates an encrypted storage file for the mnemonic entered by the u
 Doc page:       https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/CreateStorageCmd.html
 
 $ ./ergo-tool.sh createStorage 
-Enter mnemonic phrase> bird harbor wheat innocent business disease busy quick yellow trust time oil enter situate moon
+Enter Mnemonic Phrase> bird harbor wheat innocent business disease busy quick yellow trust time oil enter situate moon
 Mnemonic password> 
-Repeat mnemonic password> 
+Repeat Mnemonic password> 
 Storage password> 
-Repeat storage password> 
+Repeat Storage password> 
 Storage File: storage/secret.json
 ```
 A master secret key is generated from the (mnemonic phrase, mnemonic password) pair and

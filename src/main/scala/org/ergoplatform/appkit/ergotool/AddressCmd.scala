@@ -2,6 +2,7 @@ package org.ergoplatform.appkit.ergotool
 
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.{Address, NetworkType, SecretString}
+import org.ergoplatform.appkit.console.Console._
 
 /** Given [[mnemonic]], [[mnemonicPass]] and [[network]] the command computes
   * the address of the given network type.
@@ -41,9 +42,9 @@ object AddressCmd extends CmdDescriptor(
     CmdParameter("mnemonic", SecretStringPType,
       """secret phrase which is used to generate (private, public) key pair, of which
         |public key is used to generate the [[Address]]""".stripMargin),
-    CmdParameter("mnemonicPass", SecretStringPType,
+    CmdParameter("mnemonicPass", "Mnemonic password", SecretStringPType,
       "password which is used to additionally protect mnemonic", None,
-      Some(ctx => readNewPassword("Mnemonic password> ", "Repeat mnemonic password> ")(ctx)))
+      Some(NewPasswordInput), None)
   )
 
   override def createCmd(ctx: AppContext): Cmd = {

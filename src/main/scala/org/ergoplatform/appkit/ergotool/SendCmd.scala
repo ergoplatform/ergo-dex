@@ -5,9 +5,6 @@ import org.ergoplatform.appkit._
 import java.io.File
 
 import org.ergoplatform.appkit.Parameters.MinFee
-import Utils._
-import org.ergoplatform.appkit.ergotool.ExtractStorageCmd.parsePropName
-import org.ergoplatform.appkit.ergotool.SendCmd.error
 
 /** Creates and sends a new transaction to transfer Ergs from one address to another.
   *
@@ -79,9 +76,9 @@ object SendCmd extends CmdDescriptor(
   override val parameters: Seq[CmdParameter] = Array(
     CmdParameter("storageFile", FilePType,
       "storage with secret key of the sender"),
-    CmdParameter("storagePass", SecretStringPType,
+    CmdParameter("storagePass", "Storage password", SecretStringPType,
       "password to access sender secret key in the storage", None,
-      Some(ctx => ctx.console.readPassword("Storage password>"))),
+      Some(PasswordInput), None),
     CmdParameter("recipientAddr", AddressPType,
       "address of the recipient of the transfer"),
     CmdParameter("amountToSend", LongPType,

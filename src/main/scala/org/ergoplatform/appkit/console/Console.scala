@@ -3,6 +3,7 @@ package org.ergoplatform.appkit.console
 import java.io.{BufferedReader, PrintStream}
 
 import org.ergoplatform.appkit.SecretString
+import org.ergoplatform.appkit.ergotool.{UsageException, AppContext}
 
 /** Abstract interface for Console interactions (print and read operations).
  * Console read operations consume from input stream, and print operations
@@ -26,6 +27,47 @@ abstract class Console {
 object Console {
   /** The console which should be used in application's main method. */
   lazy val instance: Console = new MainConsole()
+
+  /** Secure double entry of the new password giving the user many attempts.
+    *
+    * @param nAttemps number of attempts before failing with exception
+    * @param block  code block which can request the user to enter a new password twice
+    * @return password returned by `block` as `Array[Char]` instead of `String`. This allows
+    *        the password to be erased as fast as possible and avoid leaking to GC.
+    * @throws UsageException
+    */
+  def readNewPassword(nAttemps: Int, console: Console)(block: => (SecretString, SecretString)): SecretString = {
+    var i = 0
+    do {
+      val (p1, p2) = block
+      i += 1
+      if (p1.equals(p2)) {
+        p2.erase() // cleanup duplicate copy
+        return p1
+      }
+      else {
+        p1.erase() // cleanup sensitive data
+        p2.erase()
+        if (i < nAttemps) {
+          console.println(s"Passwords are different, try again [${i + 1}/$nAttemps]")
+          // and loop
+        } else
+          error(s"Cannot continue without providing valid password")
+      }
+    } while (true)
+    error("should never go here due to exhaustive `if` above")
+  }
+
+  def readNewPassword(prompt: String, secondPrompt: String)(implicit ctx: AppContext): SecretString = {
+    val console = ctx.console
+    readNewPassword(3, console) {
+      val p1 = console.readPassword(prompt)
+      val p2 = console.readPassword(secondPrompt)
+      (p1, p2)
+    }
+  }
+
+  def error(msg: String) = throw ConsoleException(msg)
 }
 
 /** Wrapper around system console to be used in `Application.main` method. */
@@ -68,4 +110,8 @@ class TestConsole(in: BufferedReader, out: PrintStream) extends Console {
   }
 }
 
+/** Exception thrown by Console when incorrect usage is detected.
+  * @param message error message
+  */
+case class ConsoleException(message: String) extends RuntimeException(message)
 

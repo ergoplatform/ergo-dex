@@ -8,7 +8,7 @@ import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.JavaHelpers._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.ergotool.dex.CreateBuyOrderCmd.name
-import org.ergoplatform.appkit.ergotool.{CmdParameter, FilePType, RunWithErgoClient, ErgoIdPType, Cmd, SecretStringPType, CmdDescriptor, AppContext}
+import org.ergoplatform.appkit.ergotool.{CmdParameter, FilePType, RunWithErgoClient, ErgoIdPType, PasswordInput, Cmd, SecretStringPType, CmdDescriptor, AppContext}
 import org.ergoplatform.appkit.impl.ErgoTreeContract
 import sigmastate.Values.SigmaPropConstant
 
@@ -85,9 +85,9 @@ object CancelOrderCmd extends CmdDescriptor(
   override val parameters: Seq[CmdParameter] = Array(
     CmdParameter("storageFile", FilePType,
       "storage with secret key of the sender"),
-    CmdParameter("storagePass", SecretStringPType,
+    CmdParameter("storagePass", "Storage password", SecretStringPType,
       "password to access sender secret key in the storage", None,
-      Some(ctx => ctx.console.readPassword("Storage password>"))),
+      Some(PasswordInput), None),
     CmdParameter("orderBoxId", ErgoIdPType,
       "order box id"),
 

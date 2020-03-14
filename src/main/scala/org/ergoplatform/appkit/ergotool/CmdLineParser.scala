@@ -1,5 +1,7 @@
 package org.ergoplatform.appkit.ergotool
 
+import org.ergoplatform.appkit.NetworkType
+
 import scala.collection.mutable.ArrayBuffer
 import org.ergoplatform.appkit.ergotool.ErgoTool.{options, usageError}
 
@@ -9,7 +11,7 @@ object CmdLineParser {
     * The command line is parsed using the following simple algorithm:
     *
     *   1) The whole line starting from executable file name is split by whitespace into parts
-    *      which are passed is as `args` of this method (this is done by java app launcher)
+    *      which are passed as `args` of this method (this is done by java app launcher)
     *
     *   2) The sequence of args is traversed and each starting with `--` is parsed into option
     *      name-value pair and extracted from original args sequence. Any error in option parsing is
@@ -60,4 +62,12 @@ object CmdLineParser {
     }
     (resOptions, resArgs)
   }
+
+  def parseNetwork(network: String): NetworkType = network match {
+    case "testnet" => NetworkType.TESTNET
+    case "mainnet" => NetworkType.MAINNET
+    case _ => usageError(s"Invalid network type $network", None)
+  }
+
+
 }
