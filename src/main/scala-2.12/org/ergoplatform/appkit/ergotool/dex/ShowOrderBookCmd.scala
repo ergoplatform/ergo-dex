@@ -31,6 +31,7 @@ case class ShowOrderBookCmd(toolConf: ErgoToolConfig,
         .sortBy(_.tokenPriceWithDexFee)
         .reverse
 
+      console.println(s"Order book for token $tokenId:")
       console.println("Sell orders:")
       console.println("Amount   Total")
       sellOrders.foreach { o => console.println(f"${o.tokenAmount}%8d ${o.tokenPriceWithDexFee}") }
