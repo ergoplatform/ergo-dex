@@ -647,7 +647,8 @@ class ErgoToolSpec
       expectedConsoleScenario = "",
       data)
     println(res)
-    res should not include ("60  55000000")
+    res should include ("  Amount   Total(including DEX fee)")
+    res should include ("      60   55000000")
   }
 
 }
