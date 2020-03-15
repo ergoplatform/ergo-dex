@@ -6,6 +6,7 @@ import scala.util.control.NonFatal
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.console.Console
 import org.ergoplatform.appkit.ergotool.dex.{CancelOrderCmd, CreateBuyOrderCmd, CreateSellOrderCmd, IssueTokenCmd, ListMatchingOrdersCmd, ListMyOrdersCmd, MatchOrdersCmd}
+import org.ergoplatform.appkit.ergotool.dex.ShowOrderBookCmd
 
 /** ErgoTool implementation, contains main entry point of the console application.
   *
@@ -19,7 +20,7 @@ object ErgoTool {
     ListAddressBoxesCmd,
     CreateStorageCmd, ExtractStorageCmd, SendCmd,
     CreateSellOrderCmd, CreateBuyOrderCmd, MatchOrdersCmd,
-    ListMatchingOrdersCmd, IssueTokenCmd, CancelOrderCmd, ListMyOrdersCmd
+    ListMatchingOrdersCmd, IssueTokenCmd, CancelOrderCmd, ListMyOrdersCmd, ShowOrderBookCmd
     ).map(c => (c.name, c)).toMap
 
   /** Options supported by this application */
