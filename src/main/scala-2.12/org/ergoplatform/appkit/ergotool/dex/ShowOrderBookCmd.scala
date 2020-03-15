@@ -5,8 +5,10 @@ import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.ergotool.{AppContext, Cmd, CmdDescriptor, RunWithErgoClient}
+import org.ergoplatform.appkit.ergotool.CmdParameter
+import org.ergoplatform.appkit.ergotool.ErgoIdPType
 
-/** Shows order book for AssetsAtomicExchange
+/** Shows order book (sell and buy orders for a given token) for AssetsAtomicExchange
   */
 case class ShowOrderBookCmd(toolConf: ErgoToolConfig,
                                  name: String,
@@ -41,11 +43,17 @@ case class ShowOrderBookCmd(toolConf: ErgoToolConfig,
 }
 
 object ShowOrderBookCmd extends CmdDescriptor(
-  name = "dex:ListMatchingOrders", cmdParamSyntax = "",
-  description = "show matching token seller's and buyer's orders") {
+  name = "dex:ShowOrderBook", cmdParamSyntax = "<tokenId>",
+  description = "show order book, sell and buy order for a given token id") {
+
+  override val parameters: Seq[CmdParameter] = Array(
+    CmdParameter("tokenId", ErgoIdPType,
+      "token id to filter sell and buy orders")
+  )
 
   override def createCmd(ctx: AppContext): Cmd = {
-    ListMatchingOrdersCmd(ctx.toolConf, name)
+    val Seq(tokenId: ErgoId) = ctx.cmdParameters
+    ShowOrderBookCmd(ctx.toolConf, name, tokenId)
   }
 }
 
