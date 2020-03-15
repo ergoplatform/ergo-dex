@@ -24,12 +24,7 @@ case class ShowOrderBookCmd(toolConf: ErgoToolConfig,
         ctx.getUnspentBoxesForErgoTreeTemplate(BuyerContract.contractTemplate).convertTo[IndexedSeq[InputBox]]
       }
       val sellOrders = ShowOrderBook.sellOrders(sellerHolderBoxes, tokenId)
-        .sortBy(_.tokenPriceWithDexFee)
-        .reverse
-
       val buyOrders = ShowOrderBook.buyOrders(buyerHolderBoxes, tokenId)
-        .sortBy(_.tokenPriceWithDexFee)
-        .reverse
 
       console.println(s"Order book for token $tokenId:")
       console.println("Sell orders:")
@@ -75,6 +70,8 @@ object ShowOrderBook {
           tokenPriceWithDexFee = tokenPrice + sellerBox.getValue()
         } yield SellOrder(sellerBox, token.getValue(), tokenPriceWithDexFee)
       }
+    .sortBy(_.tokenPriceWithDexFee)
+    .reverse
 
   def buyOrders(buyerBoxes: Seq[InputBox], tokenId: ErgoId): Seq[BuyOrder] = 
     buyerBoxes
@@ -85,5 +82,7 @@ object ShowOrderBook {
           tokenPriceWithDexFee = buyerBox.getValue()
         } yield BuyOrder(buyerBox, token.getValue(), tokenPriceWithDexFee)
       }
+    .sortBy(_.tokenPriceWithDexFee)
+    .reverse
 
 }
