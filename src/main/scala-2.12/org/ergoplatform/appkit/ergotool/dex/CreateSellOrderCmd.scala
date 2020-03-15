@@ -5,9 +5,9 @@ import java.util.Optional
 
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
+import org.ergoplatform.appkit.cli.AppContext
 import org.ergoplatform.appkit.commands.{CmdParameter, FilePType, LongPType, RunWithErgoClient, ErgoIdPType, PasswordInput, Cmd, SecretStringPType, CmdDescriptor}
 import org.ergoplatform.appkit.config.ErgoToolConfig
-import org.ergoplatform.appkit.ergotool.AppContext
 import org.ergoplatform.appkit.impl.{ScalaBridge, ErgoTreeContract}
 import org.ergoplatform.contracts.AssetsAtomicExchangeCompilation
 import sigmastate.{SLong, Values}

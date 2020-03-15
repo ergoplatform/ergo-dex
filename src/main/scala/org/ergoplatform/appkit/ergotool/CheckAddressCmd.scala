@@ -1,5 +1,6 @@
 package org.ergoplatform.appkit.ergotool
 
+import org.ergoplatform.appkit.cli.AppContext
 import org.ergoplatform.appkit.commands.{CmdParameter, NetworkPType, AddressPType, PasswordInput, Cmd, SecretStringPType, CmdDescriptor}
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.{NetworkType, Address, SecretString}

@@ -1,8 +1,7 @@
 package org.ergoplatform.appkit.ergotool
 
-import org.ergoplatform.appkit.console.{Console, ConsoleTesting}
 import org.ergoplatform.appkit.FileMockedErgoClient
-import org.scalatest.{Matchers, PropSpec}
+import org.scalatest.{PropSpec, Matchers}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import org.mockito.{MockitoSugar, ArgumentMatchersSugar}
 import scalan.util.FileUtil
@@ -13,13 +12,14 @@ import java.nio.file.{Files, Paths}
 
 import org.ergoplatform.settings.ErgoAlgos
 import sigmastate.Values.ByteArrayConstant
-import sigmastate.serialization.{SigmaSerializer, ValueSerializer}
+import sigmastate.serialization.{ValueSerializer, SigmaSerializer}
 import org.ergoplatform.appkit.BlockchainContext
 import org.ergoplatform.appkit.InputBox
 import org.ergoplatform.appkit.Address
 import org.ergoplatform.appkit.MockInputBox
 import org.ergoplatform.appkit.ErgoToken
 import org.ergoplatform.appkit.ErgoTreeTemplate
+import org.ergoplatform.appkit.cli.{ConsoleTesting, Console, ConfigOption}
 
 class ErgoToolSpec 
   extends PropSpec 

@@ -5,6 +5,7 @@ import org.ergoplatform.appkit._
 import java.io.File
 
 import org.ergoplatform.appkit.Parameters.MinFee
+import org.ergoplatform.appkit.cli.AppContext
 import org.ergoplatform.appkit.commands.{CmdParameter, FilePType, AddressPType, LongPType, RunWithErgoClient, PasswordInput, Cmd, SecretStringPType, CmdDescriptor}
 
 /** Creates and sends a new transaction to transfer Ergs from one address to another.

@@ -4,9 +4,9 @@ import java.io.File
 
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
+import org.ergoplatform.appkit.cli.AppContext
 import org.ergoplatform.appkit.commands.{CmdParameter, FilePType, LongPType, RunWithErgoClient, PasswordInput, Cmd, SecretStringPType, IntPType, StringPType, CmdDescriptor}
 import org.ergoplatform.appkit.config.ErgoToolConfig
-import org.ergoplatform.appkit.ergotool.AppContext
 
 /** Issues a new token
   * following the Assets standard [[https://github.com/ergoplatform/eips/blob/master/eip-0004.md]]
