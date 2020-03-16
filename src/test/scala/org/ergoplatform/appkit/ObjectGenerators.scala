@@ -25,12 +25,13 @@ trait ObjectGenerators {
   val testnetAddressGen: Gen[Address] = addressGen(NetworkType.TESTNET.networkPrefix)
 
   val unsignedLongGen: Gen[Long] = Gen.chooseNum(0, Long.MaxValue)
+  val positiveLongGen: Gen[Long] = Gen.chooseNum(1, Long.MaxValue)
 
   val validBoxValueGen: Gen[Long] = Gen.chooseNum(Parameters.MinFee, Long.MaxValue)
 
   val tokenGen: Gen[ErgoToken] = for {
     id <- ergoIdGen
-    value <- unsignedLongGen
+    value <- positiveLongGen
   } yield new ErgoToken(id, value)
 
   val sellOrderContractGen: Gen[ErgoContract] = for {
@@ -45,7 +46,7 @@ trait ObjectGenerators {
   def sellOrderBoxGen(sellerAddress: Address): Gen[InputBox] = for {
     id <- ergoIdGen
     value <- validBoxValueGen
-    tokenPrice <- Gen.chooseNum(1L, Long.MaxValue)
+    tokenPrice <- positiveLongGen
     token <- tokenGen
   } yield {
     val ergoTree = SellerContract.contractInstance(tokenPrice, sellerAddress).getErgoTree
