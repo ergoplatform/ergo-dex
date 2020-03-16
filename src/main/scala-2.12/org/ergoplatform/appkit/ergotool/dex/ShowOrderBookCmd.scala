@@ -8,7 +8,10 @@ import org.ergoplatform.appkit.ergotool.{AppContext, Cmd, CmdDescriptor, RunWith
 import org.ergoplatform.appkit.ergotool.CmdParameter
 import org.ergoplatform.appkit.ergotool.ErgoIdPType
 
-/** Shows order book (sell and buy orders for a given token) for AssetsAtomicExchange
+/** Order book for AssetsAtomicExchange
+ *  Show sell and buy orders(token amount, total order price with DEX fee) for a given token 
+ *  sorted by total order price(descending)
+ *  @param tokenId token id to filter orders
   */
 case class ShowOrderBookCmd(toolConf: ErgoToolConfig,
                                  name: String,
