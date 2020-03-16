@@ -1,10 +1,12 @@
 package org.ergoplatform.appkit.ergotool
 
+import org.ergoplatform.appkit.cli._
+import org.ergoplatform.appkit.commands._
 import org.ergoplatform.appkit.{ErgoClient, RestApiErgoClient}
 
 import scala.util.control.NonFatal
 import org.ergoplatform.appkit.config.ErgoToolConfig
-import org.ergoplatform.appkit.console.Console
+import org.ergoplatform.appkit.cli.Console
 import org.ergoplatform.appkit.ergotool.dex.{CancelOrderCmd, CreateBuyOrderCmd, CreateSellOrderCmd, IssueTokenCmd, ListMatchingOrdersCmd, ListMyOrdersCmd, MatchOrdersCmd}
 import org.ergoplatform.appkit.ergotool.dex.ShowOrderBookCmd
 
@@ -22,9 +24,6 @@ object ErgoTool {
     CreateSellOrderCmd, CreateBuyOrderCmd, MatchOrdersCmd,
     ListMatchingOrdersCmd, IssueTokenCmd, CancelOrderCmd, ListMyOrdersCmd, ShowOrderBookCmd
     ).map(c => (c.name, c)).toMap
-
-  /** Options supported by this application */
-  val options: Seq[CmdOption] = Array(ConfigOption, DryRunOption, PrintJsonOption, LimitListOption)
 
   /** Main entry point of console application. */
   def main(args: Array[String]): Unit = {
@@ -67,9 +66,6 @@ object ErgoTool {
     }
   }
 
-  /** Should be used by ErgoTool to report usage errors */
-  def usageError(msg: String, cmdDescOpt: Option[CmdDescriptor]) = throw UsageException(msg, cmdDescOpt)
-
   /** Loads `ErgoToolConfig` from a file specified either by command line option `--conf` or from
     * the default file location */
   def loadConfig(cmdOptions: Map[String, String]): ErgoToolConfig = {
@@ -103,7 +99,7 @@ object ErgoTool {
         val actions = commands.toSeq.sortBy(_._1).map { case (name, c) =>
           s"""  $name ${c.cmdParamSyntax}\n\t${c.description}""".stripMargin
         }.mkString("\n")
-        val options = ErgoTool.options.sortBy(_.name).map(_.helpString).mkString("\n")
+        val options = CmdOption.options.sortBy(_.name).map(_.helpString).mkString("\n")
         val msg =
           s"""
             |Usage:

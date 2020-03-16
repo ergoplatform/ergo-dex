@@ -4,9 +4,10 @@ import java.io.File
 
 import org.ergoplatform.appkit.JavaHelpers._
 import org.ergoplatform.appkit._
+import org.ergoplatform.appkit.cli.AppContext
+import org.ergoplatform.appkit.commands.{CmdParameter, FilePType, RunWithErgoClient, PasswordInput, Cmd, SecretStringPType, CmdDescriptor}
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.ergotool.dex.IssueTokenCmd.name
-import org.ergoplatform.appkit.ergotool.{CmdParameter, FilePType, LongPType, RunWithErgoClient, PasswordInput, Cmd, SecretStringPType, IntPType, StringPType, CmdDescriptor, AppContext}
 
 /** Shows buy and sell orders created from the address of this wallet
   *

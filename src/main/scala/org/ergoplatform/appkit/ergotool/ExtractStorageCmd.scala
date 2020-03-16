@@ -1,5 +1,7 @@
 package org.ergoplatform.appkit.ergotool
 
+import org.ergoplatform.appkit.cli.AppContext
+import org.ergoplatform.appkit.commands.{CmdParameter, NetworkPType, EnumPType, PasswordInput, Cmd, SecretStringPType, StringPType, CmdDescriptor}
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.{NetworkType, SecretStorage, SecretString}
 import org.ergoplatform.wallet.secrets.ExtendedSecretKeySerializer

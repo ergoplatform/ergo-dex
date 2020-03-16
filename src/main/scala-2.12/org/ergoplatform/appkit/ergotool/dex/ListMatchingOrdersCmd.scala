@@ -3,8 +3,9 @@ package org.ergoplatform.appkit.ergotool.dex
 import org.ergoplatform.appkit.JavaHelpers._
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
+import org.ergoplatform.appkit.cli.AppContext
+import org.ergoplatform.appkit.commands.{RunWithErgoClient, CmdDescriptor, Cmd}
 import org.ergoplatform.appkit.config.ErgoToolConfig
-import org.ergoplatform.appkit.ergotool.{AppContext, Cmd, CmdDescriptor, RunWithErgoClient}
 
 /** Shows matching buyer and seller orders for AssetsAtomicExchange
   *

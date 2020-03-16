@@ -1,6 +1,8 @@
 package org.ergoplatform.appkit.ergotool
 
 import org.ergoplatform.appkit.JavaHelpers._
+import org.ergoplatform.appkit.cli.AppContext
+import org.ergoplatform.appkit.commands.{CmdParameter, AddressPType, RunWithErgoClient, Cmd, CmdDescriptor}
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.{ErgoClient, Address, InputBox}
 
