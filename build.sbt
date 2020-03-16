@@ -10,7 +10,7 @@ resolvers ++= Seq(Resolver.mavenLocal, sonatypeReleases, sonatypeSnapshots, Reso
 
 scalaVersion := "2.12.10"
 version := "3.1.1"
-val appkit = "org.ergoplatform" %% "ergo-appkit" % "develop-7c316b2a-SNAPSHOT"
+val appkit = "org.ergoplatform" %% "ergo-appkit" % "develop-4a3efd73-SNAPSHOT"
 
 val mockitoScalaVerstion = "1.11.4"
 

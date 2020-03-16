@@ -12,7 +12,7 @@ import java.nio.file.{Files, Paths}
 
 import org.ergoplatform.settings.ErgoAlgos
 import sigmastate.Values.ByteArrayConstant
-import sigmastate.serialization.{ValueSerializer, SigmaSerializer}
+import sigmastate.serialization.{ValueSerializer}
 import org.ergoplatform.appkit.BlockchainContext
 import org.ergoplatform.appkit.InputBox
 import org.ergoplatform.appkit.Address
@@ -105,15 +105,6 @@ class ErgoToolSpec
       runErgoTool(console, name, args, data)
     }
     ()
-  }
-
-  property("help command") {
-    ErgoTool.commands.values.foreach { c =>
-      val res = runCommand("help", Seq(c.name), expectedConsoleScenario = "")
-      res should include (s"Command Name:\t${c.name}")
-      res should include (s"Doc page:\t${c.docUrl}")
-
-    }
   }
 
   property("address command") {
