@@ -4,9 +4,8 @@ import org.ergoplatform.appkit.JavaHelpers._
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
-import org.ergoplatform.appkit.ergotool.{AppContext, Cmd, CmdDescriptor, RunWithErgoClient}
-import org.ergoplatform.appkit.ergotool.CmdParameter
-import org.ergoplatform.appkit.ergotool.ErgoIdPType
+import org.ergoplatform.appkit.cli.AppContext
+import org.ergoplatform.appkit.commands.{CmdParameter, RunWithErgoClient, ErgoIdPType, Cmd, CmdDescriptor}
 
 /** Shows order book (sell and buy orders for a given token) for AssetsAtomicExchange
   */

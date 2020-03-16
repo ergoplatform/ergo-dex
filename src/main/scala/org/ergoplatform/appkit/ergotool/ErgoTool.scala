@@ -6,7 +6,7 @@ import org.ergoplatform.appkit.{ErgoClient, RestApiErgoClient}
 
 import scala.util.control.NonFatal
 import org.ergoplatform.appkit.config.ErgoToolConfig
-import org.ergoplatform.appkit.console.Console
+import org.ergoplatform.appkit.cli.Console
 import org.ergoplatform.appkit.ergotool.dex.{CancelOrderCmd, CreateBuyOrderCmd, CreateSellOrderCmd, IssueTokenCmd, ListMatchingOrdersCmd, ListMyOrdersCmd, MatchOrdersCmd}
 import org.ergoplatform.appkit.ergotool.dex.ShowOrderBookCmd
 
