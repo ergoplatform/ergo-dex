@@ -1,8 +1,8 @@
 # Trustless Decentralized Exchange on Ergo
 
 ## Introduction
-                                                 
-Centralized exchanges are popular, have high assets liquidity and are easy to use, 
+
+Centralized exchanges are popular, have high assets liquidity and are easy to use,
 but unfortunately they may be [hacked](https://coinsutra.com/biggest-bitcoin-hacks/).
 
 [Decentralized Exchanges](https://en.wikipedia.org/wiki/Decentralized_exchange) (aka
@@ -12,9 +12,9 @@ have lower liquidity and come with their own drawbacks.
 Programming model of Ergo smart contracts is quite powerful which is demonstrated by [many
 examples](https://ergoplatform.org/docs/ErgoScript.pdf) including more [advanced potential
 applications](https://ergoplatform.org/docs/AdvancedErgoScriptTutorial.pdf), those are
-published around a time the network was launched. 
-What was missing is the concrete recipe, a step-by-step guidance and tools to put conceptual 
-design of smart contracts into working application running on Ergo blockchain. 
+published around a time the network was launched.
+What was missing is the concrete recipe, a step-by-step guidance and tools to put conceptual
+design of smart contracts into working application running on Ergo blockchain.
 
 In this [Appkit](https://ergoplatform.org/en/blog/2019_12_03_top5/) and
 [ErgoTool](https://ergoplatform.org/en/blog/2019_12_31_ergo_tool/) series of posts we aim
@@ -41,7 +41,7 @@ Framework](https://github.com/aslesarenko/ergo-tool).
 The first operation in the lifecycle of a new token is its issue.
 Ergo natively support issue, storage and transfer of tokens. New tokens can be issued
 according to the [Assets
-Standard](https://github.com/ergoplatform/eips/blob/master/eip-0004.md). 
+Standard](https://github.com/ergoplatform/eips/blob/master/eip-0004.md).
 
 The following ErgoTool command allows to issue a new token on the Ergo blockchain.
 ```
@@ -50,14 +50,14 @@ Command Name:	dex:IssueToken
 Usage Syntax:	ergo-tool dex:IssueToken <wallet file> <ergAmount> <tokenAmount> <tokenName> <tokenDesc> <tokenNumberOfDecimals>
 Description:	issue a token with given <tokenName>, <tokenAmount>, <tokenDesc>, <tokenNumberOfDecimals> and <ergAmount> with the given <wallet file> to sign transaction (requests storage password)
 Doc page:	https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/dex/IssueTokenCmd.html
-``` 
+```
 
-A token is issued by creating a new box with the `ergAmount` of ERGs and 
+A token is issued by creating a new box with the `ergAmount` of ERGs and
 (`tokenId`, `tokenAmount`) pair in the `R2` register, where `tokenId` is selected
 automatically using the id of the first input box of the transaction (as required by Ergo
 protocol). Additional registers should also be specified as required by
 [EIP-4](https://github.com/ergoplatform/eips/blob/master/eip-0004.md) standard.
-The `dex:IssueToken` command uses a wallet storage given by `storageFile` to transfer given `ergAmount` of ERGs 
+The `dex:IssueToken` command uses a wallet storage given by `storageFile` to transfer given `ergAmount` of ERGs
 to a new box with tokens. The new box will belong the same wallet given by `storageFile`.
 
 Here is an example of using `dex:IssueToken` -
@@ -93,7 +93,7 @@ The contract is implemented in [the
 repository](http://github.com/ergoplatform/ergo-contracts/blob/391912fbd466c1b262e8d2fa61d4bfd94981df4a/verified-contracts/src/main/scala/org/ergoplatform/contracts/AssetsAtomicExchange.scala#L41-L58)
 of certified contracts.
 
-The seller contract guarantees that the seller box can be spent: 
+The seller contract guarantees that the seller box can be spent:
 1) by seller itself, which is the way for a seller to [cancel the order](#canceling-the-orders)
 2) by a _swap transaction_ created by Matcher in which _seller box_ is spent together (i.e.
 atomically) with the matched _buyer box_ (see [buy tokens](#buy-tokens)).
@@ -109,7 +109,7 @@ Doc page:	https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/er
 
 Here is an [example](https://gist.github.com/greenhat/9536a7c13106f6a99530720504a6031a) of using
 `dex:SellOrder` to submit the order to the blockchain.
-  
+
 ## Buy Tokens
 
 You may also want to buy tokens, either because you believe it's value is going to surge or you need
@@ -146,14 +146,14 @@ contract the swap conditions (given `tokenId` and `tokenAmount` you want to buy)
       }
     }
   }
-```  
+```
 The contract is implemented in [the
 repository](http://github.com/ergoplatform/ergo-contracts/blob/5d064a71d2300684d18069912776b0e125f5c5bd/verified-contracts/src/main/scala/org/ergoplatform/contracts/AssetsAtomicExchange.scala#L12-L40)
 of certified contracts.
 
 The buyer contract guarantees that the buyer box can be spent:
 1) by the buyer itself, which is the way for the buyer to [cancel the order](#canceling-the-orders)
-2) by a _swap transaction_ created by Matcher in which the _buyer box_ is spent together (i.e atomically) 
+2) by a _swap transaction_ created by Matcher in which the _buyer box_ is spent together (i.e atomically)
 with the matched _seller box_ (see [sell tokens](#sell-tokens)).
 
 The following command can be used to create a new _buy order_ to buy tokens:
@@ -170,7 +170,7 @@ Doc page:	https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/er
 Here is an [example](https://gist.github.com/greenhat/0c75738edadb9870a2cfb492d6069a57) of using
 `dex:BuyOrder` to submit the order to the blockchain.
 
-## List My Orders 
+## List My Orders
 
 To show your outstanding buy/sell orders (that use your public key in their contracts) use
 `dex:ListMyOrders` command:
@@ -183,6 +183,33 @@ Doc page:	https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/er
 
 Here is an [example](https://gist.github.com/greenhat/6b1b2f7be1279de49e33045b3fac6f81) of using
 `dex:ListMyOrders`.
+
+## Show order book
+
+To show all outstanding sell and buy orders for a particular token use `dex:ShowOrderBook` command:
+```
+java -jar ../ergotool-3.1.1.jar --conf ergo_tool_config.json dex:ShowOrderBook
+parameter 'tokenId' is not specified (run 'ergo-tool help dex:ShowOrderBook' for usage help)
+
+Command Name:	dex:ShowOrderBook
+Usage Syntax:	ergo-tool dex:ShowOrderBook <tokenId>
+Description:	show order book, sell and buy order for a given token id
+Doc page:	https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/dex/ShowOrderBookCmd.html
+```
+
+Here is an example of using `dex:ShowOrderBook`:
+```
+java -jar ../ergotool-3.1.1.jar --conf ergo_tool_config.json dex:ShowOrderBook "56cf33485be550cc32cf607255be8dc8c32522d0539f6f01d44028dc1d190450"
+Loading seller boxes... Ok
+Loading buyer boxes... Ok
+Order book for token 56cf33485be550cc32cf607255be8dc8c32522d0539f6f01d44028dc1d190450:
+Sell orders:
+  Amount   Total(including DEX fee)
+     100   1005000000
+Buy orders:
+  Amount   Total(including DEX fee)
+     100   1005000000
+```
 
 ## Cancel Order
 
@@ -202,7 +229,7 @@ Here is an [example](https://gist.github.com/greenhat/6c70999c763a70a7253170d331
 ## To recap
 
 ErgoTool DEX is simple implementation of trustless decentralized exchange of crypto assets
-directly on Ergo blockchain, it mostly motivated by three goals we keep in mind: 
+directly on Ergo blockchain, it mostly motivated by three goals we keep in mind:
 1) anyone (with CLI skills) should be able to issue and trade tokens on Ergo (at
 least using CLI, in the absence of better UI)
 2) our implementation should be simple and easy to use as an example of application
