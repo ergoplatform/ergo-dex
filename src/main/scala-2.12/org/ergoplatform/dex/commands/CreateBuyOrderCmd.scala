@@ -7,13 +7,12 @@ import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.cli.AppContext
 import org.ergoplatform.appkit.commands._
 import org.ergoplatform.appkit.config.ErgoToolConfig
-import org.ergoplatform.appkit.impl.{ScalaBridge, ErgoTreeContract}
+import org.ergoplatform.appkit.impl.ErgoTreeContract
 import org.ergoplatform.contracts.AssetsAtomicExchangeCompilation
-import sigmastate.Values.{CollectionConstant, ByteArrayConstant, SigmaPropConstant, ErgoTree}
+import sigmastate.Values.{ByteArrayConstant, SigmaPropConstant, ErgoTree}
 import sigmastate.basics.DLogProtocol.{ProveDlogProp, ProveDlog}
-import sigmastate.eval.WrapperOf
 import sigmastate.eval.Extensions._
-import sigmastate.{SLong, Values, SByte}
+import sigmastate.{SLong, Values}
 
 /** Creates and sends a new transaction with buyer's order for AssetsAtomicExchange
   *

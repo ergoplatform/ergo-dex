@@ -2,8 +2,8 @@ package org.ergoplatform.dex.commands
 
 import org.scalatest.{PropSpec, Matchers}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
-import ListMatchingOrders._
-import org.ergoplatform.appkit.{Address, ErgoId, ErgoToken, InputBox, MockInputBox, NetworkType, ObjectGenerators}
+import org.ergoplatform.dex.commands.ListMatchingOrders._
+import org.ergoplatform.appkit.{ObjectGenerators, ErgoToken, MockInputBox, InputBox}
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.scalacheck.Gen
 
