@@ -1,4 +1,4 @@
-# ErgoTool: A Command Line Interface for Ergo
+# ErgoDexTool: A Command Line Interface for Decentralized Exchange on Ergo Blockchain
 
  - [Introduction](#introduction)
  - [Installation](#installation)
@@ -11,7 +11,7 @@
 ErgoTool is a [command-line
 interface](https://en.wikipedia.org/wiki/Command-line_interface) for
 [Ergo](https://ergoplatform.org/) blockchain. It is implemented in Scala using
-[Ergo Appkit](https://github.com/aslesarenko/ergo-appkit) library. ErgoTool is a Java
+[Ergo Appkit](https://github.com/ergoplatform/ergo-appkit) library. ErgoTool is a Java
 application and it can be executed on Java 8 or later compliant JRE. In addition ErgoTool
 can be compiled to a native executable using GraalVM's
 [native-image](https://www.graalvm.org/docs/reference-manual/native-image/). This
@@ -40,7 +40,7 @@ MacOS.
 You need to have [git](https://git-scm.com/) installed on your system.
 Open Terminal and use the following commands to clone the ErgoTool source code. 
 ```
-$ git clone https://github.com/aslesarenko/ergo-tool.git
+$ git clone https://github.com/ergoplatform/ergo-tool.git
 Cloning into 'ergo-tool'...
 remote: Enumerating objects: 238, done.
 remote: Counting objects: 100% (238/238), done.
@@ -119,7 +119,7 @@ The command prints usage information with the available commands and options.
 SBT build for ErgoTool is configured to generate native image using GraalVM's
 [native-image](https://www.graalvm.org/docs/reference-manual/native-image/) utility. To
 make `native-image` available the GraalVM package should be installed on your system. You
-can follow [the instruction from Appkit](https://github.com/aslesarenko/ergo-appkit#setup)
+can follow [the instruction from Appkit](https://github.com/ergoplatform/ergo-appkit#setup)
 to install both GraalVM and native-image. You can also use
 [instructions](https://www.graalvm.org/downloads/) from GraalVM's site.
 
@@ -171,7 +171,7 @@ Here `$GRAAL_HOME` is environment variable pointing to the installation of Graal
 ### Download ErgoTool Release Package 
 
 Release packages are published on the
-[releases](https://github.com/aslesarenko/ergo-tool/releases) page. Please download the
+[releases](https://github.com/ergoplatform/ergo-tool/releases) page. Please download the
 appropriate archive and extract it locally on you computer.
 
 ## Commands
@@ -187,21 +187,21 @@ the command line. All other components which remain after removing all the optio
 command name and parameters (`address`, `mainnet` and the mnemonic in the example).
 
 For further detail of how a command line is parsed see this
-[description](https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/CmdLineParser$.html#parseOptions(args:Seq[String]):(Map[String,String],Seq[String])).
+[description](https://ergoplatform.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/CmdLineParser$.html#parseOptions(args:Seq[String]):(Map[String,String],Seq[String])).
 
 ### Supported Commands
 Click on the command name to open its detailed description.
 
  Command     |  Description       
 -------------|--------------------
- [address](https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/AddressCmd.html)     | `<networkType> <mnemonic>` <br/> Returns the address for a given mnemonic and password pair. Where `networkType` = `mainnet` or `testnet`
- [checkAddress](https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/CheckAddressCmd.html) | `<networkType> <mnemonic> <address>` <br/> Check the given mnemonic and password pair correspond to the given address
- [createStorage](https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/CreateStorageCmd.html) | `[<storageDir>="storage"] [<storageFileName>="secret.json"]` <br/> Creates an encrypted storage file for the mnemonic entered by user
- [extractStorage](https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/ExtractStorageCmd.html) | `<storage file> <property> <networkType>` <br/> Reads the file, unlocks it using password and extract the requested property from the given storage file. Where `property` is one of `address`, `masterKey`, `publicKey`, `secretKey`
- [help](https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/HelpCmd.html) | `<commandName>` <br/> prints usage help for a command
- [listAddressBoxes](https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html) | `address [<limit>=10]` <br/> list top `limit=10` confirmed unspent boxes owned by the given `address`
- [mnemonic](https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/MnemonicCmd.html) | generate new mnemonic phrase using english words and default cryptographic strength
- [send](https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/SendCmd.html) | `<storageFile> <recipientAddr> <amountToSend>` <br/> send the given `amountToSend` to the given `recipientAddr` using the given `wallet file` to sign the transaction (it will also request storage password)
+ [address](https://ergoplatform.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/AddressCmd.html)     | `<networkType> <mnemonic>` <br/> Returns the address for a given mnemonic and password pair. Where `networkType` = `mainnet` or `testnet`
+ [checkAddress](https://ergoplatform.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/CheckAddressCmd.html) | `<networkType> <mnemonic> <address>` <br/> Check the given mnemonic and password pair correspond to the given address
+ [createStorage](https://ergoplatform.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/CreateStorageCmd.html) | `[<storageDir>="storage"] [<storageFileName>="secret.json"]` <br/> Creates an encrypted storage file for the mnemonic entered by user
+ [extractStorage](https://ergoplatform.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/ExtractStorageCmd.html) | `<storage file> <property> <networkType>` <br/> Reads the file, unlocks it using password and extract the requested property from the given storage file. Where `property` is one of `address`, `masterKey`, `publicKey`, `secretKey`
+ [help](https://ergoplatform.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/HelpCmd.html) | `<commandName>` <br/> prints usage help for a command
+ [listAddressBoxes](https://ergoplatform.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/ListAddressBoxesCmd.html) | `address [<limit>=10]` <br/> list top `limit=10` confirmed unspent boxes owned by the given `address`
+ [mnemonic](https://ergoplatform.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/MnemonicCmd.html) | generate new mnemonic phrase using english words and default cryptographic strength
+ [send](https://ergoplatform.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/SendCmd.html) | `<storageFile> <recipientAddr> <amountToSend>` <br/> send the given `amountToSend` to the given `recipientAddr` using the given `wallet file` to sign the transaction (it will also request storage password)
          
 ## Contributions
 
@@ -214,7 +214,7 @@ Not sure about your idea? Get in touch with a direct message.
 #### ScalaDoc API Reference
 
 ScalaDocs for the latest releases are always [available on project
-site](https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/ErgoTool$.html).
+site](https://ergoplatform.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/ErgoTool$.html).
 Please submit a PR if
 you find typos or mistakes.
 
@@ -236,7 +236,7 @@ TODO
 ## References
 
 - [Ergo](https://ergoplatform.org/)
-- [Ergo Appkit](https://github.com/aslesarenko/ergo-appkit)
+- [Ergo Appkit](https://github.com/ergoplatform/ergo-appkit)
 - [Introduction to Appkit](https://ergoplatform.org/en/blog/2019_12_03_top5/)
 - [Appkit Examples](https://github.com/aslesarenko/ergo-appkit-examples)
-- [ErgoTool ScalaDocs](https://aslesarenko.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/ErgoTool$.html)
+- [ErgoTool ScalaDocs](https://ergoplatform.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/ErgoTool$.html)
