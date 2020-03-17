@@ -8,7 +8,7 @@ import org.ergoplatform.appkit.cli.{Console, CliApplication}
   *
   * @see instructions in README to generate native executable
   */
-object ErgoDex extends CliApplication {
+object ErgoDexTool extends CliApplication {
   /** Commands supported by this application. */
   override def commands: Seq[CmdDescriptor] = super.commands ++ Array(
     CreateSellOrderCmd, CreateBuyOrderCmd, MatchOrdersCmd,

@@ -17,9 +17,9 @@ import org.ergoplatform.appkit.MockInputBox
 import org.ergoplatform.appkit.ErgoToken
 import org.ergoplatform.appkit.ErgoTreeTemplate
 import org.ergoplatform.appkit.cli.{ConsoleTesting, ConfigOption, CommandsTesting}
-import org.ergoplatform.dex.ErgoDex
+import org.ergoplatform.dex.ErgoDexTool
 
-class ErgoDexCliSpec
+class ErgoDexToolSpec
   extends PropSpec 
   with Matchers 
   with ScalaCheckDrivenPropertyChecks 
@@ -49,7 +49,7 @@ class ErgoDexCliSpec
     ctxStubber: BlockchainContext => Unit): String = {
     val consoleOps = parseScenario(expectedConsoleScenario)
     runScenario(consoleOps) { console =>
-      ErgoDex.run(name +: (Seq(ConfigOption.cmdText, testConfigFile) ++ args), console, {
+      ErgoDexTool.run(name +: (Seq(ConfigOption.cmdText, testConfigFile) ++ args), console, {
         ctx => {
           val nrs = IndexedSeq(
             loadNodeResponse("response_NodeInfo.json"),
@@ -81,7 +81,7 @@ class ErgoDexCliSpec
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1"),
       Seq(
         loadExplorerResponse("response_boxesByAddressUnspent.json")))
-    val res = runCommand(ErgoDex, "dex:SellOrder",
+    val res = runCommand(ErgoDexTool, "dex:SellOrder",
       sellOrderCmdArgs,
       expectedConsoleScenario =
         s"""Storage password> ::abc;
@@ -142,7 +142,7 @@ class ErgoDexCliSpec
       s"$tokenAmount",
       s"$dexFee",
     )
-    val res = runCommand(ErgoDex, "dex:SellOrder",
+    val res = runCommand(ErgoDexTool, "dex:SellOrder",
       args,
       expectedConsoleScenario =
         s"""Storage password> ::abc;
@@ -184,7 +184,7 @@ class ErgoDexCliSpec
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1"),
       Seq(
         loadExplorerResponse("response_boxesByAddressUnspent.json")))
-    val res = runCommand(ErgoDex, "dex:BuyOrder",
+    val res = runCommand(ErgoDexTool, "dex:BuyOrder",
       args = buyOrderCmdArgs,
       expectedConsoleScenario =
         s"""Storage password> ::abc;
@@ -230,7 +230,7 @@ class ErgoDexCliSpec
       s"$tokenAmount", // token amount
       s"$dexFee", // DEX fee
     )
-    val res = runCommand(ErgoDex, "dex:BuyOrder",
+    val res = runCommand(ErgoDexTool, "dex:BuyOrder",
       args,
       expectedConsoleScenario =
         s"""Storage password> ::abc;
@@ -262,7 +262,7 @@ class ErgoDexCliSpec
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1"),
       Seq(
       ))
-    val res = runCommand(ErgoDex, "dex:MatchOrders",
+    val res = runCommand(ErgoDexTool, "dex:MatchOrders",
       args = Seq(
         "storage/E2.json",
         "655ad79f579677fa0f44e72713ecd8f054e534a02e66d8aef4fc2729b9e62b76", // seller contract box id
@@ -294,7 +294,7 @@ class ErgoDexCliSpec
       )
     )
 
-    val res = runCommand(ErgoDex, "dex:ListMatchingOrders",
+    val res = runCommand(ErgoDexTool, "dex:ListMatchingOrders",
       args = Seq(
       ),
       expectedConsoleScenario = "",
@@ -322,7 +322,7 @@ class ErgoDexCliSpec
     val tokenName = "TKN"
     val tokenDesc = "Generic token"
     val numberOfDecimals = "2"
-    val res = runCommand(ErgoDex, "dex:IssueToken",
+    val res = runCommand(ErgoDexTool, "dex:IssueToken",
       args = Seq(
         "storage/E2.json",
         ergAmount,
@@ -360,7 +360,7 @@ class ErgoDexCliSpec
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1"),
       Seq(
       ))
-    val res = runCommand(ErgoDex, "dex:CancelOrder",
+    val res = runCommand(ErgoDexTool, "dex:CancelOrder",
       args = Seq(
         "storage/E2.json",
         "655ad79f579677fa0f44e72713ecd8f054e534a02e66d8aef4fc2729b9e62b76", // seller contract box id
@@ -379,7 +379,7 @@ class ErgoDexCliSpec
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1"),
       Seq(
       ))
-    val res = runCommand(ErgoDex, "dex:CancelOrder",
+    val res = runCommand(ErgoDexTool, "dex:CancelOrder",
       args = Seq(
         "storage/E2.json",
         "969482db6643a16b6d8f4c8b50d0a9d5b47a698014c927ee0fa495e2adabbb8e", // buyer contract box id
@@ -409,7 +409,7 @@ class ErgoDexCliSpec
       )
     )
 
-    val res = runCommand(ErgoDex, "dex:ListMyOrders",
+    val res = runCommand(ErgoDexTool, "dex:ListMyOrders",
       args = Seq(
         "storage/E2.json",
       ),
@@ -474,7 +474,7 @@ class ErgoDexCliSpec
       )
     )
 
-    val res = runCommand(ErgoDex, "dex:ShowOrderBook",
+    val res = runCommand(ErgoDexTool, "dex:ShowOrderBook",
       args = Seq(
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1"
       ),
