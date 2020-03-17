@@ -1,4 +1,4 @@
-package org.ergoplatform.appkit.ergotool.dex
+package org.ergoplatform.dex
 
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks

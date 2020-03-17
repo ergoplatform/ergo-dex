@@ -1,18 +1,14 @@
-package org.ergoplatform.appkit.ergotool
+package org.ergoplatform.dex
 
-import org.ergoplatform.appkit.commands._
 import org.ergoplatform.appkit.RestApiErgoClient
+import org.ergoplatform.appkit.commands.CmdDescriptor
 import org.ergoplatform.appkit.cli.{Console, CliApplication}
-import org.ergoplatform.appkit.ergotool.dex.{CreateBuyOrderCmd, CreateSellOrderCmd, CancelOrderCmd, ListMatchingOrdersCmd, MatchOrdersCmd, IssueTokenCmd, ListMyOrdersCmd}
-import org.ergoplatform.appkit.ergotool.dex.ShowOrderBookCmd
-
-
 
 /** ErgoTool implementation, contains main entry point of the console application.
   *
   * @see instructions in README to generate native executable
   */
-object ErgoTool extends CliApplication {
+object ErgoDex extends CliApplication {
   /** Commands supported by this application. */
   override def commands: Seq[CmdDescriptor] = super.commands ++ Array(
     CreateSellOrderCmd, CreateBuyOrderCmd, MatchOrdersCmd,
@@ -26,6 +22,4 @@ object ErgoTool extends CliApplication {
       RestApiErgoClient.create(ctx.apiUrl, ctx.networkType, ctx.apiKey)
     })
   }
-
 }
-

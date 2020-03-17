@@ -9,7 +9,7 @@ import java.lang.{String => JString}
 
 import org.ergoplatform.settings.ErgoAlgos
 import sigmastate.Values.ByteArrayConstant
-import sigmastate.serialization.{ValueSerializer}
+import sigmastate.serialization.ValueSerializer
 import org.ergoplatform.appkit.BlockchainContext
 import org.ergoplatform.appkit.InputBox
 import org.ergoplatform.appkit.Address
@@ -17,8 +17,9 @@ import org.ergoplatform.appkit.MockInputBox
 import org.ergoplatform.appkit.ErgoToken
 import org.ergoplatform.appkit.ErgoTreeTemplate
 import org.ergoplatform.appkit.cli.{ConsoleTesting, ConfigOption, CommandsTesting}
+import org.ergoplatform.dex.ErgoDex
 
-class ErgoToolSpec 
+class ErgoDexCliSpec
   extends PropSpec 
   with Matchers 
   with ScalaCheckDrivenPropertyChecks 
@@ -48,7 +49,7 @@ class ErgoToolSpec
     ctxStubber: BlockchainContext => Unit): String = {
     val consoleOps = parseScenario(expectedConsoleScenario)
     runScenario(consoleOps) { console =>
-      ErgoTool.run(name +: (Seq(ConfigOption.cmdText, testConfigFile) ++ args), console, {
+      ErgoDex.run(name +: (Seq(ConfigOption.cmdText, testConfigFile) ++ args), console, {
         ctx => {
           val nrs = IndexedSeq(
             loadNodeResponse("response_NodeInfo.json"),
@@ -80,7 +81,7 @@ class ErgoToolSpec
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1"),
       Seq(
         loadExplorerResponse("response_boxesByAddressUnspent.json")))
-    val res = runCommand(ErgoTool, "dex:SellOrder",
+    val res = runCommand(ErgoDex, "dex:SellOrder",
       sellOrderCmdArgs,
       expectedConsoleScenario =
         s"""Storage password> ::abc;
@@ -141,7 +142,7 @@ class ErgoToolSpec
       s"$tokenAmount",
       s"$dexFee",
     )
-    val res = runCommand(ErgoTool, "dex:SellOrder",
+    val res = runCommand(ErgoDex, "dex:SellOrder",
       args,
       expectedConsoleScenario =
         s"""Storage password> ::abc;
@@ -183,7 +184,7 @@ class ErgoToolSpec
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1"),
       Seq(
         loadExplorerResponse("response_boxesByAddressUnspent.json")))
-    val res = runCommand(ErgoTool, "dex:BuyOrder",
+    val res = runCommand(ErgoDex, "dex:BuyOrder",
       args = buyOrderCmdArgs,
       expectedConsoleScenario =
         s"""Storage password> ::abc;
@@ -229,7 +230,7 @@ class ErgoToolSpec
       s"$tokenAmount", // token amount
       s"$dexFee", // DEX fee
     )
-    val res = runCommand(ErgoTool, "dex:BuyOrder",
+    val res = runCommand(ErgoDex, "dex:BuyOrder",
       args,
       expectedConsoleScenario =
         s"""Storage password> ::abc;
@@ -261,7 +262,7 @@ class ErgoToolSpec
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1"),
       Seq(
       ))
-    val res = runCommand(ErgoTool, "dex:MatchOrders",
+    val res = runCommand(ErgoDex, "dex:MatchOrders",
       args = Seq(
         "storage/E2.json",
         "655ad79f579677fa0f44e72713ecd8f054e534a02e66d8aef4fc2729b9e62b76", // seller contract box id
@@ -293,7 +294,7 @@ class ErgoToolSpec
       )
     )
 
-    val res = runCommand(ErgoTool, "dex:ListMatchingOrders",
+    val res = runCommand(ErgoDex, "dex:ListMatchingOrders",
       args = Seq(
       ),
       expectedConsoleScenario = "",
@@ -321,7 +322,7 @@ class ErgoToolSpec
     val tokenName = "TKN"
     val tokenDesc = "Generic token"
     val numberOfDecimals = "2"
-    val res = runCommand(ErgoTool, "dex:IssueToken",
+    val res = runCommand(ErgoDex, "dex:IssueToken",
       args = Seq(
         "storage/E2.json",
         ergAmount,
@@ -359,7 +360,7 @@ class ErgoToolSpec
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1"),
       Seq(
       ))
-    val res = runCommand(ErgoTool, "dex:CancelOrder",
+    val res = runCommand(ErgoDex, "dex:CancelOrder",
       args = Seq(
         "storage/E2.json",
         "655ad79f579677fa0f44e72713ecd8f054e534a02e66d8aef4fc2729b9e62b76", // seller contract box id
@@ -378,7 +379,7 @@ class ErgoToolSpec
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1"),
       Seq(
       ))
-    val res = runCommand(ErgoTool, "dex:CancelOrder",
+    val res = runCommand(ErgoDex, "dex:CancelOrder",
       args = Seq(
         "storage/E2.json",
         "969482db6643a16b6d8f4c8b50d0a9d5b47a698014c927ee0fa495e2adabbb8e", // buyer contract box id
@@ -408,7 +409,7 @@ class ErgoToolSpec
       )
     )
 
-    val res = runCommand(ErgoTool, "dex:ListMyOrders",
+    val res = runCommand(ErgoDex, "dex:ListMyOrders",
       args = Seq(
         "storage/E2.json",
       ),
@@ -473,7 +474,7 @@ class ErgoToolSpec
       )
     )
 
-    val res = runCommand(ErgoTool, "dex:ShowOrderBook",
+    val res = runCommand(ErgoDex, "dex:ShowOrderBook",
       args = Seq(
         "21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1"
       ),

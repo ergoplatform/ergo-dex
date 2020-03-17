@@ -1,4 +1,4 @@
-package org.ergoplatform.appkit.ergotool.dex
+package org.ergoplatform.dex
 
 import java.io.File
 import java.util.Optional
