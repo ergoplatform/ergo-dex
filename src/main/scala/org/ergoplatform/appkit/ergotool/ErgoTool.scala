@@ -15,9 +15,6 @@ import org.ergoplatform.appkit.ergotool.dex.ShowOrderBookCmd
 object ErgoTool extends CliApplication {
   /** Commands supported by this application. */
   override def commands: Seq[CmdDescriptor] = super.commands ++ Array(
-    AddressCmd, MnemonicCmd, CheckAddressCmd,
-    ListAddressBoxesCmd,
-    CreateStorageCmd, ExtractStorageCmd, SendCmd,
     CreateSellOrderCmd, CreateBuyOrderCmd, MatchOrdersCmd,
     ListMatchingOrdersCmd, IssueTokenCmd, CancelOrderCmd, ListMyOrdersCmd, ShowOrderBookCmd
   )
