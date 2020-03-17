@@ -1,6 +1,6 @@
 package org.ergoplatform.appkit
 
-import org.ergoplatform.dex.{BuyerContract, SellerContract}
+import org.ergoplatform.dex.commands.{BuyerContract, SellerContract}
 import org.ergoplatform.{ErgoAddressEncoder, P2PKAddress}
 import org.scalacheck.{Arbitrary, Gen}
 import sigmastate.basics.DLogProtocol.ProveDlog

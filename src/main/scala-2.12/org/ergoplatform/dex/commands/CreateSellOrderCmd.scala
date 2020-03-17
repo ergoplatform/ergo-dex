@@ -1,4 +1,4 @@
-package org.ergoplatform.dex
+package org.ergoplatform.dex.commands
 
 import java.io.File
 import java.util.Optional
@@ -6,14 +6,13 @@ import java.util.Optional
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.cli.AppContext
-import org.ergoplatform.appkit.commands.{CmdParameter, FilePType, LongPType, RunWithErgoClient, ErgoIdPType, PasswordInput, Cmd, SecretStringPType, CmdDescriptor}
+import org.ergoplatform.appkit.commands._
 import org.ergoplatform.appkit.config.ErgoToolConfig
-import org.ergoplatform.appkit.impl.{ScalaBridge, ErgoTreeContract}
+import org.ergoplatform.appkit.impl.ErgoTreeContract
 import org.ergoplatform.contracts.AssetsAtomicExchangeCompilation
 import sigmastate.{SLong, Values}
 import sigmastate.Values.{SigmaPropConstant, ErgoTree}
 import sigmastate.basics.DLogProtocol.{ProveDlogProp, ProveDlog}
-import sigmastate.eval.WrapperOf
 
 /** Creates and sends a new transaction with seller's order for AssetsAtomicExchange
   *

@@ -3,6 +3,7 @@ package org.ergoplatform.dex
 import org.ergoplatform.appkit.RestApiErgoClient
 import org.ergoplatform.appkit.commands.CmdDescriptor
 import org.ergoplatform.appkit.cli.{Console, CliApplication}
+import org.ergoplatform.dex.commands._
 
 /** ErgoTool implementation, contains main entry point of the console application.
   *

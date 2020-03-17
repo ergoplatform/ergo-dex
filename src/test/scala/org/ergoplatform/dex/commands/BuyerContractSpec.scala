@@ -1,11 +1,11 @@
-package org.ergoplatform.dex
+package org.ergoplatform.dex.commands
 
 import org.ergoplatform.appkit.ObjectGenerators
 import org.ergoplatform.{Height, Outputs}
-import org.scalatest.{Matchers, PropSpec}
+import org.scalatest.{PropSpec, Matchers}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import sigmastate.EQ
-import sigmastate.Values.{BooleanConstant, ByteArrayConstant, ErgoTree, TrueLeaf}
+import sigmastate.Values.{TrueLeaf, ByteArrayConstant, ErgoTree, BooleanConstant}
 import sigmastate.utxo.SizeOf
 
 class BuyerContractSpec extends PropSpec

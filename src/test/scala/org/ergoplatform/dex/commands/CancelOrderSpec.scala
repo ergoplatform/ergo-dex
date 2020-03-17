@@ -1,10 +1,10 @@
-package org.ergoplatform.dex
+package org.ergoplatform.dex.commands
 
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit.impl.ErgoTreeContract
-import org.ergoplatform.appkit.{Address, ErgoContract, InputBox, MockInputBox, ObjectGenerators}
+import org.ergoplatform.appkit.{InputBox, Address, MockInputBox, ErgoContract, ObjectGenerators}
 import org.scalacheck.Gen
-import org.scalatest.{Matchers, PropSpec}
+import org.scalatest.{PropSpec, Matchers}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import sigmastate.Values.SigmaPropConstant
 

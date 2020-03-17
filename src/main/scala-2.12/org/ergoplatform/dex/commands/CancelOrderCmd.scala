@@ -1,19 +1,15 @@
-package org.ergoplatform.dex
+package org.ergoplatform.dex.commands
 
 import java.io.File
-import java.util
 
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.JavaHelpers._
 import org.ergoplatform.appkit.cli.AppContext
-import org.ergoplatform.appkit.commands.{CmdParameter, FilePType, RunWithErgoClient, ErgoIdPType, PasswordInput, Cmd, SecretStringPType, CmdDescriptor}
+import org.ergoplatform.appkit.commands._
 import org.ergoplatform.appkit.config.ErgoToolConfig
-import org.ergoplatform.dex.CreateBuyOrderCmd.name
 import org.ergoplatform.appkit.impl.ErgoTreeContract
 import sigmastate.Values.SigmaPropConstant
-
-import scala.util.Try
 
 /** Claims an unspent buy/sell order and send the ERGs/tokens to the address of this wallet
   *

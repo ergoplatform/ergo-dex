@@ -1,6 +1,6 @@
-package org.ergoplatform.dex
+package org.ergoplatform.dex.commands
 
-import org.scalatest.{Matchers, PropSpec}
+import org.scalatest.{PropSpec, Matchers}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import ShowOrderBook._
 import ListMatchingOrders._

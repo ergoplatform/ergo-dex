@@ -1,11 +1,11 @@
-package org.ergoplatform.dex
+package org.ergoplatform.dex.commands
 
 import java.io.File
 
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.cli.AppContext
-import org.ergoplatform.appkit.commands.{CmdParameter, FilePType, LongPType, RunWithErgoClient, ErgoIdPType, PasswordInput, Cmd, SecretStringPType, CmdDescriptor}
+import org.ergoplatform.appkit.commands._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import org.ergoplatform.appkit.impl.{ScalaBridge, ErgoTreeContract}
 import org.ergoplatform.contracts.AssetsAtomicExchangeCompilation

@@ -1,4 +1,4 @@
-package org.ergoplatform.dex
+package org.ergoplatform.dex.commands
 
 import org.ergoplatform.appkit.JavaHelpers._
 import org.ergoplatform.appkit.Parameters.MinFee
