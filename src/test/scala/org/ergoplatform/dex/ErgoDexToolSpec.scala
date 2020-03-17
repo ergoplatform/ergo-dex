@@ -1,4 +1,4 @@
-package org.ergoplatform.appkit.ergotool
+package org.ergoplatform.dex
 
 import org.scalatest.{PropSpec, Matchers}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
@@ -10,14 +10,8 @@ import java.lang.{String => JString}
 import org.ergoplatform.settings.ErgoAlgos
 import sigmastate.Values.ByteArrayConstant
 import sigmastate.serialization.ValueSerializer
-import org.ergoplatform.appkit.BlockchainContext
-import org.ergoplatform.appkit.InputBox
-import org.ergoplatform.appkit.Address
-import org.ergoplatform.appkit.MockInputBox
-import org.ergoplatform.appkit.ErgoToken
-import org.ergoplatform.appkit.ErgoTreeTemplate
+import org.ergoplatform.appkit.{InputBox, Address, ErgoToken, ErgoTreeTemplate, FileMockedErgoClientWithStubbedCtx, MockInputBox, BlockchainContext}
 import org.ergoplatform.appkit.cli.{ConsoleTesting, ConfigOption, CommandsTesting}
-import org.ergoplatform.dex.ErgoDexTool
 
 class ErgoDexToolSpec
   extends PropSpec 

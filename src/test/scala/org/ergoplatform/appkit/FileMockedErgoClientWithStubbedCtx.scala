@@ -1,8 +1,5 @@
-package org.ergoplatform.appkit.ergotool
+package org.ergoplatform.appkit
 
-import org.ergoplatform.appkit.ErgoClient
-import org.ergoplatform.appkit.BlockchainContext
-import org.ergoplatform.appkit.FileMockedErgoClient
 import java.util
 
 class FileMockedErgoClientWithStubbedCtx(nodeResponses: util.List[String], 
