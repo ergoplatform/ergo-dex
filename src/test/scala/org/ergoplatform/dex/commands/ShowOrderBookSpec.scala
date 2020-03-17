@@ -1,12 +1,9 @@
-package org.ergoplatform.appkit.ergotool.dex
+package org.ergoplatform.dex.commands
 
-import org.scalatest.{Matchers, PropSpec}
+import org.scalatest.{PropSpec, Matchers}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import ShowOrderBook._
-import ListMatchingOrders._
-import org.ergoplatform.appkit.{Address, ErgoId, ErgoToken, InputBox, MockInputBox, NetworkType, ObjectGenerators}
-import org.ergoplatform.appkit.Parameters.MinFee
-import org.scalacheck.Gen
+import org.ergoplatform.appkit._
 
 class ShowOrderBookSpec extends PropSpec
   with Matchers

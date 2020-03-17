@@ -1,4 +1,4 @@
-package org.ergoplatform.appkit.ergotool.dex
+package org.ergoplatform.dex.commands
 
 import java.io.File
 import java.util
@@ -6,7 +6,7 @@ import java.util
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.cli.AppContext
-import org.ergoplatform.appkit.commands.{CmdParameter, FilePType, LongPType, RunWithErgoClient, ErgoIdPType, PasswordInput, Cmd, SecretStringPType, CmdDescriptor}
+import org.ergoplatform.appkit.commands._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 
 /** Creates and sends a new transaction with boxes that match given buyer and seller orders for AssetsAtomicExchange
