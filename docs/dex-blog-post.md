@@ -204,7 +204,7 @@ Loading seller boxes... Ok
 Loading buyer boxes... Ok
 Order book for token 56cf33485be550cc32cf607255be8dc8c32522d0539f6f01d44028dc1d190450:
 Sell orders:
-  Amount   Total(including DEX fee)
+  Token Amount   Erg Amount  (including DEX fee)
      100   1005000000
 Buy orders:
   Amount   Total(including DEX fee)
