@@ -7,7 +7,7 @@ import org.ergoplatform.appkit.cli.AppContext
 import org.ergoplatform.appkit.commands._
 
 /** Order book for AssetsAtomicExchange
- *  Show sell and buy orders(token amount, total order price with DEX fee) for a given token 
+ *  Show sell and buy orders(token amount, total order price with DEX fee) for a given token
  *  sorted by total order price(descending)
  *  @param tokenId token id to filter orders
   */
@@ -29,19 +29,19 @@ case class ShowOrderBookCmd(toolConf: ErgoToolConfig,
 
       console.println(s"Order book for token $tokenId:")
       console.println("Sell orders:")
-      console.println("  Amount   Total(including DEX fee)")
-      sellOrders.foreach { o => console.println(f"${o.tokenAmount}%8d   ${o.tokenPriceWithDexFee}") }
+      console.println("Token Amount   Erg Amount(including DEX fee)")
+      sellOrders.foreach { o => console.println(f"${o.tokenAmount}%12d   ${o.tokenPriceWithDexFee}") }
 
       console.println("Buy orders:")
-      console.println("  Amount   Total(including DEX fee)")
-      buyOrders.foreach { o => console.println(f"${o.tokenAmount}%8d   ${o.tokenPriceWithDexFee}") }
+      console.println("Token Amount   Erg Amount(including DEX fee)")
+      buyOrders.foreach { o => console.println(f"${o.tokenAmount}%12d   ${o.tokenPriceWithDexFee}") }
     })
   }
 }
 
 object ShowOrderBookCmd extends CmdDescriptor(
   name = "dex:ShowOrderBook", cmdParamSyntax = "<tokenId>",
-  description = "show order book, sell and buy order for a given token id") {
+  description = "show order book for a given token (sell and buy orders sorted be total price(descending)") {
 
   override val parameters: Seq[CmdParameter] = Array(
     CmdParameter("tokenId", ErgoIdPType,
@@ -59,7 +59,7 @@ object ShowOrderBook {
   case class SellOrder(seller: InputBox, tokenAmount: Long, tokenPriceWithDexFee: Long)
   case class BuyOrder(buyer: InputBox, tokenAmount: Long, tokenPriceWithDexFee: Long)
 
-  def sellOrders(sellerBoxes: Seq[InputBox], tokenId: ErgoId): Seq[SellOrder] = 
+  def sellOrders(sellerBoxes: Seq[InputBox], tokenId: ErgoId): Seq[SellOrder] =
     sellerBoxes
       .flatMap { sellerBox =>
         for {
@@ -74,7 +74,7 @@ object ShowOrderBook {
     .sortBy(_.tokenPriceWithDexFee)
     .reverse
 
-  def buyOrders(buyerBoxes: Seq[InputBox], tokenId: ErgoId): Seq[BuyOrder] = 
+  def buyOrders(buyerBoxes: Seq[InputBox], tokenId: ErgoId): Seq[BuyOrder] =
     buyerBoxes
       .flatMap { buyerBox =>
         for {

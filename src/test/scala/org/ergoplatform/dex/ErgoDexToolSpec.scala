@@ -14,12 +14,12 @@ import org.ergoplatform.appkit.{InputBox, Address, ErgoToken, ErgoTreeTemplate, 
 import org.ergoplatform.appkit.cli.{ConsoleTesting, ConfigOption, CommandsTesting}
 
 class ErgoDexToolSpec
-  extends PropSpec 
-  with Matchers 
-  with ScalaCheckDrivenPropertyChecks 
+  extends PropSpec
+  with Matchers
+  with ScalaCheckDrivenPropertyChecks
   with ConsoleTesting
   with CommandsTesting
-  with MockitoSugar 
+  with MockitoSugar
   with ArgumentMatchersSugar {
 
   // test values which correspond to each other (see also addr.json storage file, which is obtained using this values)
@@ -49,7 +49,7 @@ class ErgoDexToolSpec
             loadNodeResponse("response_NodeInfo.json"),
             loadNodeResponse("response_LastHeaders.json")) ++ data.nodeResponses
           val ers: IndexedSeq[String] = data.explorerResponses.toIndexedSeq
-          new FileMockedErgoClientWithStubbedCtx(nrs.convertTo[JList[JString]], 
+          new FileMockedErgoClientWithStubbedCtx(nrs.convertTo[JList[JString]],
             ers.convertTo[JList[JString]],
             ctx => { val spiedCtx = spy(ctx); ctxStubber(spiedCtx); spiedCtx })
         }
@@ -89,7 +89,7 @@ class ErgoDexToolSpec
       sellOrderCmdArgs,
       expectedConsoleScenario =
         s"""Storage password> ::abc;
-          |""".stripMargin, 
+          |""".stripMargin,
       ctxStubber = { ctx: BlockchainContext =>
           val emptyInputBoxes = new java.util.ArrayList[InputBox](0)
           doReturn(emptyInputBoxes).when(ctx).getUnspentBoxesFor(any[Address])
@@ -104,7 +104,7 @@ class ErgoDexToolSpec
       sellOrderCmdArgs,
       expectedConsoleScenario =
         s"""Storage password> ::abc;
-          |""".stripMargin, 
+          |""".stripMargin,
       ctxStubber = { ctx: BlockchainContext =>
           doReturn(inputBoxes.convertTo[JList[InputBox]]).when(ctx).getUnspentBoxesFor(any[Address])
       })
@@ -118,7 +118,7 @@ class ErgoDexToolSpec
       args = sellOrderCmdArgs,
       expectedConsoleScenario =
         s"""Storage password> ::abc;
-          |""".stripMargin, 
+          |""".stripMargin,
       ctxStubber = { ctx: BlockchainContext =>
           doReturn(inputBoxes.convertTo[JList[InputBox]]).when(ctx).getUnspentBoxesFor(any[Address])
       })
@@ -127,7 +127,7 @@ class ErgoDexToolSpec
 
   def sellOrderCheckUserInputValidation(tokenPrice: Long = 5000000L,
     tokenAmount: Long = 60L,
-    dexFee: Long = 5000000L, 
+    dexFee: Long = 5000000L,
     expectedStr: String) = {
     val args = Seq(
       "storage/E2.json",
@@ -146,17 +146,17 @@ class ErgoDexToolSpec
   }
 
   property("dex:SellOrder - failed, incorrect user input, tokenPrice") {
-    sellOrderCheckUserInputValidation(tokenPrice = 0, 
+    sellOrderCheckUserInputValidation(tokenPrice = 0,
       expectedStr = "java.lang.IllegalArgumentException: requirement failed: invalid tokenPrice")
   }
 
   property("dex:SellOrder - failed, incorrect user input, token amount") {
-    sellOrderCheckUserInputValidation(tokenAmount = 0, 
+    sellOrderCheckUserInputValidation(tokenAmount = 0,
       expectedStr = "java.lang.IllegalArgumentException: requirement failed: invalid token amount")
   }
 
   property("dex:SellOrder - failed, incorrect user input, dex fee") {
-    sellOrderCheckUserInputValidation(dexFee = 0, 
+    sellOrderCheckUserInputValidation(dexFee = 0,
       expectedStr = "java.lang.IllegalArgumentException: requirement failed: invalid DEX fee")
   }
 
@@ -192,7 +192,7 @@ class ErgoDexToolSpec
       buyOrderCmdArgs,
       expectedConsoleScenario =
         s"""Storage password> ::abc;
-          |""".stripMargin, 
+          |""".stripMargin,
       ctxStubber = { ctx: BlockchainContext =>
           val emptyInputBoxes = new java.util.ArrayList[InputBox](0)
           doReturn(emptyInputBoxes).when(ctx).getUnspentBoxesFor(any[Address])
@@ -206,7 +206,7 @@ class ErgoDexToolSpec
       args = buyOrderCmdArgs,
       expectedConsoleScenario =
         s"""Storage password> ::abc;
-          |""".stripMargin, 
+          |""".stripMargin,
       ctxStubber = { ctx: BlockchainContext =>
           doReturn(inputBoxes.convertTo[JList[InputBox]]).when(ctx).getUnspentBoxesFor(any[Address])
       })
@@ -215,7 +215,7 @@ class ErgoDexToolSpec
 
   def buyOrderCheckUserInputValidation(ergAmount: Long = 5000000L,
     tokenAmount: Long = 60L,
-    dexFee: Long = 5000000L, 
+    dexFee: Long = 5000000L,
     expectedStr: String) = {
     val args = Seq(
       "storage/E2.json",
@@ -439,7 +439,7 @@ class ErgoDexToolSpec
       ),
       expectedConsoleScenario =
         s"""Storage password> ::abc;
-           |""".stripMargin, 
+           |""".stripMargin,
       ctxStubber = { ctx: BlockchainContext =>
           doReturn(inputBoxes.convertTo[JList[InputBox]])
             .when(ctx)
@@ -475,8 +475,8 @@ class ErgoDexToolSpec
       expectedConsoleScenario = "",
       data)
     println(res)
-    res should include ("  Amount   Total(including DEX fee)")
-    res should include ("      60   55000000")
+    res should include ("Token Amount   Erg Amount(including DEX fee)")
+    res should include ("          60   55000000")
   }
 
 }
