@@ -41,7 +41,7 @@ case class ShowOrderBookCmd(toolConf: ErgoToolConfig,
 
 object ShowOrderBookCmd extends CmdDescriptor(
   name = "dex:ShowOrderBook", cmdParamSyntax = "<tokenId>",
-  description = "show order book for a given token (sell and buy orders sorted be total price(descending)") {
+  description = "show order book for a given token (sell and buy orders sorted by total price(descending)") {
 
   override val parameters: Seq[CmdParameter] = Array(
     CmdParameter("tokenId", ErgoIdPType,
