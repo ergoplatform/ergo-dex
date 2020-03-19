@@ -2,6 +2,10 @@
 .google
 .gradle
 .idea
+.bloop/
+.metals/
+.vscode/
+project/metals.sbt
 build
 target
 gradle

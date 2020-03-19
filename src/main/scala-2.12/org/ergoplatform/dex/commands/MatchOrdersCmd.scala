@@ -1,12 +1,13 @@
-package org.ergoplatform.appkit.ergotool.dex
+package org.ergoplatform.dex.commands
 
 import java.io.File
 import java.util
 
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._
+import org.ergoplatform.appkit.cli.AppContext
+import org.ergoplatform.appkit.commands._
 import org.ergoplatform.appkit.config.ErgoToolConfig
-import org.ergoplatform.appkit.ergotool.{AddressPType, AppContext, Cmd, CmdDescriptor, CmdParameter, ErgoIdPType, FilePType, LongPType, RunWithErgoClient, SecretStringPType, StringPType}
 
 /** Creates and sends a new transaction with boxes that match given buyer and seller orders for AssetsAtomicExchange
   *
@@ -46,16 +47,21 @@ case class MatchOrdersCmd(toolConf: ErgoToolConfig,
         BoxOperations.createProver(ctx, storageFile.getPath, storagePass).build()
       }
       val sellerHolderBox = loggedStep(s"Loading seller's box (${sellerHolderBoxId.toString})", console) {
-        ctx.getBoxesById(sellerHolderBoxId.toString).head
+        ctx.getBoxesById(sellerHolderBoxId.toString).headOption
+          .getOrElse(error(s"failed to load seller's box (${sellerHolderBoxId.toString})}"))
       }
       val sellerAddressPk = SellerContract.sellerPkFromTree(sellerHolderBox.getErgoTree)
         .getOrElse(error(s"cannot find seller's public key in seller order in box $sellerHolderBoxId"))
       val buyerHolderBox = loggedStep(s"Loading buyer's box (${buyerHolderBoxId.toString})", console) {
-        ctx.getBoxesById(buyerHolderBoxId.toString).head
+        ctx.getBoxesById(buyerHolderBoxId.toString).headOption
+          .getOrElse(error(s"failed to load buyer's box (${buyerHolderBoxId.toString})}"))
       }
       val buyerAddressPk = BuyerContract.buyerPkFromTree(buyerHolderBox.getErgoTree)
         .getOrElse(error(s"cannot find buyer's public key in buyer order in box $buyerHolderBoxId"))
 
+      if (sellerHolderBox.getTokens.isEmpty) {
+        error(s"no tokens in seller's box (${sellerHolderBoxId.toString})")
+      }
       val token = sellerHolderBox.getTokens.get(0)
       if (!BuyerContract.tokenFromContractTree(buyerHolderBox.getErgoTree).contains(token)) {
         error(s"cannot find token $token in buyer order in box $buyerHolderBoxId")
@@ -117,15 +123,15 @@ case class MatchOrdersCmd(toolConf: ErgoToolConfig,
 }
 
 object MatchOrdersCmd extends CmdDescriptor(
-  name = "dex:MatchOrders", cmdParamSyntax = "<storageFile> <sellerHolderBoxId> <buyerHolderBoxId>      <minDexFee",
-  description = "match an existing token seller's order (by <sellerHolderBoxId>) and an existing buyer's order (by <buyerHolderBoxId) and send tokens to buyer's address(extracted from buyer's order) and Ergs to seller's address(extracted from seller's order) claiming the minimum fee of <minDexFee> with the given <storageFile> to sign transaction (requests storage password)") {
+  name = "dex:MatchOrders", cmdParamSyntax = "<wallet file> <sellerHolderBoxId> <buyerHolderBoxId>      <minDexFee",
+  description = "match an existing token seller's order (by <sellerHolderBoxId>) and an existing buyer's order (by <buyerHolderBoxId) and send tokens to buyer's address(extracted from buyer's order) and Ergs to seller's address(extracted from seller's order) claiming the minimum fee of <minDexFee> with the given <wallet file> to sign transaction (requests storage password)") {
 
   override val parameters: Seq[CmdParameter] = Array(
     CmdParameter("storageFile", FilePType,
       "storage with secret key of the sender"),
-    CmdParameter("storagePass", SecretStringPType,
+    CmdParameter("storagePass", "Storage password", SecretStringPType,
       "password to access sender secret key in the storage", None,
-      Some(ctx => ctx.console.readPassword("Storage password>"))),
+      Some(PasswordInput), None),
     CmdParameter("sellerHolderBoxId", ErgoIdPType,
       "box id of the seller order"),
     CmdParameter("buyerHolderBoxId", ErgoIdPType,

@@ -60,8 +60,14 @@ protocol). Additional registers should also be specified as required by
 The `dex:IssueToken` command uses a wallet storage given by `storageFile` to transfer given `ergAmount` of ERGs
 to a new box with tokens. The new box will belong the same wallet given by `storageFile`.
 
-Here is an example of using `dex:IssueToken` -
-https://gist.github.com/greenhat/47fc2a4190ba8874248a3f759f645f1b
+```
+$ ergo-tool dex:IssueToken "storage/E2.json" 50000000 1000000 "TKN" "Generic token" 2
+Creating prover... Ok
+Loading unspent boxes from at address 9hHDQb26AjnJUXxcqriqY1mnhpLuUeC81C4pggtK7tupr92Ea1K... Ok
+Signing the transaction... Ok
+...
+``` 
+[output](https://gist.github.com/greenhat/a14094cdba984222c5841e65870071bc)
 
 ## Sell Tokens
 
