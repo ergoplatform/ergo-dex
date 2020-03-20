@@ -9,7 +9,7 @@ lazy val sonatypeSnapshots = "Sonatype Snapshots" at "https://oss.sonatype.org/c
 resolvers ++= Seq(Resolver.mavenLocal, sonatypeReleases, sonatypeSnapshots, Resolver.mavenCentral)
 
 scalaVersion := "2.12.10"
-version := "3.1.1"
+version := "0.1.0"
 val appkit = "org.ergoplatform" %% "ergo-appkit" % "develop-b302956b-SNAPSHOT"
 
 val mockitoScalaVerstion = "1.11.4"
@@ -48,7 +48,7 @@ pomExtra in ThisBuild :=
 scalacOptions in(Compile, compile) ++= (if (scalaBinaryVersion.value == "2.11") Seq() else Seq("-release", "8"))
 
 test in assembly := {}
-assemblyJarName in assembly := s"ergotool-${version.value}.jar"
+assemblyJarName in assembly := s"ergodex-${version.value}.jar"
 
 // See https://www.scala-sbt.org/sbt-native-packager/formats/graalvm-native-image.html
 graalVMNativeImageOptions ++= Seq(
