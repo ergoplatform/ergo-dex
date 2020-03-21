@@ -326,19 +326,17 @@ Buy orders:
 
 ### Cancel Order
 
-To cancel your buy/sell order you need to "spend" the box of the order by sending its assets (coins
-and/or tokens) back to your own address.
-The following command can be used to spend your order box and send you the assets:
+To cancel a buy/sell order you need to "spend" the box of the order (`bid` of `ask` boxes
+on the diagram) by sending its assets (coins and/or tokens) back to your own address. The
+following command can be used to spend sell/buy order box and send the assets home:
 ```
-Command Name:	dex:CancelOrder
-Usage Syntax:	ergo-tool dex:CancelOrder <wallet file> <orderBoxId>
-Description:	claim an unspent buy/sell order (by <orderBoxId>) and sends the ERGs/tokens to the address of this wallet (requests storage password)
-Doc page:	https://ergoplatform.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/dex/CancelOrderCmd.html
+$ ./ergo-dex.sh dex:CancelOrder storage/secret.json "357bba87df0299ed692e3945fcf6ab88465e0dc7fff6db48957c939603ae23f0"
+Storage password>
+Creating prover... Ok
+Loading order's box (357bba87df0299ed692e3945fcf6ab88465e0dc7fff6db48957c939603ae23f0)... Ok
+Signing the transaction... Ok
 ```
-
-Here is an [example](https://gist.github.com/greenhat/6c70999c763a70a7253170d33127e9da) of using
-`dex:CancelOrder`.
-
+[output](https://gist.github.com/greenhat/6c70999c763a70a7253170d33127e9da)
          
 ## Contributions
 
@@ -374,3 +372,4 @@ declarations.
 - [Appkit Examples](https://github.com/aslesarenko/ergo-appkit-examples)
 - [ErgoDex ScalaDocs](https://ergoplatform.github.io/ergo-dex/api/org/ergoplatform/dex/ErgoDexTool$.html)
 - [ErgoTree Specification](https://ergoplatform.org/docs/ErgoTree.pdf)
+
