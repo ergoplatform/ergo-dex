@@ -29,12 +29,12 @@ case class ShowOrderBookCmd(toolConf: ErgoToolConfig,
 
       console.println(s"Order book for token $tokenId:")
       console.println("Sell orders:")
-      console.println("  Amount   Total(including DEX fee)")
-      sellOrders.foreach { o => console.println(f"${o.tokenAmount}%8d   ${o.tokenPriceWithDexFee}") }
+      console.println("  Token Amount   Erg Amount(including DEX fee)")
+      sellOrders.foreach { o => console.println(f"${o.tokenAmount}%8d           ${o.tokenPriceWithDexFee}") }
 
       console.println("Buy orders:")
-      console.println("  Amount   Total(including DEX fee)")
-      buyOrders.foreach { o => console.println(f"${o.tokenAmount}%8d   ${o.tokenPriceWithDexFee}") }
+      console.println("  Token Amount   Erg Amount(including DEX fee)")
+      buyOrders.foreach { o => console.println(f"${o.tokenAmount}%8d           ${o.tokenPriceWithDexFee}") }
     })
   }
 }
