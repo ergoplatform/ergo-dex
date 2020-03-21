@@ -1,6 +1,7 @@
 # ErgoDexTool: A Command Line Interface for Decentralized Exchange on Ergo Blockchain
 
  - [Introduction](#introduction)
+ - [DEX Protocol Overview](#dex-protocol-overview)
  - [Installation](#installation)
  - [Commands](#commands)
  - [Contributions](#contributions)
@@ -10,16 +11,32 @@
 
 ErgoDexTool is a [command-line
 interface](https://en.wikipedia.org/wiki/Command-line_interface) for
-[Ergo](https://ergoplatform.org/) blockchain. It is implemented in Scala using
-[Ergo Appkit](https://github.com/ergoplatform/ergo-appkit) library. ErgoDexTool is a Java
-application and it can be executed on Java 8 or later compliant JRE. In addition ErgoTool
-can be compiled to a native executable using GraalVM's
+[Ergo](https://ergoplatform.org/) blockchain. It is implemented in Scala using [Ergo
+Appkit Commands](https://github.com/ergoplatform/ergo-appkit) framework. ErgoDexTool is a
+Java application and it can be executed on Java 8 or later compliant JRE. In addition
+ErgoDexTool can be compiled to a native executable using GraalVM's
 [native-image](https://www.graalvm.org/docs/reference-manual/native-image/). This
 capability is inherited from Appkit, which is native-image friendly by design.
 
 Native executables are especially attractive for CLI tools, because of the very fast start
 up times (comparing to a typical start up pause of a JVM based executable). Please follow
 the [installation instructions](#installation) to setup ErgoDexTool on your system.
+
+## DEX Protocol Overview
+
+There are three participants (buyer, seller and DEX) of the DEX dApp and five different
+transaction types, which can be created by participants. The buyer wants to swap `ergAmt`
+ERGs for `tAmt` of `TID` tokens (or seller wants to sell, who send the orders first
+doesn't matter). Both the buyer and the seller can cancel their orders. The DEX off-chain
+service can find matching orders and create a special `Swap` transaction to complete the
+exchange without knowledge of any secrets, thus both the buyer and the seller are in full
+control of their funds.
+
+The following diagram fully specifies all the five transactions of the DEX scenario.
+For each transaction there is a corresponding command in ErgoDexTool as well as
+additional commands to list orders, create tokens etc (see [Commands](#commands)).
+
+![DEX](docs/dex-contracts.png)
 
 ## Installation
 
@@ -35,7 +52,7 @@ MacOS.
 
 ### Build ErgoDexTool From Source Code
 
-#### 1. Clone ErgoTool repository
+#### 1. Clone ergo-dex repository
 
 You need to have [git](https://git-scm.com/) installed on your system.
 Open Terminal and use the following commands to clone the ErgoDexTool source code. 
@@ -112,7 +129,7 @@ Options:
 
 The command prints usage information with the available commands and options.
 
-### Download ErgoTool Release Package 
+### Download ErgoDex Release Package 
 
 Release packages are published on the
 [releases](https://github.com/ergoplatform/ergo-dex/releases) page. Please download the
@@ -133,12 +150,195 @@ options are the command name and parameters (i.e. `storage.json`, `1000000` etc)
 For further detail of how a command line is parsed see this
 [description](https://github.com/ergoplatform/ergo-appkit/blob/75468e4c0fd4cf1c2417be970119c47ba3c5dbb7/appkit/src/main/scala/org/ergoplatform/appkit/cli/CmdLineParser.scala#L8).
 
-### Supported Commands
+#### Supported Commands
 Click on the command name to open its detailed description.
 
  Command     |  Description       
 -------------|--------------------
  [dex:IssueToken]()     | `<wallet file> <ergAmount> <tokenAmount> <tokenName> <tokenDesc> <tokenNumberOfDecimals>` <br/> issue a token with given `tokenName`, `tokenAmount`, `tokenDesc`, `tokenNumberOfDecimals` and `ergAmount` with the given `wallet file` to sign transaction (requests storage password)
+         
+         
+### Issue A New Token
+
+The first operation in the lifecycle of a new token is its issue. Ergo natively support
+issue, storage and transfer of tokens. New tokens can be issued according to the [Assets
+Standard](https://github.com/ergoplatform/eips/blob/master/eip-0004.md).
+
+A token is issued by creating a new box with the `ergAmount` of ERGs and (`tokenId`,
+`tokenAmount`) pair in the `R2` register, where `tokenId` is selected automatically using
+the id of the first input box of the transaction (as required by Ergo protocol).
+Additional registers should also be specified as required by
+[EIP-4](https://github.com/ergoplatform/eips/blob/master/eip-0004.md) standard. The
+`dex:IssueToken` command uses a wallet storage given by `<wallet file>` to transfer given
+`ergAmount` of ERGs to a new box with tokens. The new box will belong the same wallet
+given by `<wallet file>`.
+
+The following ErgoDexTool command allows to issue a new token on the Ergo blockchain.
+```
+$ ./ergo-dex.sh dex:IssueToken "storage/E2.json" 50000000 1000000 "TKN" "Generic token" 2
+Creating prover... Ok
+Loading unspent boxes from at address 9hHDQb26AjnJUXxcqriqY1mnhpLuUeC81C4pggtK7tupr92Ea1K... Ok
+Signing the transaction... Ok
+...
+``` 
+[output](https://gist.github.com/greenhat/a14094cdba984222c5841e65870071bc)
+
+### Sell Tokens
+
+When we have tokens in a box we can sell them on Ergo DEX by creating a sell order and
+submit it to the order book. In ErgoDexTool implementation we create orders and store them
+directly on the Ergo blockchain. The created order is the `ask` box (see diagram)
+protected with the special _seller contract_ holding the minimum amount of ERGs (`minErg`)
+and `tokenAmount` of the `TID` tokens.
+
+```scala
+/** The `sellOrder` contract which protects the `ask` box (see the diagram)
+  * @param ergAmt   nanoERG amount seller wants to receive for the tokens
+  * @param pkSeller public key of the seller
+  * @return  sigma protocol proposition (see ErgoTree Specification)
+  */
+def sellOrder(ctx: Context, ergAmt: Long, pkSeller: SigmaProp): SigmaProp = {
+  import ctx._
+  pkSeller || (
+    OUTPUTS.size > 1 &&
+    OUTPUTS(1).R4[Coll[Byte]].isDefined
+  ) && {
+    val knownBoxId = OUTPUTS(1).R4[Coll[Byte]].get == SELF.id
+    OUTPUTS(1).value >= ergAmt &&
+    knownBoxId &&
+    OUTPUTS(1).propositionBytes == pkSeller.propBytes
+  }
+}
+```
+The contract is implemented in [the
+repository](http://github.com/ergoplatform/ergo-contracts/blob/391912fbd466c1b262e8d2fa61d4bfd94981df4a/verified-contracts/src/main/scala/org/ergoplatform/contracts/AssetsAtomicExchange.scala#L41-L58)
+of certified contracts.
+
+The `sellOrder` contract guarantees that the seller box can be spent:
+1) by seller itself, which is the way for a seller to [cancel the
+order](#canceling-the-orders)
+2) by a _swap transaction_ created by anyone else in which the `ask` box is spent together
+(i.e. atomically) with the matched `bid` box (see the diagram and also [buy
+tokens](#buy-tokens)).
+
+The following command can be used to create a new `ask` box to sell tokens:
+```
+./ergo-dex.sh dex:SellOrder storage/secret.json 10000000 "d0105f7469be3ac90f16d943b29133f16c3bf4d85bd754656194cead849baf1e" 3 5000000
+Storage password>
+Creating prover... Ok
+Loading unspent boxes from at address 3WxrCKgrcmS7oPpWXgwuKNiB1JSNEmpyqaXPM1cBrXiJY1jhk4Ep... Ok
+Signing the transaction... Ok
+```
+[output](https://gist.github.com/greenhat/9536a7c13106f6a99530720504a6031a)
+
+### Buy Tokens
+
+You may also want to buy tokens, either because you believe it's value is going to surge
+or you need one to participate in a dApp which require having some tokens or whatever
+reason you may have. You can create a _buy order_ and submit it to the order book. The
+created order is a `bid` box (see diagram) protected with the special _buyer contract_.
+The `bid` box holds the necessary amount of ERGs and whose contract checks the swap
+conditions (given `tokenId` and `tAmt` you want to buy).
+
+```scala
+/** The `buyOrder` contract which protects the `bid` box (see the diagram) 
+  * @param tokenId token id to buy
+  * @param tAmt token amount to buy
+  * @param pkBuyer public key for the buyer
+  * @return sigma protocol proposition (see ErgoTree Specification) 
+  */
+def buyer(
+  ctx: Context,
+  tokenId: Coll[Byte],
+  tAmt: Long,
+  pkBuyer: SigmaProp
+): SigmaProp = {
+  import ctx._
+  pkBuyer || {
+    (OUTPUTS.nonEmpty && OUTPUTS(0).R4[Coll[Byte]].isDefined) && {
+      val tokens = OUTPUTS(0).tokens
+      val tokenDataCorrect = tokens.nonEmpty &&
+        tokens(0)._1 == tokenId &&
+        tokens(0)._2 >= tAmt
+
+      val knownId = OUTPUTS(0).R4[Coll[Byte]].get == SELF.id
+      tokenDataCorrect &&
+      OUTPUTS(0).propositionBytes == pkBuyer.propBytes &&
+      knownId
+    }
+  }
+}
+```
+The
+[contract](http://github.com/ergoplatform/ergo-contracts/blob/5d064a71d2300684d18069912776b0e125f5c5bd/verified-contracts/src/main/scala/org/ergoplatform/contracts/AssetsAtomicExchange.scala#L12-L40)
+is implemented in the repository of certified contracts.
+
+The buyer contract guarantees that the buyer box can be spent:
+1) by the buyer itself, which is the way for the buyer to [cancel the order](#cancel-order)
+2) by a _swap transaction_ created by anyone else in which the `bid` box is spent together (i.e atomically)
+with the matched `ask` box (see the diagram and also [sell tokens](#sell-tokens)).
+
+The following command can be used to create a new _buy order_ to buy tokens:
+```
+./ergo-dex.sh dex:BuyOrder storage/secret.json 10000000 "d0105f7469be3ac90f16d943b29133f16c3bf4d85bd754656194cead849baf1e" 3 5000000
+Storage password>
+Creating prover... Ok
+Loading unspent boxes from at address 3WxrCKgrcmS7oPpWXgwuKNiB1JSNEmpyqaXPM1cBrXiJY1jhk4Ep... Ok
+Signing the transaction... Ok
+```
+[output](https://gist.github.com/greenhat/0c75738edadb9870a2cfb492d6069a57)
+
+### List My Orders
+
+To show your outstanding buy/sell orders (that use your public key in their contracts) use
+`dex:ListMyOrders` command:
+```
+./ergo-dex.sh dex:ListMyOrders storage/secret.json
+Storage password>
+Creating prover... Ok
+Loading seller boxes... Ok
+Loading buyer boxes... Ok
+Orders created with key 9hHDQb26AjnJUXxcqriqY1mnhpLuUeC81C4pggtK7tupr92Ea1K:
+Sell:
+Box id                                                           Token ID                                                         Token amount  Token price  Box value
+357bba87df0299ed692e3945fcf6ab88465e0dc7fff6db48957c939603ae23f0 d0105f7469be3ac90f16d943b29133f16c3bf4d85bd754656194cead849baf1e 3             10000000     5000000
+Buy:
+Box id                                                           Token ID                                                         Token amount  Box value
+```
+[output](https://gist.github.com/greenhat/6b1b2f7be1279de49e33045b3fac6f81)
+
+### Show order book
+
+To show all outstanding sell and buy orders for a particular token use `dex:ShowOrderBook`
+command. Below is an example of using `dex:ShowOrderBook`:
+```
+./ergo-dex.sh dex:ShowOrderBook "56cf33485be550cc32cf607255be8dc8c32522d0539f6f01d44028dc1d190450"
+Loading seller boxes... Ok
+Loading buyer boxes... Ok
+Order book for token 56cf33485be550cc32cf607255be8dc8c32522d0539f6f01d44028dc1d190450:
+Sell orders:
+  Token Amount   Erg Amount(including DEX fee)
+     100           1005000000
+Buy orders:
+  Token Amount   Erg Amount(including DEX fee)
+     100           1005000000
+```
+
+### Cancel Order
+
+To cancel your buy/sell order you need to "spend" the box of the order by sending its assets (coins
+and/or tokens) back to your own address.
+The following command can be used to spend your order box and send you the assets:
+```
+Command Name:	dex:CancelOrder
+Usage Syntax:	ergo-tool dex:CancelOrder <wallet file> <orderBoxId>
+Description:	claim an unspent buy/sell order (by <orderBoxId>) and sends the ERGs/tokens to the address of this wallet (requests storage password)
+Doc page:	https://ergoplatform.github.io/ergo-tool/api/org/ergoplatform/appkit/ergotool/dex/CancelOrderCmd.html
+```
+
+Here is an [example](https://gist.github.com/greenhat/6c70999c763a70a7253170d33127e9da) of using
+`dex:CancelOrder`.
+
          
 ## Contributions
 
@@ -157,7 +357,7 @@ Please submit a PR if you find typos or mistakes.
 #### Preparing for native image generation
 
 You may need to re-generate reflection and resources configs for native-image utility. 
-To do that run ErgoToolSpec with `native-image-agent` configured.
+To do that run ErgoDexToolSpec with `native-image-agent` configured.
 The following should be added to command line.
 ```
 -agentlib:native-image-agent=config-merge-dir=graal/META-INF/native-image
@@ -173,3 +373,4 @@ declarations.
 - [Introduction to Appkit](https://ergoplatform.org/en/blog/2019_12_03_top5/)
 - [Appkit Examples](https://github.com/aslesarenko/ergo-appkit-examples)
 - [ErgoDex ScalaDocs](https://ergoplatform.github.io/ergo-dex/api/org/ergoplatform/dex/ErgoDexTool$.html)
+- [ErgoTree Specification](https://ergoplatform.org/docs/ErgoTree.pdf)
