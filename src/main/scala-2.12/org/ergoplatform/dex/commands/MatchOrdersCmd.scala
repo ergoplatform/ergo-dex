@@ -9,15 +9,16 @@ import org.ergoplatform.appkit.cli.AppContext
 import org.ergoplatform.appkit.commands._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 
-/** Creates and sends a new transaction with boxes that match given buyer and seller orders for AssetsAtomicExchange
+/** Creates and sends a new transaction which spend the boxes that match the given buyer and seller
+  * orders (protected by `buyer` and `seller` contracts from AssetsAtomicExchange).
   *
   * Steps:<br/>
   * 1) request storage password from the user<br/>
   * 2) read storage file, unlock using password and get secret<br/>
-  * 3) get master public key and compute sender's address<br/>
+  * 3) get master public key and compute transaction sender's address<br/>
   * 4) find the box with buyer's order (by buyerHolderBoxId)<br/>
   * 5) find the box with seller's order (by sellerHolderBoxId)<br/>
-  * 6) select sender's coins to cover the transaction fee, and computes the amount of change<br/>
+  * 6) computes the amount of change (including dexFee and checking it is at least `minDexFee`)<br/>
   * 7) create output box for buyer's tokens<br/>
   * 8) create output box for seller's Ergs<br/>
   * 9) create a transaction using buyer's and seller's order boxes (from steps 4,5) as inputs<br/>
@@ -77,7 +78,7 @@ case class MatchOrdersCmd(toolConf: ErgoToolConfig,
       val txFee = MinFee
       val dexFee = claimableValue - txFee
       if (dexFee <= minDexFee) {
-        error(s"found DEX fee = (claimable value - miner's fee) to be $dexFee, which is <= minDexFee ")
+        error(s"found DEX fee = (claimable value - miner's fee) to be $dexFee, which is <= $minDexFee (minDexFee) ")
       }
       val inputBoxes = util.Arrays.asList(buyerHolderBox, sellerHolderBox)
       val txB = ctx.newTxBuilder
