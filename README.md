@@ -332,7 +332,8 @@ BoxId                                                             Token Amount  
 To match and swap buy and sell orders the `dex:MatchOrders` command can be used.
 The command creates and sends a new transaction which spends the `bid` and `ask` boxes
 with matching `ergAmt` and `tAmt` values. 
-The command: 1)  requests the storage password from the user, reads the storage file,
+The command: 
+1)  requests the storage password from the user, reads the storage file,
 unlocks it using password and gets the secret to sign the transaction; 
 2) finds the boxes with buyer's and seller's orders (using `buyerHolderBoxId` and `sellerHolderBoxId`);
 3) computes the amount of change (including dexFee and checking it is at least `minDexFee`);
