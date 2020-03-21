@@ -157,6 +157,8 @@ Click on the command name to open its detailed description.
 -------------|--------------------
  [dex:IssueToken]()     | `<wallet file> <ergAmount> <tokenAmount> <tokenName> <tokenDesc> <tokenNumberOfDecimals>` <br/> issue a token with given `tokenName`, `tokenAmount`, `tokenDesc`, `tokenNumberOfDecimals` and `ergAmount` with the given `wallet file` to sign transaction (requests storage password)
          
+TODO [generate](https://github.com/ergoplatform/ergo-appkit/issues/45) table for the rest
+of the commands
          
 ### Issue A New Token
 
@@ -210,9 +212,9 @@ def sellOrder(ctx: Context, ergAmt: Long, pkSeller: SigmaProp): SigmaProp = {
   }
 }
 ```
-The contract is implemented in [the
-repository](http://github.com/ergoplatform/ergo-contracts/blob/391912fbd466c1b262e8d2fa61d4bfd94981df4a/verified-contracts/src/main/scala/org/ergoplatform/contracts/AssetsAtomicExchange.scala#L41-L58)
-of certified contracts.
+The contract is
+[implemented](http://github.com/ergoplatform/ergo-contracts/blob/391912fbd466c1b262e8d2fa61d4bfd94981df4a/verified-contracts/src/main/scala/org/ergoplatform/contracts/AssetsAtomicExchange.scala#L41-L58)
+in the repository of certified contracts.
 
 The `sellOrder` contract guarantees that the seller box can be spent:
 1) by seller itself, which is the way for a seller to [cancel the
@@ -223,7 +225,7 @@ tokens](#buy-tokens)).
 
 The following command can be used to create a new `ask` box to sell tokens:
 ```
-./ergo-dex.sh dex:SellOrder storage/secret.json 10000000 "d0105f7469be3ac90f16d943b29133f16c3bf4d85bd754656194cead849baf1e" 3 5000000
+$ ./ergo-dex.sh dex:SellOrder storage/secret.json 10000000 "d0105f7469be3ac90f16d943b29133f16c3bf4d85bd754656194cead849baf1e" 3 5000000
 Storage password>
 Creating prover... Ok
 Loading unspent boxes from at address 3WxrCKgrcmS7oPpWXgwuKNiB1JSNEmpyqaXPM1cBrXiJY1jhk4Ep... Ok
@@ -269,9 +271,9 @@ def buyer(
   }
 }
 ```
-The
-[contract](http://github.com/ergoplatform/ergo-contracts/blob/5d064a71d2300684d18069912776b0e125f5c5bd/verified-contracts/src/main/scala/org/ergoplatform/contracts/AssetsAtomicExchange.scala#L12-L40)
-is implemented in the repository of certified contracts.
+The contract is
+[implemented](http://github.com/ergoplatform/ergo-contracts/blob/5d064a71d2300684d18069912776b0e125f5c5bd/verified-contracts/src/main/scala/org/ergoplatform/contracts/AssetsAtomicExchange.scala#L12-L40)
+in the repository of certified contracts.
 
 The buyer contract guarantees that the buyer box can be spent:
 1) by the buyer itself, which is the way for the buyer to [cancel the order](#cancel-order)
@@ -280,7 +282,7 @@ with the matched `ask` box (see the diagram and also [sell tokens](#sell-tokens)
 
 The following command can be used to create a new _buy order_ to buy tokens:
 ```
-./ergo-dex.sh dex:BuyOrder storage/secret.json 10000000 "d0105f7469be3ac90f16d943b29133f16c3bf4d85bd754656194cead849baf1e" 3 5000000
+$ ./ergo-dex.sh dex:BuyOrder storage/secret.json 10000000 "d0105f7469be3ac90f16d943b29133f16c3bf4d85bd754656194cead849baf1e" 3 5000000
 Storage password>
 Creating prover... Ok
 Loading unspent boxes from at address 3WxrCKgrcmS7oPpWXgwuKNiB1JSNEmpyqaXPM1cBrXiJY1jhk4Ep... Ok
@@ -293,7 +295,7 @@ Signing the transaction... Ok
 To show your outstanding buy/sell orders (that use your public key in their contracts) use
 `dex:ListMyOrders` command:
 ```
-./ergo-dex.sh dex:ListMyOrders storage/secret.json
+$ ./ergo-dex.sh dex:ListMyOrders storage/secret.json
 Storage password>
 Creating prover... Ok
 Loading seller boxes... Ok
@@ -312,17 +314,41 @@ Box id                                                           Token ID       
 To show all outstanding sell and buy orders for a particular token use `dex:ShowOrderBook`
 command. Below is an example of using `dex:ShowOrderBook`:
 ```
-./ergo-dex.sh dex:ShowOrderBook "56cf33485be550cc32cf607255be8dc8c32522d0539f6f01d44028dc1d190450"
+$ ./ergo-dex.sh dex:ShowOrderBook "56cf33485be550cc32cf607255be8dc8c32522d0539f6f01d44028dc1d190450"
 Loading seller boxes... Ok
 Loading buyer boxes... Ok
 Order book for token 56cf33485be550cc32cf607255be8dc8c32522d0539f6f01d44028dc1d190450:
+
 Sell orders:
-  Token Amount   Erg Amount(including DEX fee)
-     100           1005000000
+BoxId                                                             Token Amount   Erg Amount(including DEX fee)
+10008261a053ffb63919a410059a4e6bf1c87de6020198138544ebcbf9c2182c      100           1005000000
+
 Buy orders:
-  Token Amount   Erg Amount(including DEX fee)
-     100           1005000000
+BoxId                                                             Token Amount   Erg Amount(including DEX fee)
+8cc5b491f31db054f80c93b08704155fa68fa3a8477b87a8c0ef7097cda3c80d      100           1005000000
 ```
+
+### Match Orders
+To match and swap buy and sell orders the `dex:MatchOrders` command can be used.
+The command creates and sends a new transaction which spends the `bid` and `ask` boxes
+with matching `ergAmt` and `tAmt` values. 
+The command: 1)  requests the storage password from the user, reads the storage file,
+unlocks it using password and gets the secret to sign the transaction; 
+2) finds the boxes with buyer's and seller's orders (using `buyerHolderBoxId` and `sellerHolderBoxId`);
+3) computes the amount of change (including dexFee and checking it is at least `minDexFee`);
+4) create output boxes for buyer's tokens and seller's Ergs;
+5) create a transaction spending buyer's and seller's order boxes and sign it using
+sender`s key.
+
+```
+$ ./ergo-dex.sh dex:MatchOrders storage "10008261a053ffb63919a410059a4e6bf1c87de6020198138544ebcbf9c2182c" "d5b150c73baad5debbaaeab27ee269cbd487ff0dcab8ff0cd5084dff8f0db167" 1000000
+Storage password>
+Creating prover... Ok
+Loading seller's box (10008261a053ffb63919a410059a4e6bf1c87de6020198138544ebcbf9c2182c)... Ok
+Loading buyer's box (d5b150c73baad5debbaaeab27ee269cbd487ff0dcab8ff0cd5084dff8f0db167)... Ok
+Signing the transaction... Ok 
+```
+[output](https://github.com/ergoplatform/ergo-tool/issues/44#issuecomment-599982502)
 
 ### Cancel Order
 
