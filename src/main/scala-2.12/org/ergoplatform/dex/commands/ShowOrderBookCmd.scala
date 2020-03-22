@@ -28,13 +28,13 @@ case class ShowOrderBookCmd(toolConf: ErgoToolConfig,
       val buyOrders = ShowOrderBook.buyOrders(buyerHolderBoxes, tokenId)
 
       console.println(s"Order book for token $tokenId:")
-      console.println("Sell orders:")
-      console.println("  Amount   Total(including DEX fee)")
-      sellOrders.foreach { o => console.println(f"${o.tokenAmount}%8d   ${o.tokenPriceWithDexFee}") }
+      console.println("\nSell orders:")
+      console.println(s"BoxId${" " * 60} Token Amount   Erg Amount(including DEX fee)")
+      sellOrders.foreach { o => console.println(f"${o.seller.getId} ${o.tokenAmount}%8d           ${o.tokenPriceWithDexFee}") }
 
-      console.println("Buy orders:")
-      console.println("  Amount   Total(including DEX fee)")
-      buyOrders.foreach { o => console.println(f"${o.tokenAmount}%8d   ${o.tokenPriceWithDexFee}") }
+      console.println("\nBuy orders:")
+      console.println(s"BoxId${" " * 60} Token Amount   Erg Amount(including DEX fee)")
+      buyOrders.foreach { o => console.println(f"${o.buyer.getId} ${o.tokenAmount}%8d           ${o.tokenPriceWithDexFee}") }
     })
   }
 }
