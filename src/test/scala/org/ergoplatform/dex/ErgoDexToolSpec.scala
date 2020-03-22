@@ -475,8 +475,8 @@ class ErgoDexToolSpec
       expectedConsoleScenario = "",
       data)
     println(res)
-    res should include ("  Amount   Total(including DEX fee)")
-    res should include ("      60   55000000")
+    res should include (s"BoxId${" " * 60} Token Amount   Erg Amount(including DEX fee)")
+    res should include ("969482db6643a16b6d8f4c8b50d0a9d5b47a698014c927ee0fa495e2adabbb8e       60           55000000")
   }
 
 }
