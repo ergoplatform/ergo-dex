@@ -13,6 +13,7 @@ import org.ergoplatform.contracts.AssetsAtomicExchangeCompilation
 import sigmastate.{SLong, Values}
 import sigmastate.Values.{SigmaPropConstant, ErgoTree}
 import sigmastate.basics.DLogProtocol.{ProveDlogProp, ProveDlog}
+import scala.collection.JavaConverters._
 
 /** Creates and sends a new transaction with seller's order for AssetsAtomicExchange
   *
@@ -57,7 +58,7 @@ case class CreateSellOrderCmd(toolConf: ErgoToolConfig,
       val unspent = loggedStep(s"Loading unspent boxes from at address $sender", console) {
         ctx.getUnspentBoxesFor(sender)
       }
-      val boxesToSpend = BoxOperations.selectTop(unspent, MinFee + dexFee, Optional.of(token))
+      val boxesToSpend = BoxOperations.selectTop(unspent, MinFee + dexFee, List(token).asJava)
 //      println(s"contract ergo tree: ${ScalaBridge.isoStringToErgoTree.from(sellerContract.getErgoTree)}")
       val txB = ctx.newTxBuilder
       val newBox = txB.outBoxBuilder
