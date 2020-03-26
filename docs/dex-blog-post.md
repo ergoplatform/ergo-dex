@@ -77,8 +77,8 @@ alternative on the diagram is identified by unique name prefixed with `!` (`!can
 example, when the `bid` box is spend by the `Cancel` transaction the `?buyer` condition
 should be satisfied, which can be read as "the signature of the buyer should be presented
 in the transaction". Therefore, only buyer can cancel the buy order. This "signature"
-condition is only required for `!cancel` spending alternative and not required for
-`!swap`. The same is true for cancelling `sellOrder`.
+condition is only required for `!cancel` spending alternative and omitted for
+the `!swap` alternative. The same is true for cancelling `sellOrder`.
 
 #### SellOrder Transaction
 
@@ -102,8 +102,8 @@ when the transaction is added to the blockchain (see
 ErgoScript).
 
 We can put all the conditions for spending `bid` and `ask` boxes on the diagram.
-However, those conditions are not specified in the `bid` and `ask` boxes,
-they are instead defined in the output boxes of the `Swap` transaction.
+However, those conditions are specified in the output boxes of the `Swap` transaction
+instead of the `bid` and `ask` boxes.
 This is more convenient in the diagram, because most of the conditions relate to the
 properties of the output boxes. We could specify those properties in the `bid` and `ask`
 boxes, but then we would had to use more complex expressions for the same logic.
@@ -128,7 +128,7 @@ Similar properties are added to the `sellerOut` box, which is specified to be at
 and the name is given using label on the box itself, rather than on the arrow.
 
 The `Swap` transaction spends two boxes `bid` and `ask` using the `!swap` spending path,
-however unlike `!cancel` the conditions on the path are not specified. This is where the
+however unlike `!cancel` the conditions on the path are omitted. This is where the
 `bid ?` and `ask ?` prefixes come into play, so the conditions on the `buyerOut` and
 `sellerOut` boxes are moved to the `!swap` spending path of the `bid` and `ask` boxes
 correspondingly.
