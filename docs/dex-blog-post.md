@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Centralized exchanges are popular, have high assets liquidity and are easy to use,
+Centralized exchanges are popular, have big liquidity and are easy to use,
 but unfortunately they may be [hacked](https://coingape.com/top-cryptocurrency-exchange-hacks-in-2019/).
 
 [Decentralized Exchanges](https://en.wikipedia.org/wiki/Decentralized_exchange) (aka
@@ -16,11 +16,11 @@ published around a time the network was launched.
 What was missing is the concrete recipe, a step-by-step guidance and tools to put conceptual
 design of smart contracts into working application running on Ergo blockchain.
 
-In this and the previously published [Appkit](https://ergoplatform.org/en/blog/2019_12_03_top5/)
+In this writing, following the previously published [Appkit](https://ergoplatform.org/en/blog/2019_12_03_top5/)
 and [ErgoTool](https://ergoplatform.org/en/blog/2019_12_31_ergo_tool/) posts we aim to
 give updates on both new application and tooling development.
 
-Ergo have expressive smart contracts and transaction model which allows an
+Ergo has expressive smart contracts and transaction model which allows an
 implementation of fully trustless DEX protocol, in which signed buy and sell orders can be
 put into the blockchain independently by buyers and sellers. An off-chain matching
 service can observe the Ergo blockchain, find matching orders and submit the swap
@@ -35,7 +35,7 @@ command line interface (CLI) utility
 
 ## DEX Protocol Overview
 
-There are three participants (buyer, seller and DEX) of the DEX dApp and five different
+There are three participants (buyer, seller and the matcher) of the DEX dApp and five different
 transaction types, which can be created by participants. The buyer wants to swap `ergAmt`
 ERGs for `tAmt` of `TID` tokens (or seller wants to sell, who send the orders first
 doesn't matter). Both the buyer and the seller can cancel their orders. The DEX off-chain

@@ -24,7 +24,7 @@ the [installation instructions](#installation) to setup ErgoDexTool on your syst
 
 ## DEX Protocol Overview
 
-There are three participants (buyer, seller and DEX) of the DEX dApp which create five
+There are three participants (buyer, seller and the matcher) of the DEX dApp which create five
 different transaction types. The buyer wants to swap `ergAmt` ERGs for `tAmt` of `TID`
 tokens (or seller wants to sell, who send the orders first doesn't matter). Both the buyer
 and the seller can cancel their orders. The DEX off-chain service can find matching orders
