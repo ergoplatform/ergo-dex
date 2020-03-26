@@ -340,9 +340,7 @@ class ErgoDexToolSpec
       },
     """.stripMargin)
 
-    res should include (s"""
-       | "value": $ergAmount,
-       |""".stripMargin)
+    res should include (s""""value": $ergAmount,""")
   }
 
   property("dex:CancelOrder command for sell order") {
