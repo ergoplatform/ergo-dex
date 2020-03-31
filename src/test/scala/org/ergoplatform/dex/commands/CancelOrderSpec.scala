@@ -23,7 +23,7 @@ class CancelOrderSpec extends PropSpec
     val orderAuthorAddress = testnetAddressGen.sample.get
     forAll(Gen.oneOf(sellOrderBoxGen(orderAuthorAddress), buyOrderBoxGen(orderAuthorAddress))) { orderBox =>
 
-      val txProto = CancelOrder.createTx(orderBox, orderAuthorAddress, getOneInputBox)
+      val txProto = CancelOrder.createTx(orderBox, orderAuthorAddress, getOneInputBox).head
 
       val valueToCoverTxFeeAndMinimumTransfer = MinFee * 2
       if (orderBox.getValue >= valueToCoverTxFeeAndMinimumTransfer) {
@@ -50,7 +50,7 @@ class CancelOrderSpec extends PropSpec
   property("valid outbox for sell order"){
     val orderAuthorAddress = testnetAddressGen.sample.get
     forAll(sellOrderBoxGen(orderAuthorAddress)) { orderBox =>
-      val txProto = CancelOrder.createTx(orderBox, orderAuthorAddress, getOneInputBox)
+      val txProto = CancelOrder.createTx(orderBox, orderAuthorAddress, getOneInputBox).head
       txProto.outputBoxes.length shouldBe 1
       val outbox = txProto.outputBoxes.head
       outbox.getValue shouldBe orderBox.getValue - MinFee
@@ -60,26 +60,44 @@ class CancelOrderSpec extends PropSpec
     }
   }
 
-  property("valid outbox for buy order"){
+  property("valid txs for buy order"){
     val orderAuthorAddress = testnetAddressGen.sample.get
     forAll(buyOrderBoxGen(orderAuthorAddress)) { orderBox =>
-      val txProto = CancelOrder.createTx(orderBox, orderAuthorAddress, getOneInputBox)
-      txProto.outputBoxes.length shouldBe 1
-      val outbox = txProto.outputBoxes.head
-      outbox.getValue shouldBe orderBox.getValue - MinFee
+      val txProtos = CancelOrder.createTx(orderBox, orderAuthorAddress, getOneInputBox)
+      txProtos.length shouldBe 2
+      val firstTx = txProtos(0)
+      val secondTx = txProtos(1)
+
+      firstTx.sendChangeTo shouldEqual orderAuthorAddress
+      firstTx.outputBoxes.length shouldBe 1
+      firstTx.outputBoxes.head.getValue shouldBe (orderBox.getValue - MinFee)
+      firstTx.outputBoxes.head.mintToken.isDefined shouldBe true
+      firstTx.outputBoxes.head.tokens shouldBe empty
+
+      secondTx.sendChangeTo shouldEqual orderAuthorAddress
+      // TODO check that minted token from previous tx is present in inputs
+      secondTx.outputBoxes.length shouldBe 1
+      secondTx.outputBoxes.head.getValue shouldBe (MinFee)
+      // TODO check that minted token from previous tx is NOT present in outputs
+      secondTx.outputBoxes.head.mintToken.isDefined shouldBe false
+
+      // txProto.outputBoxes.length shouldBe 1
+      // val outbox = txProto.outputBoxes.head
+      // outbox.getValue shouldBe orderBox.getValue - MinFee
+
       // although in this case outbox.tokes should be empty
       // as a workaround for https://github.com/ScorexFoundation/sigmastate-interpreter/issues/628
       // box.tokens cannot be empty
-      //      outbox.tokens shouldBe empty
-      val expectedOutboxContract = sendToPk(orderAuthorAddress)
-      outbox.contract.getErgoTree shouldEqual expectedOutboxContract.getErgoTree
+
+      // val expectedOutboxContract = sendToPk(orderAuthorAddress)
+      // outbox.contract.getErgoTree shouldEqual expectedOutboxContract.getErgoTree
     }
   }
 
   property("valid tx.fee"){
     val orderAuthorAddress = testnetAddressGen.sample.get
     forAll(Gen.oneOf(sellOrderBoxGen(orderAuthorAddress), buyOrderBoxGen(orderAuthorAddress))) { orderBox =>
-      val txProto = CancelOrder.createTx(orderBox, orderAuthorAddress, getOneInputBox)
+      val txProto = CancelOrder.createTx(orderBox, orderAuthorAddress, getOneInputBox).head
       txProto.fee shouldBe MinFee
     }
   }
@@ -87,7 +105,7 @@ class CancelOrderSpec extends PropSpec
   property("valid tx.sendChangeTo address"){
     val orderAuthorAddress = testnetAddressGen.sample.get
     forAll(Gen.oneOf(sellOrderBoxGen(orderAuthorAddress), buyOrderBoxGen(orderAuthorAddress))) { orderBox =>
-      val txProto = CancelOrder.createTx(orderBox, orderAuthorAddress, getOneInputBox)
+      val txProto = CancelOrder.createTx(orderBox, orderAuthorAddress, getOneInputBox).head
       txProto.sendChangeTo shouldEqual orderAuthorAddress
     }
   }

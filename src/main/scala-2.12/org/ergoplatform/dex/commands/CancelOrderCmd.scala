@@ -56,20 +56,21 @@ case class CancelOrderCmd(toolConf: ErgoToolConfig,
         BoxOperations.selectTop(unspent, nanoErgs).convertTo[IndexedSeq[InputBox]]
       }
 
-      val tx = CancelOrder.createTx(orderBox, recipientAddress, unspentBoxesForAmount)
-        .toTx(ctx.newTxBuilder)
+      val txs = CancelOrder.createTx(orderBox, recipientAddress, unspentBoxesForAmount).map(_.toTx(ctx.newTxBuilder))
 
-      val signed = loggedStep(s"Signing the transaction", console) {
-        senderProver.sign(tx)
-      }
-      val txJson = signed.toJson(true)
-      console.println(s"Tx: $txJson")
-
-      if (!runCtx.isDryRun) {
-        val txId = loggedStep(s"Sending the transaction", console) {
-          ctx.sendTransaction(signed)
+      txs.foreach{tx => 
+        val signed = loggedStep(s"Signing the transaction", console) {
+          senderProver.sign(tx)
         }
-        console.println(s"Server returned tx id: $txId")
+        val txJson = signed.toJson(true)
+        console.println(s"Tx: $txJson")
+
+        if (!runCtx.isDryRun) {
+          val txId = loggedStep(s"Sending the transaction", console) {
+            ctx.sendTransaction(signed)
+          }
+          console.println(s"Server returned tx id: $txId")
+        }
       }
     })
   }
@@ -143,11 +144,22 @@ object CancelOrder {
   }
 
   def createTx(orderBox: InputBox, recipientAddress: Address,
-               unspentBoxesForAmount: (Long) => Seq[InputBox]): TxProto = {
-    val outbox = outBoxProto(orderBox, recipientAddress)
-    val inputBoxes = selectInputBoxes(orderBox, outbox.getValue, unspentBoxesForAmount)
-    TxProto(inputBoxes, Seq(outbox), MinFee, recipientAddress)
+               unspentBoxesForAmount: (Long) => Seq[InputBox]): Seq[TxProto] = {
+    // val outbox = outBoxProto(orderBox, recipientAddress)
+    // val inputBoxes = selectInputBoxes(orderBox, outbox.getValue, unspentBoxesForAmount)
+    // val tx = TxProto(inputBoxes, Seq(outbox), MinFee, recipientAddress)
+    val orderBoxContractTemplate = ErgoTreeTemplate.fromErgoTree(orderBox.getErgoTree)
+    if (orderBoxContractTemplate.equals(SellerContract.contractTemplate)) {
+      Seq(cancelTxForSellOrder(orderBox, recipientAddress, unspentBoxesForAmount))
+    } else {
+      cancelTxsForBuyOrder(orderBox, recipientAddress, unspentBoxesForAmount)
+    }
   }
+
+  def cancelTxForSellOrder(orderBox: InputBox, recipientAddress: Address,
+               unspentBoxesForAmount: (Long) => Seq[InputBox]): TxProto = ???
+  def cancelTxsForBuyOrder(orderBox: InputBox, recipientAddress: Address,
+               unspentBoxesForAmount: (Long) => Seq[InputBox]): Seq[TxProto] = ???
 
   def outBoxProto(orderBox: InputBox, recipientAddress: Address): OutBoxProto = {
     val orderBoxContractTemplate = ErgoTreeTemplate.fromErgoTree(orderBox.getErgoTree)
