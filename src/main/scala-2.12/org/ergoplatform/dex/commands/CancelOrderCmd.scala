@@ -162,9 +162,11 @@ object CancelOrder {
       .getOrElse(sys.error(s"cannot extract seller PK from order box $orderBoxId"))
     require(sellerPk == recipientAddress.getPublicKey,
       s"sell order box $orderBoxId can be claimed with $sellerPk PK, while your's is ${recipientAddress.getPublicKey}")
-    val outbox = OutBoxProto(orderBox.getValue - txFee, Seq(orderBox.getTokens.get(0)), None, Seq(), outboxContract)
-    val inputBoxes = selectInputBoxes(orderBox, outbox.getValue, unspentBoxesForAmount)
-    TxProto(inputBoxes, Seq(outbox), MinFee, recipientAddress)
+    val outboxValue = orderBox.getValue - txFee
+    // TODO ensure outboxValue >= min box value
+    val outbox = OutBoxProto(outboxValue, Seq(orderBox.getTokens.get(0)), None, Seq(), outboxContract)
+    val inputBoxes = selectInputBoxes(orderBox, outboxValue + txFee, unspentBoxesForAmount)
+    TxProto(inputBoxes, Seq(outbox), txFee, recipientAddress)
   }
 
   def cancelTxsForBuyOrder(orderBox: InputBox, recipientAddress: Address,
@@ -186,9 +188,12 @@ object CancelOrder {
       desc = "New token each time DEX buy order is cancelled", // token description (see EIP-4)
       numberOfDecimals = 2 // number of decimals (see EIP-4)
     )
-    val outbox = OutBoxProto(orderBox.getValue - txFee, Seq(), Some(mintTokenInfo), Seq(), outboxContract)
-    val inputBoxes = selectInputBoxes(orderBox, outbox.getValue, unspentBoxesForAmount)
-    Seq(TxProto(inputBoxes, Seq(outbox), MinFee, recipientAddress))
+    // TODO ensure outboxValue >= min box value
+    // TODO add min box value + txFee for the next tx in chain
+    val outboxValue = orderBox.getValue - txFee
+    val outbox = OutBoxProto(outboxValue, Seq(), Some(mintTokenInfo), Seq(), outboxContract)
+    val inputBoxes = selectInputBoxes(orderBox, outboxValue + txFee, unspentBoxesForAmount)
+    Seq(TxProto(inputBoxes, Seq(outbox), txFee, recipientAddress))
   }
 
   def selectInputBoxes(orderBox: InputBox, outboxValue: Long,
