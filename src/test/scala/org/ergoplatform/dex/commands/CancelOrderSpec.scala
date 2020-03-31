@@ -68,29 +68,25 @@ class CancelOrderSpec extends PropSpec
       val firstTx = txProtos(0)
       val secondTx = txProtos(1)
 
-      firstTx.sendChangeTo shouldEqual orderAuthorAddress
       firstTx.outputBoxes.length shouldBe 1
+      val expectedOutboxContract = sendToPk(orderAuthorAddress)
+      firstTx.outputBoxes.head.contract.getErgoTree shouldEqual expectedOutboxContract.getErgoTree
+      firstTx.sendChangeTo shouldEqual orderAuthorAddress
       firstTx.outputBoxes.head.getValue shouldBe (orderBox.getValue - MinFee)
+      // although in this case minted token should be empty
+      // as a workaround for https://github.com/ScorexFoundation/sigmastate-interpreter/issues/628
       firstTx.outputBoxes.head.mintToken.isDefined shouldBe true
+      val mintedToken = firstTx.outputBoxes.head.mintToken.get.token
       firstTx.outputBoxes.head.tokens shouldBe empty
 
       secondTx.sendChangeTo shouldEqual orderAuthorAddress
       // TODO check that minted token from previous tx is present in inputs
       secondTx.outputBoxes.length shouldBe 1
+      secondTx.outputBoxes.head.contract.getErgoTree shouldEqual expectedOutboxContract.getErgoTree
       secondTx.outputBoxes.head.getValue shouldBe (MinFee)
-      // TODO check that minted token from previous tx is NOT present in outputs
+      // check that minted token from previous tx is NOT present in outputs
+      secondTx.outputBoxes.forall(!_.tokens.exists(_.equals(mintedToken)))
       secondTx.outputBoxes.head.mintToken.isDefined shouldBe false
-
-      // txProto.outputBoxes.length shouldBe 1
-      // val outbox = txProto.outputBoxes.head
-      // outbox.getValue shouldBe orderBox.getValue - MinFee
-
-      // although in this case outbox.tokes should be empty
-      // as a workaround for https://github.com/ScorexFoundation/sigmastate-interpreter/issues/628
-      // box.tokens cannot be empty
-
-      // val expectedOutboxContract = sendToPk(orderAuthorAddress)
-      // outbox.contract.getErgoTree shouldEqual expectedOutboxContract.getErgoTree
     }
   }
 
