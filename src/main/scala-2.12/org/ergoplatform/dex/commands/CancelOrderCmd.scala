@@ -193,6 +193,7 @@ object CancelOrder {
     val outboxValue = orderBox.getValue - txFee
     val outbox = OutBoxProto(outboxValue, Seq(), Some(mintTokenInfo), Seq(), outboxContract)
     val inputBoxes = selectInputBoxes(orderBox, outboxValue + txFee, unspentBoxesForAmount)
+    // TODO add second tx burning the minted token
     Seq(TxProto(inputBoxes, Seq(outbox), txFee, recipientAddress))
   }
 
