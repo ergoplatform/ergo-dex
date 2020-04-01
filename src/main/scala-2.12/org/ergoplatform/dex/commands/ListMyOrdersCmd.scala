@@ -7,43 +7,36 @@ import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.cli.AppContext
 import org.ergoplatform.appkit.commands._
 import org.ergoplatform.appkit.config.ErgoToolConfig
+import org.ergoplatform.ErgoAddressEncoder
+import org.ergoplatform.P2PKAddress
+import org.ergoplatform.Pay2SHAddress
+import org.ergoplatform.Pay2SAddress
 
-/** Shows buy and sell orders created from the address of this wallet
+/** Shows buy and sell orders created from the given address
   *
-  * Steps:<br/>
-  * 1) request storage password from the user<br/>
-  * 2) read storage file, unlock using password and get secret<br/>
-  * 3) get master public key and compute sender's address<br/>
-  * 4) load and show sell and buy orders<br/>
-  *
-  * @param storageFile storage with secret key of the sender
-  * @param storagePass password to access sender secret key in the storage
+  * @param address address to filter buy and sell orders
   */
 case class ListMyOrdersCmd(toolConf: ErgoToolConfig,
                            name: String,
-                           storageFile: File,
-                           storagePass: SecretString) extends Cmd with RunWithErgoClient {
+                           address: Address) extends Cmd with RunWithErgoClient {
 
   override def runWithClient(ergoClient: ErgoClient, runCtx: AppContext): Unit = {
     val console = runCtx.console
     ergoClient.execute(ctx => {
-      val senderProver = loggedStep("Creating prover", console) {
-        BoxOperations.createProver(ctx, storageFile.getPath, storagePass).build()
-      }
-      val sender = senderProver.getAddress
+      val addressEncoder = ErgoAddressEncoder(ctx.getNetworkType().networkPrefix)
+      val pubkey = address.getPublicKey()
 
       val sellerHolderBoxes = loggedStep(s"Loading seller boxes", console) {
         ctx.getUnspentBoxesForErgoTreeTemplate(SellerContract.contractTemplate).convertTo[IndexedSeq[InputBox]]
       }
-        .filter { b => SellerContract.sellerPkFromTree(b.getErgoTree).contains(sender.getPublicKey) }
+        .filter { b => SellerContract.sellerPkFromTree(b.getErgoTree).contains(pubkey) }
 
       val buyerHolderBoxes = loggedStep(s"Loading buyer boxes", console) {
         ctx.getUnspentBoxesForErgoTreeTemplate(BuyerContract.contractTemplate).convertTo[IndexedSeq[InputBox]]
       }
-        .filter { b => BuyerContract.buyerPkFromTree(b.getErgoTree).contains(sender.getPublicKey) }
+        .filter { b => BuyerContract.buyerPkFromTree(b.getErgoTree).contains(pubkey) }
 
-      console.println(s"Orders created with key $sender :")
-
+      console.println(s"Orders created from address $address :")
       console.println("Sell:")
       console.println("Box id                                                           Token ID                                                         Token amount  Token price  Box value")
       sellerHolderBoxes.foreach { b =>
@@ -66,22 +59,17 @@ case class ListMyOrdersCmd(toolConf: ErgoToolConfig,
 }
 
 object ListMyOrdersCmd extends CmdDescriptor(
-  name = "dex:ListMyOrders", cmdParamSyntax = "<storageFile>",
-  description = "show buy and sell orders created from the address of this wallet") {
+  name = "dex:ListMyOrders", cmdParamSyntax = "<address>",
+  description = "show buy and sell orders created from the given address") {
 
   override val parameters: Seq[CmdParameter] = Array(
-    CmdParameter("storageFile", FilePType,
-      "storage with secret key of the sender"),
-    CmdParameter("storagePass", "Storage password", SecretStringPType,
-      "password to access sender secret key in the storage", None,
-      Some(PasswordInput), None),
+    CmdParameter("address", AddressPType, "address"),
   )
 
   override def createCmd(ctx: AppContext): Cmd = {
     val Seq(
-      storageFile: File,
-      pass: SecretString,
+      address: Address
     ) = ctx.cmdParameters
-    ListMyOrdersCmd(ctx.toolConf, name, storageFile, pass)
+    ListMyOrdersCmd(ctx.toolConf, name, address)
   }
 }

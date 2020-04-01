@@ -104,8 +104,8 @@ Available actions:
 	issue a token with given <tokenName>, <tokenAmount>, <tokenDesc>, <tokenNumberOfDecimals> and <ergAmount> with the given <wallet file> to sign transaction (requests storage password)
   dex:ListMatchingOrders 
 	show matching token seller's and buyer's orders
-  dex:ListMyOrders <storageFile>
-	show buy and sell orders created from the address of this wallet
+  dex:ListMyOrders <address>
+	show buy and sell orders created from the given address
   dex:MatchOrders <wallet file> <sellerHolderBoxId> <buyerHolderBoxId>      <minDexFee
 	match an existing token seller's order (by <sellerHolderBoxId>) and an existing buyer's order (by <buyerHolderBoxId) and send tokens to buyer's address(extracted from buyer's order) and Ergs to seller's address(extracted from seller's order) claiming the minimum fee of <minDexFee> with the given <wallet file> to sign transaction (requests storage password)
   dex:SellOrder <wallet file> <ergPrice> <tokenId> <tokenAmount> <dexFee>
@@ -295,7 +295,7 @@ Signing the transaction... Ok
 To show your outstanding buy/sell orders (that use your public key in their contracts) use
 `dex:ListMyOrders` command:
 ```
-$ ./ergo-dex.sh dex:ListMyOrders storage/secret.json
+$ ./ergo-dex.sh dex:ListMyOrders "9hHDQb26AjnJUXxcqriqY1mnhpLuUeC81C4pggtK7tupr92Ea1K"
 Storage password>
 Creating prover... Ok
 Loading seller boxes... Ok

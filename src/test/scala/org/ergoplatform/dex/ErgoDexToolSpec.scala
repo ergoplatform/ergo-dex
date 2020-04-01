@@ -405,12 +405,12 @@ class ErgoDexToolSpec
 
     val res = runCommand(ErgoDexTool, "dex:ListMyOrders",
       args = Seq(
-        "storage/E2.json",
+        "9hHDQb26AjnJUXxcqriqY1mnhpLuUeC81C4pggtK7tupr92Ea1K",
       ),
-      expectedConsoleScenario =
-        s"""Storage password> ::abc;
-           |""".stripMargin, data)
+      expectedConsoleScenario = "", 
+      data)
     println(res)
+    res should include("Orders created from address 9hHDQb26AjnJUXxcqriqY1mnhpLuUeC81C4pggtK7tupr92Ea1K :")
     res should include ("655ad79f579677fa0f44e72713ecd8f054e534a02e66d8aef4fc2729b9e62b76 21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1 60            50000000     5000000")
     res should include ("969482db6643a16b6d8f4c8b50d0a9d5b47a698014c927ee0fa495e2adabbb8e 21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1 60            55000000")
   }
@@ -434,18 +434,15 @@ class ErgoDexToolSpec
     )
     val inputBoxes = IndexedSeq[InputBox]()
     val res = runCommandWithCtxStubber("dex:ListMyOrders",
-      args = Seq(
-        "storage/E2.json",
-      ),
-      expectedConsoleScenario =
-        s"""Storage password> ::abc;
-           |""".stripMargin, 
+      args = Seq("9hHDQb26AjnJUXxcqriqY1mnhpLuUeC81C4pggtK7tupr92Ea1K"),
+      expectedConsoleScenario = "", 
       ctxStubber = { ctx: BlockchainContext =>
           doReturn(inputBoxes.convertTo[JList[InputBox]])
             .when(ctx)
             .getUnspentBoxesForErgoTreeTemplate(any[ErgoTreeTemplate])
       })
     println(res)
+    res should include("Orders created from address 9hHDQb26AjnJUXxcqriqY1mnhpLuUeC81C4pggtK7tupr92Ea1K :")
     res should not include ("655ad79f579677fa0f44e72713ecd8f054e534a02e66d8aef4fc2729b9e62b76 21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1 60            50000000     5000000")
     res should not include ("969482db6643a16b6d8f4c8b50d0a9d5b47a698014c927ee0fa495e2adabbb8e 21f84cf457802e66fb5930fb5d45fbe955933dc16a72089bf8980797f24e2fa1 60            55000000")
   }
