@@ -14,7 +14,7 @@ import org.ergoplatform.Pay2SAddress
 
 /** Shows buy and sell orders created from the given address
   *
-  * @param address address 
+  * @param address address to filter buy and sell orders
   */
 case class ListMyOrdersCmd(toolConf: ErgoToolConfig,
                            name: String,
