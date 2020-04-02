@@ -13,8 +13,8 @@ ErgoDexTool is a [command-line
 interface](https://en.wikipedia.org/wiki/Command-line_interface) for
 [Ergo](https://ergoplatform.org/) blockchain. It is implemented in Scala using [Ergo
 Appkit Commands](https://github.com/ergoplatform/ergo-appkit) framework. ErgoDexTool is a
-Java application and it can be executed on Java 8 or later compliant JRE. In addition
-ErgoDexTool can be compiled to a native executable using GraalVM's
+Java application which uses Java 8 or later compliant JRE for execution. In addition you
+can compile ErgoDexTool to a native executable using GraalVM's
 [native-image](https://www.graalvm.org/docs/reference-manual/native-image/). This
 capability is inherited from Appkit, which is native-image friendly by design.
 
@@ -24,13 +24,12 @@ the [installation instructions](#installation) to setup ErgoDexTool on your syst
 
 ## DEX Protocol Overview
 
-There are three participants (buyer, seller and DEX) of the DEX dApp and five different
-transaction types, which can be created by participants. The buyer wants to swap `ergAmt`
-ERGs for `tAmt` of `TID` tokens (or seller wants to sell, who send the orders first
-doesn't matter). Both the buyer and the seller can cancel their orders. The DEX off-chain
-service can find matching orders and create a special `Swap` transaction to complete the
-exchange without knowledge of any secrets, thus both the buyer and the seller are in full
-control of their funds.
+There are three participants (buyer, seller and the matcher) of the DEX dApp which create five
+different transaction types. The buyer wants to swap `ergAmt` ERGs for `tAmt` of `TID`
+tokens (or seller wants to sell, who send the orders first doesn't matter). Both the buyer
+and the seller can cancel their orders. The DEX off-chain service can find matching orders
+and create a special `Swap` transaction to complete the exchange without knowledge of any
+secrets, thus both the buyer and the seller are in full control of their funds.
 
 The following diagram fully specifies all the five transactions of the DEX scenario.
 For each transaction there is a corresponding command in ErgoDexTool as well as
@@ -137,17 +136,17 @@ appropriate archive and extract it locally on you computer.
 
 ## Commands
 
-A unit of execution in ErgoDexTool is a command. The command is specified by its name
-when the tool is started and it can be followed by options and parameters. 
+A unit of execution in ErgoDexTool is a command. Specify the command by its name followed
+by options and parameters when you start the tool in the command line.
 ```
-$ ./ergo-dex.sh dex:IssueToken storage.json 1000000 1000 "TKN" "DEX test token" "2" 
+$ ./ergo-dex.sh dex:IssueToken --conf my_config.json storage.json 1000000 1000 "TKN" "DEX test token" "2" 
 ```
-The command option is given by the name with `--` prefix (i.e. `--conf`) and the value
-(i.e. `ergo_tool_config.json`) separated by the whitespace. Options (name-value pairs) can
-go anywhere in the command line. All other components which remain after removing all the
-options are the command name and parameters (i.e. `storage.json`, `1000000` etc).
+The command option has the name with `--` prefix (i.e. `--conf`) and the value (i.e.
+`my_config.json`) which goes after the whitespace. Options (name-value pairs) can go
+anywhere in the command line. The tool first extracts all the options from the command
+line and uses all the remaining components as the command name and parameters.
 
-For further detail of how a command line is parsed see this
+For further detail of how the ErgoDexTool parses a command line see this
 [description](https://github.com/ergoplatform/ergo-appkit/blob/75468e4c0fd4cf1c2417be970119c47ba3c5dbb7/appkit/src/main/scala/org/ergoplatform/appkit/cli/CmdLineParser.scala#L8).
 
 #### Supported Commands
@@ -163,17 +162,17 @@ of the commands
 ### Issue A New Token
 
 The first operation in the lifecycle of a new token is its issue. Ergo natively support
-issue, storage and transfer of tokens. New tokens can be issued according to the [Assets
-Standard](https://github.com/ergoplatform/eips/blob/master/eip-0004.md).
+issue, storage and transfer of tokens. Use ErgoDexTool to issue tokens according to the
+[EIP-4 Standard](https://github.com/ergoplatform/eips/blob/master/eip-0004.md).
 
-A token is issued by creating a new box with the `ergAmount` of ERGs and (`tokenId`,
-`tokenAmount`) pair in the `R2` register, where `tokenId` is selected automatically using
-the id of the first input box of the transaction (as required by Ergo protocol).
-Additional registers should also be specified as required by
-[EIP-4](https://github.com/ergoplatform/eips/blob/master/eip-0004.md) standard. The
-`dex:IssueToken` command uses a wallet storage given by `<wallet file>` to transfer given
-`ergAmount` of ERGs to a new box with tokens. The new box will belong the same wallet
-given by `<wallet file>`.
+You can issue a token by creating a new box with the `ergAmount` of ERGs and (`tokenId`,
+`tokenAmount`) pair in the `R2` register. The tool automatically selects `tokenId` using
+the id of the first input box of the transaction.
+You also need to specify additional parameters of the command to fill up registers 
+(as the `EIP-4 Standard` requires). 
+The `dex:IssueToken` command uses a wallet storage given by the `<wallet file>` parameter
+to transfer the `ergAmount` amount of ERGs to a new box with tokens. The new box belongs
+to the same wallet given by `<wallet file>`.
 
 The following ErgoDexTool command allows to issue a new token on the Ergo blockchain.
 ```
@@ -216,14 +215,13 @@ The contract is
 [implemented](http://github.com/ergoplatform/ergo-contracts/blob/391912fbd466c1b262e8d2fa61d4bfd94981df4a/verified-contracts/src/main/scala/org/ergoplatform/contracts/AssetsAtomicExchange.scala#L41-L58)
 in the repository of certified contracts.
 
-The `sellOrder` contract guarantees that the seller box can be spent:
-1) by seller itself, which is the way for a seller to [cancel the
-order](#canceling-the-orders)
-2) by a _swap transaction_ created by anyone else in which the `ask` box is spent together
-(i.e. atomically) with the matched `bid` box (see the diagram and also [buy
-tokens](#buy-tokens)).
+The `sellOrder` contract guarantees the following:
+1) The seller can spend the `ask` box at any time, which is the way for a seller to
+[cancel the order](#cancel-order)
+2) Anyone else can create a _swap transaction_ which spends both the `ask` box and the
+matched `bid` box atomically (see the diagram and also [buy tokens](#buy-tokens)).
 
-The following command can be used to create a new `ask` box to sell tokens:
+Use the following command to create a new `ask` box to sell tokens:
 ```
 $ ./ergo-dex.sh dex:SellOrder storage/secret.json 10000000 "d0105f7469be3ac90f16d943b29133f16c3bf4d85bd754656194cead849baf1e" 3 5000000
 Storage password>
@@ -275,12 +273,13 @@ The contract is
 [implemented](http://github.com/ergoplatform/ergo-contracts/blob/5d064a71d2300684d18069912776b0e125f5c5bd/verified-contracts/src/main/scala/org/ergoplatform/contracts/AssetsAtomicExchange.scala#L12-L40)
 in the repository of certified contracts.
 
-The buyer contract guarantees that the buyer box can be spent:
-1) by the buyer itself, which is the way for the buyer to [cancel the order](#cancel-order)
-2) by a _swap transaction_ created by anyone else in which the `bid` box is spent together (i.e atomically)
-with the matched `ask` box (see the diagram and also [sell tokens](#sell-tokens)).
+The `buyOrder` contract guarantees the following:
+1) The buyer can spend the `bid` box at any time, which is the way for a buyer to [cancel
+the order](#cancel-order)
+2) Anyone else can create a _swap transaction_ which spends both the `ask` box and the
+matched `bid` box atomically (see the diagram and also [buy tokens](#buy-tokens)).
 
-The following command can be used to create a new _buy order_ to buy tokens:
+Use the following command to create a new _buy order_ to buy tokens:
 ```
 $ ./ergo-dex.sh dex:BuyOrder storage/secret.json 10000000 "d0105f7469be3ac90f16d943b29133f16c3bf4d85bd754656194cead849baf1e" 3 5000000
 Storage password>
@@ -329,7 +328,7 @@ BoxId                                                             Token Amount  
 ```
 
 ### Match Orders
-To match and swap buy and sell orders the `dex:MatchOrders` command can be used.
+You can use the `dex:MatchOrders` command to match and swap buy and sell orders.
 The command creates and sends a new transaction which spends the `bid` and `ask` boxes
 with matching `ergAmt` and `tAmt` values. 
 The command: 
@@ -354,8 +353,8 @@ Signing the transaction... Ok
 ### Cancel Order
 
 To cancel a buy/sell order you need to "spend" the box of the order (`bid` of `ask` boxes
-on the diagram) by sending its assets (coins and/or tokens) back to your own address. The
-following command can be used to spend sell/buy order box and send the assets home:
+on the diagram) by sending its assets (coins and/or tokens) back to your own address. Use
+the following command to spend sell/buy order box and send the assets home:
 ```
 $ ./ergo-dex.sh dex:CancelOrder storage/secret.json "357bba87df0299ed692e3945fcf6ab88465e0dc7fff6db48957c939603ae23f0"
 Storage password>
