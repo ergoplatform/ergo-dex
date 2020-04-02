@@ -379,6 +379,7 @@ class ErgoDexToolSpec
            |""".stripMargin, data)
     println(res)
     res should include ("\"transactionId\": \"3acd12f5a85cfeba4096d2d5a562ac3f44ee2bb7e3ba4861b1d85d2f01eac048\",")
+    res should include ("\"transactionId\": \"secondTx\",")
   }
 
   property("dex:ListMyOrders command") {

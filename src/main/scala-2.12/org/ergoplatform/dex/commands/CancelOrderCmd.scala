@@ -56,20 +56,38 @@ case class CancelOrderCmd(toolConf: ErgoToolConfig,
         BoxOperations.selectTop(unspent, nanoErgs).convertTo[IndexedSeq[InputBox]]
       }
 
-      val tx = CancelOrder.createTx(orderBox, recipientAddress, unspentBoxesForAmount)
-        .toTx(ctx.newTxBuilder)
+      val orderBoxContractTemplate = ErgoTreeTemplate.fromErgoTree(orderBox.getErgoTree)
 
-      val signed = loggedStep(s"Signing the transaction", console) {
-        senderProver.sign(tx)
-      }
-      val txJson = signed.toJson(true)
-      console.println(s"Tx: $txJson")
-
-      if (!runCtx.isDryRun) {
-        val txId = loggedStep(s"Sending the transaction", console) {
-          ctx.sendTransaction(signed)
+      val signedTxs = if (orderBoxContractTemplate.equals(SellerContract.contractTemplate)) {
+        val tx = CancelOrder.txForSellOrder(orderBox, recipientAddress, unspentBoxesForAmount).toTx(ctx.newTxBuilder)
+        val signed = loggedStep(s"Signing cancel transaction for sell order", console) {
+          senderProver.sign(tx)
         }
-        console.println(s"Server returned tx id: $txId")
+        val txJson = signed.toJson(true)
+        console.println(s"Tx: ${signed.toJson(true)}")
+        Seq(signed)
+      } else {
+        val firstTx = CancelOrder.firstTxForBuyOrder(orderBox, recipientAddress, unspentBoxesForAmount).toTx(ctx.newTxBuilder)
+        val signedFirstTx = loggedStep(s"Signing the first cancel transaction for buy order", console) {
+          senderProver.sign(firstTx)
+        }
+        console.println(s"Tx: ${signedFirstTx.toJson(true)}")
+        val inputBoxWithToken = signedFirstTx.getOutputsToSpend().get(0)
+        val secondTx = CancelOrder.txToBurnMintedToken(inputBoxWithToken, recipientAddress).toTx(ctx.newTxBuilder)
+        val signedSecondTx = loggedStep(s"Signing the second cancel transaction for buy order", console) {
+          senderProver.sign(secondTx)
+        }
+        console.println(s"Tx: ${signedSecondTx.toJson(true)}")
+        Seq(signedFirstTx, signedSecondTx)
+      }
+
+      signedTxs.foreach{ tx => 
+        if (!runCtx.isDryRun) {
+          val txId = loggedStep(s"Sending the transaction(s)", console) {
+            ctx.sendTransaction(tx)
+          }
+          console.println(s"Server returned tx id: $txId")
+        }
       }
     })
   }
@@ -142,53 +160,62 @@ object CancelOrder {
     }
   }
 
-  def createTx(orderBox: InputBox, recipientAddress: Address,
+  def txForSellOrder(orderBox: InputBox, recipientAddress: Address,
                unspentBoxesForAmount: (Long) => Seq[InputBox]): TxProto = {
-    val outbox = outBoxProto(orderBox, recipientAddress)
-    val inputBoxes = selectInputBoxes(orderBox, outbox.getValue, unspentBoxesForAmount)
-    TxProto(inputBoxes, Seq(outbox), MinFee, recipientAddress)
-  }
-
-  def outBoxProto(orderBox: InputBox, recipientAddress: Address): OutBoxProto = {
-    val orderBoxContractTemplate = ErgoTreeTemplate.fromErgoTree(orderBox.getErgoTree)
     val orderBoxId = orderBox.getId
     val txFee = MinFee
     val outboxContract = new ErgoTreeContract(SigmaPropConstant(recipientAddress.getPublicKey))
-    if (orderBoxContractTemplate.equals(SellerContract.contractTemplate)) {
-      // sell order
-      val sellerPk = SellerContract.sellerPkFromTree(orderBox.getErgoTree)
-        .getOrElse(sys.error(s"cannot extract seller PK from order box $orderBoxId"))
-      require(sellerPk == recipientAddress.getPublicKey,
-        s"sell order box $orderBoxId can be claimed with $sellerPk PK, while your's is ${recipientAddress.getPublicKey}")
-      OutBoxProto(orderBox.getValue - txFee, Seq(orderBox.getTokens.get(0)), None, Seq(), outboxContract)
-    } else if (orderBoxContractTemplate.equals(BuyerContract.contractTemplate)) {
-      // buy order
-      val buyerPk = BuyerContract.buyerPkFromTree(orderBox.getErgoTree)
-        .getOrElse(sys.error(s"cannot extract buyer PK from order box $orderBoxId"))
-      require(buyerPk == recipientAddress.getPublicKey,
-        s"buy order box $orderBoxId can be claimed with ${buyerPk} PK, while yours is ${recipientAddress.getPublicKey}")
-      // as a workaround for https://github.com/ScorexFoundation/sigmastate-interpreter/issues/628
-      // box.tokens cannot be empty, so we mint new token
-      val token = new ErgoToken(orderBox.getId, 1L)
-      // according to https://github.com/ergoplatform/eips/blob/master/eip-0004.md
-      val mintTokenInfo = MintTokenInfo(
-        token = token,
-        name = "CANCELDEXBUY", // token name (see EIP-4)
-        desc = "New token each time DEX buy order is cancelled", // token description (see EIP-4)
-        numberOfDecimals = 2 // number of decimals (see EIP-4)
-      )
-      OutBoxProto(orderBox.getValue - txFee, Seq(), Some(mintTokenInfo), Seq(), outboxContract)
-    } else {
-      sys.error(s"unsupported contract type in box ${orderBoxId.toString}")
-    }
+    val sellerPk = SellerContract.sellerPkFromTree(orderBox.getErgoTree)
+      .getOrElse(sys.error(s"cannot extract seller PK from order box $orderBoxId"))
+    require(sellerPk == recipientAddress.getPublicKey,
+      s"sell order box $orderBoxId can be claimed with $sellerPk PK, while your's is ${recipientAddress.getPublicKey}")
+    val outboxValue = math.max(orderBox.getValue - txFee, MinFee)
+    val outbox = OutBoxProto(outboxValue, Seq(orderBox.getTokens.get(0)), None, Seq(), outboxContract)
+    val inputBoxes = selectInputBoxes(orderBox, outboxValue + txFee, unspentBoxesForAmount)
+    TxProto(inputBoxes, Seq(outbox), txFee, recipientAddress)
   }
 
-  def selectInputBoxes(orderBox: InputBox, outboxValue: Long,
+  def firstTxForBuyOrder(orderBox: InputBox, recipientAddress: Address,
+               unspentBoxesForAmount: (Long) => Seq[InputBox]): TxProto = {
+    val orderBoxId = orderBox.getId
+    val txFee = MinFee
+    val outboxContract = new ErgoTreeContract(SigmaPropConstant(recipientAddress.getPublicKey))
+    val buyerPk = BuyerContract.buyerPkFromTree(orderBox.getErgoTree)
+      .getOrElse(sys.error(s"cannot extract buyer PK from order box $orderBoxId"))
+    require(buyerPk == recipientAddress.getPublicKey,
+      s"buy order box $orderBoxId can be claimed with ${buyerPk} PK, while yours is ${recipientAddress.getPublicKey}")
+    // as a workaround for https://github.com/ScorexFoundation/sigmastate-interpreter/issues/628
+    // box.tokens cannot be empty, so we mint new token
+    val token = new ErgoToken(orderBox.getId, 1L)
+    // according to https://github.com/ergoplatform/eips/blob/master/eip-0004.md
+    val mintTokenInfo = MintTokenInfo(
+      token = token,
+      name = "CANCELDEXBUY", // token name (see EIP-4)
+      desc = "New token each time DEX buy order is cancelled", // token description (see EIP-4)
+      numberOfDecimals = 2 // number of decimals (see EIP-4)
+    )
+    val feeForSecondTx = MinFee + txFee
+    val outboxValue = math.max(orderBox.getValue - txFee, MinFee + feeForSecondTx)
+    val outbox = OutBoxProto(outboxValue, Seq(), Some(mintTokenInfo), Seq(), outboxContract)
+    val inputBoxes = selectInputBoxes(orderBox, outboxValue + txFee, unspentBoxesForAmount)
+    TxProto(inputBoxes, Seq(outbox), txFee, recipientAddress)
+  }
+
+  def txToBurnMintedToken(inputBoxWithToken: InputBox, recipientAddress: Address): TxProto = {
+    require(inputBoxWithToken.getTokens.size == 1, s"expected 1 token to burn, got ${inputBoxWithToken.getTokens}")
+    val txFee = MinFee
+    val outboxValue = inputBoxWithToken.getValue() - txFee 
+    val outboxContract = new ErgoTreeContract(SigmaPropConstant(recipientAddress.getPublicKey))
+    val outbox = OutBoxProto(outboxValue, Seq(), None, Seq(), outboxContract)
+    TxProto(Seq(inputBoxWithToken), Seq(outbox), txFee, recipientAddress)
+  }
+
+  def selectInputBoxes(orderBox: InputBox, toSpend: Long,
                        unspentBoxesForAmount: (Long) => Seq[InputBox]): Seq[InputBox] =
-    if (outboxValue >= MinFee) {
+    if (orderBox.getValue >= toSpend) {
       Seq(orderBox)
     } else {
-      Seq(orderBox) ++ unspentBoxesForAmount(MinFee - outboxValue)
+      Seq(orderBox) ++ unspentBoxesForAmount(toSpend - orderBox.getValue())
     }
 
 }
