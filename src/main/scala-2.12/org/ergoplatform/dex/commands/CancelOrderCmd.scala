@@ -58,9 +58,8 @@ case class CancelOrderCmd(toolConf: ErgoToolConfig,
 
       val orderBoxContractTemplate = ErgoTreeTemplate.fromErgoTree(orderBox.getErgoTree)
 
-      val txBuilder = ctx.newTxBuilder
       val signedTxs = if (orderBoxContractTemplate.equals(SellerContract.contractTemplate)) {
-        val tx = CancelOrder.txForSellOrder(orderBox, recipientAddress, unspentBoxesForAmount).toTx(txBuilder)
+        val tx = CancelOrder.txForSellOrder(orderBox, recipientAddress, unspentBoxesForAmount).toTx(ctx.newTxBuilder)
         val signed = loggedStep(s"Signing cancel transaction for sell order", console) {
           senderProver.sign(tx)
         }
@@ -68,13 +67,13 @@ case class CancelOrderCmd(toolConf: ErgoToolConfig,
         console.println(s"Tx: ${signed.toJson(true)}")
         Seq(signed)
       } else {
-        val firstTx = CancelOrder.firstTxForBuyOrder(orderBox, recipientAddress, unspentBoxesForAmount).toTx(txBuilder)
+        val firstTx = CancelOrder.firstTxForBuyOrder(orderBox, recipientAddress, unspentBoxesForAmount).toTx(ctx.newTxBuilder)
         val signedFirstTx = loggedStep(s"Signing the first cancel transaction for buy order", console) {
           senderProver.sign(firstTx)
         }
         console.println(s"Tx: ${signedFirstTx.toJson(true)}")
         val inputBoxWithToken = signedFirstTx.getOutputsToSpend().get(0)
-        val secondTx = CancelOrder.txToBurnMintedToken(inputBoxWithToken, recipientAddress).toTx(txBuilder)
+        val secondTx = CancelOrder.txToBurnMintedToken(inputBoxWithToken, recipientAddress).toTx(ctx.newTxBuilder)
         val signedSecondTx = loggedStep(s"Signing the second cancel transaction for buy order", console) {
           senderProver.sign(secondTx)
         }
@@ -203,8 +202,9 @@ object CancelOrder {
   }
 
   def txToBurnMintedToken(inputBoxWithToken: InputBox, recipientAddress: Address): TxProto = {
+    require(inputBoxWithToken.getTokens.size == 1, s"expected 1 token to burn, got ${inputBoxWithToken.getTokens}")
     val txFee = MinFee
-    val outboxValue = MinFee
+    val outboxValue = inputBoxWithToken.getValue() - txFee 
     val outboxContract = new ErgoTreeContract(SigmaPropConstant(recipientAddress.getPublicKey))
     val outbox = OutBoxProto(outboxValue, Seq(), None, Seq(), outboxContract)
     TxProto(Seq(inputBoxWithToken), Seq(outbox), txFee, recipientAddress)

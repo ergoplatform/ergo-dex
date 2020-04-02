@@ -7,6 +7,7 @@ import org.scalacheck.Gen
 import org.scalatest.{PropSpec, Matchers}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import sigmastate.Values.SigmaPropConstant
+import org.ergoplatform.appkit.ErgoToken
 
 class CancelOrderSpec extends PropSpec
   with Matchers
@@ -77,52 +78,54 @@ class CancelOrderSpec extends PropSpec
     }
   }
 
-/*
   property("valid txs for buy order"){
     val orderAuthorAddress = testnetAddressGen.sample.get
     forAll(buyOrderBoxGen(orderAuthorAddress)) { orderBox =>
-      val txProtos = CancelOrder.createTx(orderBox, orderAuthorAddress, getOneInputBox)
-      txProtos.length shouldBe 2
-      val firstTx = txProtos(0)
-      val secondTx = txProtos(1)
-
-      firstTx.outputBoxes.length shouldBe 1
+      val expectedTokenToBurn = new ErgoToken(orderBox.getId, 1L)
+      val firstTx = CancelOrder.firstTxForBuyOrder(orderBox, orderAuthorAddress, getOneInputBox)
+      firstTx.outputBoxes should have size 1
       val expectedOutboxContract = sendToPk(orderAuthorAddress)
       firstTx.outputBoxes.head.contract.getErgoTree shouldEqual expectedOutboxContract.getErgoTree
       firstTx.sendChangeTo shouldEqual orderAuthorAddress
-      firstTx.outputBoxes.head.getValue shouldBe (orderBox.getValue - MinFee)
+      val feeForSecondTx = MinFee * 2
+      val expectedOutboxValue = math.max(orderBox.getValue - MinFee, MinFee + feeForSecondTx)
+      firstTx.outputBoxes.head.getValue shouldBe expectedOutboxValue
       // although in this case minted token should be empty
       // as a workaround for https://github.com/ScorexFoundation/sigmastate-interpreter/issues/628
       firstTx.outputBoxes.head.mintToken.isDefined shouldBe true
-      val mintedToken = firstTx.outputBoxes.head.mintToken.get.token
+      firstTx.outputBoxes.head.mintToken.get.token shouldEqual expectedTokenToBurn
       firstTx.outputBoxes.head.tokens shouldBe empty
+      firstTx.fee shouldBe MinFee
+      firstTx.sendChangeTo shouldEqual orderAuthorAddress
+
+      val outBoxWithToken = firstTx.outputBoxes(0)
+      val mockedInputBoxWithTokenToBurn = MockInputBox(outBoxWithToken.getValue, 
+        IndexedSeq(outBoxWithToken.mintToken.get.token))
+      val secondTx = CancelOrder.txToBurnMintedToken(mockedInputBoxWithTokenToBurn, orderAuthorAddress)
 
       secondTx.sendChangeTo shouldEqual orderAuthorAddress
-      // TODO check that minted token from previous tx is present in inputs
-      secondTx.outputBoxes.length shouldBe 1
+      secondTx.inputBoxes should have size 1
+      secondTx.inputBoxes.head.getTokens should have size 1
+      secondTx.inputBoxes.head.getTokens.get(0) shouldEqual expectedTokenToBurn 
+      secondTx.outputBoxes should have size 1
       secondTx.outputBoxes.head.contract.getErgoTree shouldEqual expectedOutboxContract.getErgoTree
-      secondTx.outputBoxes.head.getValue shouldBe (MinFee)
+      secondTx.outputBoxes.head.getValue shouldBe mockedInputBoxWithTokenToBurn.getValue - MinFee
       // check that minted token from previous tx is NOT present in outputs
-      secondTx.outputBoxes.forall(!_.tokens.exists(_.equals(mintedToken)))
+      secondTx.outputBoxes.head.tokens should be ('empty)
       secondTx.outputBoxes.head.mintToken.isDefined shouldBe false
+      secondTx.fee shouldBe MinFee
+      secondTx.sendChangeTo shouldEqual orderAuthorAddress
     }
   }
 
-  property("valid tx.fee"){
+  property("Sell order: valid tx.fee, outbox value, change address"){
     val orderAuthorAddress = testnetAddressGen.sample.get
-    forAll(Gen.oneOf(sellOrderBoxGen(orderAuthorAddress), buyOrderBoxGen(orderAuthorAddress))) { orderBox =>
-      val txProto = CancelOrder.createTx(orderBox, orderAuthorAddress, getOneInputBox).head
-      txProto.fee shouldBe MinFee
-    }
-  }
-
-  property("valid tx.sendChangeTo address"){
-    val orderAuthorAddress = testnetAddressGen.sample.get
-    forAll(Gen.oneOf(sellOrderBoxGen(orderAuthorAddress), buyOrderBoxGen(orderAuthorAddress))) { orderBox =>
-      val txProto = CancelOrder.createTx(orderBox, orderAuthorAddress, getOneInputBox).head
+    forAll(sellOrderBoxGen(orderAuthorAddress)) { orderBox =>
+      val txProto = CancelOrder.txForSellOrder(orderBox, orderAuthorAddress, getOneInputBox)
+      txProto.fee should be >= MinFee
+      txProto.outputBoxes.foreach(_.getValue should be >= MinFee)
       txProto.sendChangeTo shouldEqual orderAuthorAddress
     }
   }
-  */
-}
 
+}
