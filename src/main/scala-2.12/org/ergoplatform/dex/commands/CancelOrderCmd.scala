@@ -73,7 +73,8 @@ case class CancelOrderCmd(toolConf: ErgoToolConfig,
           senderProver.sign(firstTx)
         }
         console.println(s"Tx: ${signedFirstTx.toJson(true)}")
-        val secondTx = CancelOrder.txToBurnMintedToken(signedFirstTx, recipientAddress).toTx(txBuilder)
+        val inputBoxWithToken = signedFirstTx.getOutputsToSpend().get(0)
+        val secondTx = CancelOrder.txToBurnMintedToken(inputBoxWithToken, recipientAddress).toTx(txBuilder)
         val signedSecondTx = loggedStep(s"Signing the second cancel transaction for buy order", console) {
           senderProver.sign(secondTx)
         }
@@ -201,8 +202,7 @@ object CancelOrder {
     TxProto(inputBoxes, Seq(outbox), txFee, recipientAddress)
   }
 
-  def txToBurnMintedToken(firstTx: SignedTransaction, recipientAddress: Address): TxProto = {
-    val inputBoxWithToken = firstTx.getOutputsToSpend().get(0)
+  def txToBurnMintedToken(inputBoxWithToken: InputBox, recipientAddress: Address): TxProto = {
     val txFee = MinFee
     val outboxValue = MinFee
     val outboxContract = new ErgoTreeContract(SigmaPropConstant(recipientAddress.getPublicKey))

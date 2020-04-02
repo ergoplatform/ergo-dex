@@ -19,11 +19,10 @@ class CancelOrderSpec extends PropSpec
   def sendToPk(address: Address): ErgoContract =
     new ErgoTreeContract(SigmaPropConstant(address.getPublicKey))
 
-  property("if orderBox.value does not cover tx fee and output box value add more input"){
+  property("Sell order: if orderBox.value does not cover tx fee and output box value add more input") {
     val orderAuthorAddress = testnetAddressGen.sample.get
-    forAll(Gen.oneOf(sellOrderBoxGen(orderAuthorAddress), buyOrderBoxGen(orderAuthorAddress))) { orderBox =>
-
-      val txProto = CancelOrder.createTx(orderBox, orderAuthorAddress, getOneInputBox).head
+    forAll(sellOrderBoxGen(orderAuthorAddress)) { orderBox =>
+      val txProto = CancelOrder.txForSellOrder(orderBox, orderAuthorAddress, getOneInputBox)
 
       val valueToCoverTxFeeAndMinimumTransfer = MinFee * 2
       if (orderBox.getValue >= valueToCoverTxFeeAndMinimumTransfer) {
@@ -34,32 +33,51 @@ class CancelOrderSpec extends PropSpec
     }
   }
 
+  property("Buy order: if orderBox.value does not cover tx fee and output box value add more input") {
+    val orderAuthorAddress = testnetAddressGen.sample.get
+    forAll(buyOrderBoxGen(orderAuthorAddress)) { orderBox =>
+      val txProto = CancelOrder.firstTxForBuyOrder(orderBox, orderAuthorAddress, getOneInputBox)
+
+      val valueToCoverTxFeeAndMinimumTransfer = MinFee * 2
+      val valueToCoverSecondTxFeeAndValue = MinFee * 2
+      val total = valueToCoverTxFeeAndMinimumTransfer + valueToCoverSecondTxFeeAndValue
+      if (orderBox.getValue >= total) {
+          txProto.inputBoxes should contain only orderBox
+      } else {
+          txProto.inputBoxes should contain (orderBox)
+      }
+    }
+  }
+
   property("cancel wrong contract type (neither sell or buy order) should fail"){
     val orderBox = MockInputBox(validBoxValueGen.sample.get)
-    an[RuntimeException] should be thrownBy CancelOrder.createTx(orderBox, testnetAddressGen.sample.get, getOneInputBox)
+    an[RuntimeException] should be thrownBy CancelOrder.firstTxForBuyOrder(orderBox, testnetAddressGen.sample.get, getOneInputBox)
+    an[RuntimeException] should be thrownBy CancelOrder.txForSellOrder(orderBox, testnetAddressGen.sample.get, getOneInputBox)
   }
 
   property("using withdrawal address not in the order contract should fail "){
     val orderAuthorAddress = testnetAddressGen.sample.get
     forAll(Gen.oneOf(sellOrderBoxGen(orderAuthorAddress), buyOrderBoxGen(orderAuthorAddress))) { orderBox =>
       val invalidRecipientAddress = testnetAddressGen.sample.get
-      an[RuntimeException] should be thrownBy CancelOrder.createTx(orderBox, invalidRecipientAddress, getOneInputBox)
+      an[RuntimeException] should be thrownBy CancelOrder.txForSellOrder(orderBox, invalidRecipientAddress, getOneInputBox)
+      an[RuntimeException] should be thrownBy CancelOrder.firstTxForBuyOrder(orderBox, invalidRecipientAddress, getOneInputBox)
     }
   }
 
   property("valid outbox for sell order"){
     val orderAuthorAddress = testnetAddressGen.sample.get
     forAll(sellOrderBoxGen(orderAuthorAddress)) { orderBox =>
-      val txProto = CancelOrder.createTx(orderBox, orderAuthorAddress, getOneInputBox).head
+      val txProto = CancelOrder.txForSellOrder(orderBox, orderAuthorAddress, getOneInputBox)
       txProto.outputBoxes.length shouldBe 1
       val outbox = txProto.outputBoxes.head
-      outbox.getValue shouldBe orderBox.getValue - MinFee
+      outbox.getValue shouldBe math.max(orderBox.getValue - MinFee, MinFee)
       outbox.tokens should contain only orderBox.getTokens.get(0)
       val expectedOutboxContract = sendToPk(orderAuthorAddress)
       outbox.contract.getErgoTree shouldEqual expectedOutboxContract.getErgoTree
     }
   }
 
+/*
   property("valid txs for buy order"){
     val orderAuthorAddress = testnetAddressGen.sample.get
     forAll(buyOrderBoxGen(orderAuthorAddress)) { orderBox =>
@@ -105,5 +123,6 @@ class CancelOrderSpec extends PropSpec
       txProto.sendChangeTo shouldEqual orderAuthorAddress
     }
   }
+  */
 }
 
