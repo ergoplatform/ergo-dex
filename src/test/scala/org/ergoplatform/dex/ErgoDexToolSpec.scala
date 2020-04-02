@@ -329,8 +329,7 @@ class ErgoDexToolSpec
         s"""Storage password> ::abc;
            |""".stripMargin, data)
     println(res)
-    res should include
-    s"""
+    res should include (s"""
           "amount": $tokenAmount
         }
       ],
@@ -339,12 +338,9 @@ class ErgoDexToolSpec
         "R5": "${encodedRegValue(tokenDesc)}",
         "R6": "${encodedRegValue(numberOfDecimals)}"
       },
-    """.stripMargin
+    """.stripMargin)
 
-    res should include
-    s"""
-       | "value": $ergAmount,
-       |""".stripMargin
+    res should include (s""""value": $ergAmount,""")
   }
 
   property("dex:CancelOrder command for sell order") {

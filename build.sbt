@@ -10,7 +10,11 @@ resolvers ++= Seq(Resolver.mavenLocal, sonatypeReleases, sonatypeSnapshots, Reso
 
 scalaVersion := "2.12.10"
 version := "0.1.0"
-val appkit = "org.ergoplatform" %% "ergo-appkit" % "develop-b302956b-SNAPSHOT"
+
+val appkitVersion = "use-wallet-box-selection-4fb32798-SNAPSHOT"
+val appkit = "org.ergoplatform" %% "ergo-appkit" % appkitVersion
+
+val ergoContractsVersion = "0.0.0-15-df0325c9-SNAPSHOT"
 
 val mockitoScalaVerstion = "1.11.4"
 
@@ -19,7 +23,7 @@ libraryDependencies ++= Seq(
   //.classifier("tests-sources") // uncomment this for debuging to make sources available (doesn't work when appkit is published locally) ,
   "org.graalvm.sdk" % "graal-sdk" % "19.2.1",
   "com.squareup.okhttp3" % "mockwebserver" % "3.12.0",
-  "org.ergoplatform" %% "verified-contracts" % "0.0.0-5-ee53f015-SNAPSHOT",
+  "org.ergoplatform" %% "verified-contracts" % ergoContractsVersion,
   "org.scalatest" %% "scalatest" % "3.0.8" % "test",
   "org.scalacheck" %% "scalacheck" % "1.14.1" % "test",
   "org.mockito" %% "mockito-scala" % mockitoScalaVerstion % "test",
