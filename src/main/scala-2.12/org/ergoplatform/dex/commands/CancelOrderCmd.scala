@@ -56,18 +56,35 @@ case class CancelOrderCmd(toolConf: ErgoToolConfig,
         BoxOperations.selectTop(unspent, nanoErgs).convertTo[IndexedSeq[InputBox]]
       }
 
-      val txs = CancelOrder.createTx(orderBox, recipientAddress, unspentBoxesForAmount).map(_.toTx(ctx.newTxBuilder))
+      val orderBoxContractTemplate = ErgoTreeTemplate.fromErgoTree(orderBox.getErgoTree)
 
-      txs.foreach{tx => 
-        val signed = loggedStep(s"Signing the transaction", console) {
+      val txBuilder = ctx.newTxBuilder
+      val signedTxs = if (orderBoxContractTemplate.equals(SellerContract.contractTemplate)) {
+        val tx = CancelOrder.txForSellOrder(orderBox, recipientAddress, unspentBoxesForAmount).toTx(txBuilder)
+        val signed = loggedStep(s"Signing cancel transaction for sell order", console) {
           senderProver.sign(tx)
         }
         val txJson = signed.toJson(true)
-        console.println(s"Tx: $txJson")
+        console.println(s"Tx: ${signed.toJson(true)}")
+        Seq(signed)
+      } else {
+        val firstTx = CancelOrder.firstTxForBuyOrder(orderBox, recipientAddress, unspentBoxesForAmount).toTx(txBuilder)
+        val signedFirstTx = loggedStep(s"Signing the first cancel transaction for buy order", console) {
+          senderProver.sign(firstTx)
+        }
+        console.println(s"Tx: ${signedFirstTx.toJson(true)}")
+        val secondTx = CancelOrder.txToBurnMintedToken(signedFirstTx, recipientAddress).toTx(txBuilder)
+        val signedSecondTx = loggedStep(s"Signing the second cancel transaction for buy order", console) {
+          senderProver.sign(secondTx)
+        }
+        console.println(s"Tx: ${signedSecondTx.toJson(true)}")
+        Seq(signedFirstTx, signedSecondTx)
+      }
 
+      signedTxs.foreach{ tx => 
         if (!runCtx.isDryRun) {
-          val txId = loggedStep(s"Sending the transaction", console) {
-            ctx.sendTransaction(signed)
+          val txId = loggedStep(s"Sending the transaction(s)", console) {
+            ctx.sendTransaction(tx)
           }
           console.println(s"Server returned tx id: $txId")
         }
@@ -143,17 +160,7 @@ object CancelOrder {
     }
   }
 
-  def createTx(orderBox: InputBox, recipientAddress: Address,
-               unspentBoxesForAmount: (Long) => Seq[InputBox]): Seq[TxProto] = {
-    val orderBoxContractTemplate = ErgoTreeTemplate.fromErgoTree(orderBox.getErgoTree)
-    if (orderBoxContractTemplate.equals(SellerContract.contractTemplate)) {
-      Seq(cancelTxForSellOrder(orderBox, recipientAddress, unspentBoxesForAmount))
-    } else {
-      cancelTxsForBuyOrder(orderBox, recipientAddress, unspentBoxesForAmount)
-    }
-  }
-
-  def cancelTxForSellOrder(orderBox: InputBox, recipientAddress: Address,
+  def txForSellOrder(orderBox: InputBox, recipientAddress: Address,
                unspentBoxesForAmount: (Long) => Seq[InputBox]): TxProto = {
     val orderBoxId = orderBox.getId
     val txFee = MinFee
@@ -162,15 +169,14 @@ object CancelOrder {
       .getOrElse(sys.error(s"cannot extract seller PK from order box $orderBoxId"))
     require(sellerPk == recipientAddress.getPublicKey,
       s"sell order box $orderBoxId can be claimed with $sellerPk PK, while your's is ${recipientAddress.getPublicKey}")
-    val outboxValue = orderBox.getValue - txFee
-    // TODO ensure outboxValue >= min box value
+    val outboxValue = math.max(orderBox.getValue - txFee, MinFee)
     val outbox = OutBoxProto(outboxValue, Seq(orderBox.getTokens.get(0)), None, Seq(), outboxContract)
     val inputBoxes = selectInputBoxes(orderBox, outboxValue + txFee, unspentBoxesForAmount)
     TxProto(inputBoxes, Seq(outbox), txFee, recipientAddress)
   }
 
-  def cancelTxsForBuyOrder(orderBox: InputBox, recipientAddress: Address,
-               unspentBoxesForAmount: (Long) => Seq[InputBox]): Seq[TxProto] = {
+  def firstTxForBuyOrder(orderBox: InputBox, recipientAddress: Address,
+               unspentBoxesForAmount: (Long) => Seq[InputBox]): TxProto = {
     val orderBoxId = orderBox.getId
     val txFee = MinFee
     val outboxContract = new ErgoTreeContract(SigmaPropConstant(recipientAddress.getPublicKey))
@@ -188,24 +194,28 @@ object CancelOrder {
       desc = "New token each time DEX buy order is cancelled", // token description (see EIP-4)
       numberOfDecimals = 2 // number of decimals (see EIP-4)
     )
-    // TODO ensure outboxValue >= min box value
-    // TODO add min box value + txFee for the next tx in chain
-    val outboxValue = orderBox.getValue - txFee
+    val feeForSecondTx = MinFee + txFee
+    val outboxValue = math.max(orderBox.getValue - txFee, MinFee + feeForSecondTx)
     val outbox = OutBoxProto(outboxValue, Seq(), Some(mintTokenInfo), Seq(), outboxContract)
     val inputBoxes = selectInputBoxes(orderBox, outboxValue + txFee, unspentBoxesForAmount)
-    // TODO add second tx burning the minted token
-    val firstTx = TxProto(inputBoxes, Seq(outbox), txFee, recipientAddress)
-    Seq(firstTx)
+    TxProto(inputBoxes, Seq(outbox), txFee, recipientAddress)
   }
 
-  def burnMintedTokenTx(txId: String, recipientAddress: Address, unspentBoxesForAmount: (Long) => Seq[InputBox]): TxProto = ???
+  def txToBurnMintedToken(firstTx: SignedTransaction, recipientAddress: Address): TxProto = {
+    val inputBoxWithToken = firstTx.getOutputsToSpend().get(0)
+    val txFee = MinFee
+    val outboxValue = MinFee
+    val outboxContract = new ErgoTreeContract(SigmaPropConstant(recipientAddress.getPublicKey))
+    val outbox = OutBoxProto(outboxValue, Seq(), None, Seq(), outboxContract)
+    TxProto(Seq(inputBoxWithToken), Seq(outbox), txFee, recipientAddress)
+  }
 
-  def selectInputBoxes(orderBox: InputBox, outboxValue: Long,
+  def selectInputBoxes(orderBox: InputBox, toSpend: Long,
                        unspentBoxesForAmount: (Long) => Seq[InputBox]): Seq[InputBox] =
-    if (outboxValue >= MinFee) {
+    if (orderBox.getValue >= toSpend) {
       Seq(orderBox)
     } else {
-      Seq(orderBox) ++ unspentBoxesForAmount(MinFee - outboxValue)
+      Seq(orderBox) ++ unspentBoxesForAmount(toSpend - orderBox.getValue())
     }
 
 }
