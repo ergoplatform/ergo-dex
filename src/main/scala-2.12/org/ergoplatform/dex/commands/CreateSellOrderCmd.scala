@@ -1,7 +1,6 @@
 package org.ergoplatform.dex.commands
 
 import java.io.File
-import java.util.Optional
 
 import org.ergoplatform.appkit.Parameters.MinFee
 import org.ergoplatform.appkit._

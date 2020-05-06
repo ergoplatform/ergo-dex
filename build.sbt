@@ -11,7 +11,7 @@ resolvers ++= Seq(Resolver.mavenLocal, sonatypeReleases, sonatypeSnapshots, Reso
 scalaVersion := "2.12.10"
 version := "0.1.0"
 
-val appkitVersion = "use-wallet-box-selection-4fb32798-SNAPSHOT"
+val appkitVersion = "develop-d9f8eee9-SNAPSHOT"
 val appkit = "org.ergoplatform" %% "ergo-appkit" % appkitVersion
 
 val ergoContractsVersion = "0.0.0-15-df0325c9-SNAPSHOT"
